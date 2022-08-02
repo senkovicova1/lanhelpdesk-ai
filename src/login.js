@@ -2,13 +2,27 @@ import React from 'react';
 import { Center, Button, Checkbox, Input, Icon, FormControl, Stack, WarningOutlineIcon } from "native-base";
 import { MaterialIcons } from '@expo/vector-icons';
 
+import {
+  useMutation,
+} from "@apollo/client";
+import {
+  LOGIN_USER
+} from './queries/login';
+
+
 export default function Login ( props ) {
 
   const {
     navigation
   } = props;
 
-  const [show, setShow] = React.useState(false);
+  const [ loginUser ] = useMutation( LOGIN_USER );
+
+  const [ email, setEmail ] = React.useState( '' );
+  const [ password, setPassword ] = React.useState( '' );
+  const [ showPassword, setShowPassword ] = React.useState(false);
+  const [ signingIn, setSigningIn ] = React.useState( false );
+  const [ error, setError ] = React.useState( null );
 
   return (
     <Center
@@ -25,7 +39,13 @@ export default function Login ( props ) {
       <FormControl isRequired>
           <Stack mx="4">
             <FormControl.Label>Login</FormControl.Label>
-            <Input type="text" defaultValue=""/>
+            <Input
+              type="text"
+              value={email}
+              onChangeText={(text) => {
+                setEmail(text)
+              }}
+            />
           </Stack>
       </FormControl>
 
@@ -33,19 +53,23 @@ export default function Login ( props ) {
             <Stack mx="4">
               <FormControl.Label>Password</FormControl.Label>
                 <Input
-                  type={show ? "text" : "password"}
+                  type={showPassword ? "text" : "password"}
                   style={{width: "100%"}}
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text)
+                  }}
                   InputRightElement={
                     <Icon
                       as={
                         <MaterialIcons
-                          name={show ? "visibility" : "visibility-off"}
+                          name={showPassword ? "visibility" : "visibility-off"}
                           />
                       }
                       size={5}
                       mr="2"
                       color="muted.400"
-                      onPress={() => setShow(!show)}
+                      onPress={() => setShowPassword(!showPassword)}
                       />
                   }
                   placeholder="Password"

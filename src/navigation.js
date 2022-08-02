@@ -4,6 +4,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Button, IconButton, Heading } from "native-base";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { FontAwesome, FontAwesome5, AntDesign  } from '@expo/vector-icons';
+import {
+  useQuery
+} from '@apollo/client'
 
 import List from './list';
 import Login from './login';
@@ -18,9 +21,20 @@ import UserAdd from './userAdd';
 import CompanyList from './companyList';
 import CompanyAdd from './companyAdd';
 
+import {
+  GET_IS_LOGGED_IN,
+} from './apollo/localSchema/queries';
+
 const Stack = createNativeStackNavigator();
 
 export default function Navigation (props) {
+
+  const {
+    data
+  } = useQuery( GET_IS_LOGGED_IN );
+  console.log("HI");
+  console.log(data.isLoggedIn);
+
   return (
     <Stack.Navigator>
       <Stack.Screen
