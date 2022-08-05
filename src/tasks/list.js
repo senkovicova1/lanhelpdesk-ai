@@ -1,9 +1,11 @@
-import React from 'react';/*
+import React from 'react';
 import {
   useQuery,
   useSubscription,
-} from "@apollo/client";*/
+} from "@apollo/client";
+import moment from 'moment';
 import {
+  Badge,
   Box,
   Button,
   Divider,
@@ -13,7 +15,8 @@ import {
   Pressable,
   ScrollView,
 } from "native-base";
-/*
+import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
+
 import {
   GET_PROJECT,
   GET_FILTER,
@@ -22,15 +25,15 @@ import {
 import {
   GET_TASKS,
   ADD_TASK_SUBSCRIPTION,
-} from '../queries/tasks';*/
+} from '../queries/tasks';
 
 export default function TaskList ( props ) {
   const {
     navigation
   } = props;
-  console.log("HI");
+
   //local
-/*  const {
+  const {
     data: filterData,
     loading: filterLoading
   } = useQuery( GET_FILTER );
@@ -42,22 +45,6 @@ export default function TaskList ( props ) {
 
   const localFilter = filterData.localFilter;
   const localProject = projectData.localProject;
-
-  //apollo queries
-  const taskVariables = {
-    projectId: null,
-    milestoneId: null,
-    filter: filterVariables,
-    sort: {
-      asc: true,
-      key: 'status'
-    },
-    stringFilter: null,
-    page: 1,
-    limit: 30,
-  }
-
-  const filterVariables = localFilterToValues( localFilter );
 
   const localFilterToValues = ( localFilter ) => {
     let filterValues = {
@@ -78,6 +65,22 @@ export default function TaskList ( props ) {
     return filterValues;
   }
 
+  const filterVariables = localFilterToValues( localFilter );
+  //apollo queries
+  const taskVariables = {
+    projectId: null,
+    milestoneId: null,
+    filter: filterVariables,
+    sort: {
+      asc: true,
+      key: 'status'
+    },
+    stringFilter: null,
+    page: 1,
+    limit: 30,
+  }
+
+  console.log(filterVariables);
   //network
   const {
     data: tasksData,
@@ -103,46 +106,66 @@ export default function TaskList ( props ) {
     }
   } );
 
+  const timestampToString = ( timestamp, trimmed = false, dateOnly = false ) => {
+    if ( trimmed ) {
+      return moment( parseInt( timestamp ) ).format( 'H:mm D.M.YYYY' );
+    }
+    if ( dateOnly ) {
+      return moment( parseInt( timestamp ) ).format( 'D.M.YYYY' );
+    }
+    return moment( parseInt( timestamp ) ).format( 'HH:mm DD.MM.YYYY' );
+  }
 
   const tasks = tasksLoading ? [] : tasksData.tasks.tasks;
-  console.log(tasks.map((task) => task.title));*/
+
   return (
     <ScrollView>
-      <Pressable
-        onPress={() => navigation.navigate('TaskDetail')}
-        margin="5"
-        marginBottom="0"
-        >
-        <Flex direction="row" justify="space-between">
-        <Box>
-          <Heading variant="list" size="md">Item title</Heading>
-          <Text>Item attribute</Text>
-        </Box>
-        <Box>
-          <Text>Item attribute</Text>
-          <Text>Item attribute</Text>
-        </Box>
-      </Flex>
-        <Divider mt="5"/>
-      </Pressable>
 
-      <Pressable
-        onPress={() => navigation.navigate('TaskDetail')}
-        margin="5"
-        marginBottom="0"
-        >
-        <Flex direction="row" justify="space-between">
-        <Box>
-          <Heading variant="list" size="md">Item title</Heading>
-          <Text>Item attribute</Text>
-        </Box>
-        <Box>
-          <Text>Item attribute</Text>
-          <Text>Item attribute</Text>
-        </Box>
-      </Flex>
-        <Divider mt="5"/>
-      </Pressable>
+      {
+        tasks.map((task) => (
+          <Pressable
+            key={task.id}
+            onPress={() => navigation.navigate('TaskDetail')}
+            margin="5"
+            marginBottom="0"
+            >
+            <Flex direction="row" justify="space-between">
+            <Box width="60%">
+              <Heading variant="list" size="sm">{task.title}</Heading>
+              <Text>{`Requester: ${task.requester.fullName}`}</Text>
+              <Text>{`Assigned: ${task.assignedTo.map((assigned) => assigned.fullName).join(", ")}`}</Text>
+            </Box>
+            <Box>
+              <Badge
+                color="white"
+                bgColor={task.status.color}
+                _text={{
+                  color: "white"
+                }}
+                >
+                {task.status.title}
+              </Badge>
+              <Flex flexDirection="row" alignItems="center">
+                <MaterialCommunityIcons name="asterisk" size={12} color="black" mr="2" pr="2"/>
+                <Text>
+                  {timestampToString(task.createdAt, false, true)}
+                </Text>
+              </Flex>
+              {
+                task.deadline &&
+                <Flex flexDirection="row" alignItems="center">
+                  <FontAwesome name="warning" size={12} color="red" mr="2" pr="2"/>
+                  <Text>
+                    {timestampToString(task.deadline, false, true)}
+                  </Text>
+                </Flex>
+              }
+            </Box>
+          </Flex>
+            <Divider mt="5"/>
+          </Pressable>
+        ))
+      }
 
     </ScrollView>
   );

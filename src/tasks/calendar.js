@@ -6,6 +6,7 @@ import {
 import {
   Calendar
 } from 'react-native-calendars';
+import List from './list';
 
 export default function CalendarView ( props ) {
   const {
@@ -48,6 +49,8 @@ export default function CalendarView ( props ) {
         }}
         enableSwipeMonths={true}
       />
+
+    <List />
 
     </View>
   );
