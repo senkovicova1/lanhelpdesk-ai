@@ -2,9 +2,20 @@ import React from 'react';
 import { Center, Button, Checkbox, Input, Icon, FormControl, Stack, WarningOutlineIcon } from "native-base";
 import { MaterialIcons } from '@expo/vector-icons';
 
+import localStorage from 'react-native-sync-localstorage';
+
 import {
   useMutation,
+  useQuery
 } from "@apollo/client";
+import {
+  setIsLoggedIn,
+  setTestedToken,
+} from './apollo/localSchema/actions';
+import refreshToken from './apollo/refreshToken';
+import {
+  GET_TESTED_TOKEN,
+} from './apollo/localSchema/queries';
 import {
   LOGIN_USER
 } from './queries/login';
@@ -23,6 +34,70 @@ export default function Login ( props ) {
   const [ showPassword, setShowPassword ] = React.useState(false);
   const [ signingIn, setSigningIn ] = React.useState( false );
   const [ error, setError ] = React.useState( null );
+
+  const {
+    data: testedTokenData,
+    loading: testedTokenLoading
+  } = useQuery( GET_TESTED_TOKEN );
+
+  const login = () => {
+    setSigningIn( true );
+    setError( null );
+    console.log("login");
+
+    loginUser( {
+        variables: {
+          email,
+          password
+        }
+      } )
+      .then( ( response ) => {
+        setSigningIn( false );
+        console.log(localStorage);
+        localStorage.setItem( "acctok", response.data.loginUser.accessToken );
+        setIsLoggedIn( true );
+        navigation.navigate('Drawer');
+      } )
+      .catch( ( err ) => {
+        setSigningIn( false );
+        setError( err.message );
+        console.log("FAILED");
+        console.log(err);
+        console.log(err.message);
+    } );
+  }
+
+  React.useEffect( () => {
+    if ( !testedTokenData.testedToken ) {
+      setTestedToken( true )
+      tryLogin();
+    }
+  }, [ testedTokenLoading, testedTokenData.testedToken ] );
+
+  const tryLogin = () => {
+    setSigningIn( true );
+    refreshToken()
+      .then( ( response ) => {
+        const {
+          ok,
+          accessToken
+        } = response.data;
+        if ( ok ) {
+          localStorage.setItem( "acctok", accessToken );
+          setIsLoggedIn( true )
+          setSigningIn( false );
+          navigation.navigate('Drawer');
+        } else {
+          localStorage.removeItem( "acctok" );
+          setIsLoggedIn( false );
+          setSigningIn( false );
+        }
+      } )
+      .catch( ( error ) => {
+        setIsLoggedIn( false );
+        setSigningIn( false );
+      } )
+  }
 
   return (
     <Center
@@ -94,12 +169,14 @@ export default function Login ( props ) {
         </Stack>
       </FormControl>
 
-      <FormControl>
+      <FormControl
+        isDisabled={ signingIn || email.length === 0 || password.length === 0 }
+      >
           <Stack mx="4">
             <Button
               shadow={2}
               onPress={() => {
-                navigation.navigate('List');
+                login();
               }}
               >
               Login

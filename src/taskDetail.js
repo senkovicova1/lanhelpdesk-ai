@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { Platform } from 'react-native';
 import { ScrollView, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 
@@ -196,7 +197,7 @@ export default function TaskDetail ( props ) {
             <IconButton
               onPress={() => {navigation.navigate('CommentAdd')}}
               variant="solid"
-              width="fit-content"
+              width="50px"
               borderRadius="20"
               _icon={{
                 as: AntDesign,
@@ -268,7 +269,7 @@ export default function TaskDetail ( props ) {
             <IconButton
               onPress={() => {navigation.navigate('SubtaskAdd')}}
               variant="solid"
-              width="fit-content"
+              width="50px"
               borderRadius="20"
               _icon={{
                 as: AntDesign,
@@ -304,7 +305,7 @@ export default function TaskDetail ( props ) {
             <IconButton
               onPress={() => {navigation.navigate('MaterialAdd')}}
               variant="solid"
-              width="fit-content"
+              width="50px"
               borderRadius="20"
               _icon={{
                 as: AntDesign,

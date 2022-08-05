@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { ScrollView, Pressable, Divider, Heading, Text, Flex, Box, Stack, FormControl, Icon, Input, IconButton } from "native-base";
 import { FontAwesome, AntDesign } from '@expo/vector-icons';
 
@@ -53,7 +54,7 @@ export default function UserList ( props ) {
         <IconButton
           onPress={() => {navigation.navigate('UserAdd')}}
           variant="solid"
-          width="fit-content"
+          width="50px"
           borderRadius="20"
           _icon={{
             as: AntDesign,

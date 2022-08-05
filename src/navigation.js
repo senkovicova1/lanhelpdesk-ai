@@ -8,9 +8,8 @@ import {
   useQuery
 } from '@apollo/client'
 
-import List from './list';
+import Drawer from './drawer';
 import Login from './login';
-import Calendar from './calendar';
 import TaskDetail from './taskDetail';
 import CommentAdd from './addComment';
 import SubtaskAdd from './subtaskAdd';
@@ -32,8 +31,8 @@ export default function Navigation (props) {
   const {
     data
   } = useQuery( GET_IS_LOGGED_IN );
-  console.log("HI");
-  console.log(data.isLoggedIn);
+
+  console.log("isLoggedIn", data.isLoggedIn);
 
   return (
     <Stack.Navigator>
@@ -50,43 +49,10 @@ export default function Navigation (props) {
         }}
       />
       <Stack.Screen
-        name="List"
-        component={List}
+        name="Drawer"
+        component={Drawer}
         options={{
           headerShown: false
-        }}
-      />
-      <Stack.Screen
-        name="Calendar"
-        component={Calendar}
-        options={{
-          headerTitle: (props) => <Text>Calendar</Text>,
-          headerRight: () => (
-            <Heading style={{display: "flex", flexDirection: "row"}}>
-              <Button
-                onPress={() => alert('This is a button!')}
-                title="Info"
-                color="#fff"
-              />
-              <Button
-                onPress={() => alert('This is a button!')}
-                title="Info"
-                color="#fff"
-              />
-          </Heading>
-          ),
-          headerLeft: () => (
-            <Button
-              onPress={() => alert('This is a button!')}
-              title="Info"
-              color="#fff"
-            />
-          ),
-          headerBackVisible: false,
-          headerBackTitleVisible: false,
-          headerStyle: {
-            backgroundColor: '#0078d4',
-          },
         }}
       />
       <Stack.Screen
