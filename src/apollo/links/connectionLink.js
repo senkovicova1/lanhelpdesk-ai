@@ -14,6 +14,8 @@ import {
   SOCKET_URL
 } from '../../configs/restAPI';
 
+import localStorage from 'react-native-sync-localstorage';
+
 const httpLink = new HttpLink( {
   uri: `${REST_URL}/graphql`,
   credentials: "include"
@@ -24,7 +26,7 @@ export const socketLink = new WebSocketLink( {
   options: {
     reconnect: true,
     connectionParams: () => ( {
-      authorization: `Bearer ${sessionStorage.getItem( 'acctok' )}`,
+      authorization: `Bearer ${localStorage.getItem( 'acctok' )}`,
     } ),
   }
 } );

@@ -18,6 +18,8 @@ import {
 } from './links';
 import refreshToken from './refreshToken';
 
+import localStorage from 'react-native-sync-localstorage';
+
 //Apollo cashe
 export const cache = new InMemoryCache( {
   typePolicies: {
@@ -39,9 +41,9 @@ const promiseToObservable = promise => (
           accessToken
         } = response.data;
         if ( ok ) {
-          sessionStorage.setItem( "acctok", accessToken );
+          localStorage.setItem( "acctok", accessToken );
         } else {
-          sessionStorage.removeItem( "acctok" )
+          localStorage.removeItem( "acctok" )
           setIsLoggedIn( false );
         }
         if ( subscriber.closed ) return;
@@ -67,7 +69,7 @@ function processErrors( {
     return promiseToObservable( refreshToken() ).flatMap( () => forward( operation ) );
   }
   if ( error.extensions.code === "NO_ACC_TOKEN" ) {
-    sessionStorage.removeItem( "acctok" )
+    localStorage.removeItem( "acctok" )
     setIsLoggedIn( false );
   } else {
     addApolloErrors( graphQLErrors );

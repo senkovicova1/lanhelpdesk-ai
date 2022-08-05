@@ -15,7 +15,7 @@ import Navigation from './src/navigation';
 const client = createClient();
 
 export default function App() {
-
+  
   return (
     <ApolloProvider client={client}>
       <NavigationContainer>

@@ -8,6 +8,8 @@ import {
 import refreshToken from '../refreshToken';
 import moment from 'moment';
 
+import localStorage from 'react-native-sync-localstorage';
+
 const afterNow = ( unix ) => {
   return unix > moment().unix()
 }
@@ -16,7 +18,7 @@ export const authLink = setContext(
   async ( _, {
     headers
   } ) => {
-    let token = sessionStorage.getItem( 'acctok' );
+    let token = localStorage.getItem( 'acctok' );
     if ( !token ) {
       return headers;
     }
@@ -27,9 +29,9 @@ export const authLink = setContext(
       } = ( await refreshToken() ).data;
       if ( ok ) {
         token = accessToken;
-        sessionStorage.setItem( "acctok", accessToken );
+        localStorage.setItem( "acctok", accessToken );
       } else {
-        sessionStorage.removeItem( "acctok" )
+        localStorage.removeItem( "acctok" )
         setIsLoggedIn( false );
       }
     }
