@@ -10,7 +10,7 @@ import {
 
 import Drawer from './drawer';
 import Login from './login';
-import TaskDetail from './taskDetail';
+import TaskDetail from './tasks/taskForm/editContainer';
 import CommentAdd from './addComment';
 import SubtaskAdd from './subtaskAdd';
 import MaterialAdd from './materialAdd';

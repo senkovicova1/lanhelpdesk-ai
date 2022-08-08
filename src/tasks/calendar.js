@@ -24,33 +24,33 @@ export default function CalendarView ( props ) {
           // Handler which gets executed on day press. Default = undefined
         //  console.log('selected day', day);
           let newMarkedDates = {};
-          newMarkedDates[day.dateString] = {selected: true, marked: true, selectedColor: '#dae5ee'};
+          newMarkedDates[day.dateString] = {selected: true, marked: true, selectedColor: '#dae5ee', unix: day.timestamp};
 
           setMarkedDays(newMarkedDates);
         }}
         onDayLongPress={day => {
           // Handler which gets executed on day long press. Default = undefined
-          console.log('selected day', day);
+          // console.log('selected day', day);
         }}
         monthFormat={'MMMM yyyy'}
         onMonthChange={month => {
           // Handler which gets executed when visible month changes in calendar. Default = undefined
-          console.log('month changed', month);
+          // console.log('month changed', month);
         }}
         firstDay={1}
         showWeekNumbers={true}
         onPressArrowLeft={(subtractMonth) => {
           // Handler which gets executed when press arrow icon left. It receive a callback can go back month
-          // subtractMonth()
+           subtractMonth()
         }}
         onPressArrowRight={(addMonth) => {
           // Handler which gets executed when press arrow icon right. It receive a callback can go next month
-          // addMonth()
+           addMonth()
         }}
         enableSwipeMonths={true}
       />
 
-    <List />
+    <List {...props} markedDate={Object.keys(markedDates).length === 0 ? null : markedDates[Object.keys(markedDates)].unix} />
 
     </View>
   );

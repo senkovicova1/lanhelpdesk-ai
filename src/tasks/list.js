@@ -29,7 +29,8 @@ import {
 
 export default function TaskList ( props ) {
   const {
-    navigation
+    navigation,
+    markedDate,
   } = props;
 
   //local
@@ -68,7 +69,7 @@ export default function TaskList ( props ) {
   const filterVariables = localFilterToValues( localFilter );
   //apollo queries
   const taskVariables = {
-    projectId: null,
+    projectId: localProject.project.id === -1 ? null : localProject.project.id,
     milestoneId: null,
     filter: filterVariables,
     sort: {
@@ -80,7 +81,6 @@ export default function TaskList ( props ) {
     limit: 30,
   }
 
-  console.log(filterVariables);
   //network
   const {
     data: tasksData,
@@ -116,16 +116,19 @@ export default function TaskList ( props ) {
     return moment( parseInt( timestamp ) ).format( 'HH:mm DD.MM.YYYY' );
   }
 
-  const tasks = tasksLoading ? [] : tasksData.tasks.tasks;
+  let tasks = tasksLoading ? [] : tasksData.tasks.tasks;
+  if (markedDate){
+    tasks = tasks.filter((task) => (task.startsAt && parseInt(task.startsAt) <= parseInt(markedDate)) || (task.deadline && parseInt(task.deadline) >= parseInt(markedDate)));
+  }
 
   return (
-    <ScrollView>
+    <ScrollView height="55%">
 
       {
         tasks.map((task) => (
           <Pressable
             key={task.id}
-            onPress={() => navigation.navigate('TaskDetail')}
+            onPress={() => navigation.navigate('TaskDetail', {taskId: task.id})}
             margin="5"
             marginBottom="0"
             >
