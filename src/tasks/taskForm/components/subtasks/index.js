@@ -8,63 +8,47 @@ export default function TaskSubtasks ( props ) {
   const {
     navigation,
     taskId,
+    task,
   } = props;
 
   return (
     <Box>
-      <Box marginTop="5">
-        <Flex direction="row" justify="space-between">
-          <Flex direction="row" justify="space-between" alignItems="center">
-            {/*<MaterialIcons name="check-box" size={24} color="black" />*/}
-            <MaterialIcons name="check-box-outline-blank" size={24} color="black" />
-            <Heading variant="list" size="sm">Repair keyboard</Heading>
-          </Flex>
-          <IconButton
-            onPress={() => {navigation.navigate('SubtaskAdd')}}
-            p="0"
-            variant="ghost"
-            _icon={{
-              as: Ionicons ,
-              name: "pencil",
-              color: "#0078d4"
-            }}
-            />
-        </Flex>
+      {
+        task.subtasks.map((subtask) => (
+          <Box key={subtask.id} marginTop="5">
+            <Flex direction="row" justify="space-between">
+              <Flex direction="row" justify="space-between" alignItems="center">
+                {
+                  subtask.done &&
+                  <MaterialIcons name="check-box" size={24} color="black" />
+                }
+                {
+                  !subtask.done &&
+                  <MaterialIcons name="check-box-outline-blank" size={24} color="black" />
+                }
+                <Heading variant="list" size="sm">{subtask.title}</Heading>
+              </Flex>
+              <IconButton
+                onPress={() => {navigation.navigate('SubtaskAdd')}}
+                p="0"
+                variant="ghost"
+                _icon={{
+                  as: Ionicons ,
+                  name: "pencil",
+                  color: "#0078d4"
+                }}
+                />
+            </Flex>
 
-        <Flex direction="row" justify="space-between">
-          <Text>Sonka</Text>
-          <Text>1.5h</Text>
-        </Flex>
+            <Flex direction="row" justify="space-between">
+              <Text>{subtask.assignedTo.fullName}</Text>
+              <Text>{`${subtask.quantity}h`}</Text>
+            </Flex>
 
-        <Divider w="100%" marginTop="2"/>
-      </Box>
-
-      <Box marginTop="5">
-        <Flex direction="row" justify="space-between">
-          <Flex direction="row" justify="space-between" alignItems="center">
-            {/*<MaterialIcons name="check-box" size={24} color="black" />*/}
-            <MaterialIcons name="check-box-outline-blank" size={24} color="black" />
-            <Heading variant="list" size="sm">Repair keyboard</Heading>
-          </Flex>
-          <IconButton
-            onPress={() => {navigation.navigate('SubtaskAdd')}}
-            p="0"
-            variant="ghost"
-            _icon={{
-              as: Ionicons ,
-              name: "pencil",
-              color: "#0078d4"
-            }}
-            />
-        </Flex>
-
-        <Flex direction="row" justify="space-between">
-          <Text>Sonka</Text>
-          <Text>1.5h</Text>
-        </Flex>
-
-        <Divider w="100%" marginTop="2"/>
-      </Box>
+            <Divider w="100%" marginTop="2"/>
+          </Box>
+        ))
+      }
 
       <Box marginTop="5" alignItems="center">
         <IconButton

@@ -8,24 +8,24 @@ export default function TaskComments ( props ) {
   const {
     navigation,
     taskId,
+    task,
   } = props;
+
+  const comments = task.comments;
 
   return (
     <Box>
-      <Box marginTop="5" bgColor="#e0f6df" p="2">
-        <Flex direction="row" justify="space-between">
-          <Heading variant="list" size="sm">Sonka</Heading>
-          <Text>28.07.2022</Text>
-        </Flex>
-        <Text>Lorem ipsum</Text>
-      </Box>
-      <Box marginTop="5" bgColor="#e0f6df" p="2">
-        <Flex direction="row" justify="space-between">
-          <Heading variant="list" size="sm">Sonka</Heading>
-          <Text>28.07.2022</Text>
-        </Flex>
-        <Text>Lorem ipsum</Text>
-      </Box>
+      {/*
+        comments.map((comment) => (
+          <Box marginTop="5" bgColor="#e0f6df" p="2">
+            <Flex direction="row" justify="space-between">
+              <Heading variant="list" size="sm">{comment.user.fullName}</Heading>
+              <Text>{timestampToString(comment.createdAt)}</Text>
+            </Flex>
+            <Text>{comment.message}</Text>
+          </Box>
+        ))
+      */}
       <Box marginTop="5" alignItems="center">
         <IconButton
           onPress={() => {navigation.navigate('CommentAdd')}}

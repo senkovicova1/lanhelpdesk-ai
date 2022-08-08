@@ -9,31 +9,53 @@ export default function TaskMaterial ( props ) {
   const {
     navigation,
     taskId,
+    task,
   } = props;
+
+  console.log(task.materials);
 
   return (
     <Box>
-      <Box marginTop="5">
-        <Flex direction="row" justify="space-between">
-          <Heading variant="list" size="sm">Toner</Heading>
-          <IconButton
-            onPress={() => {navigation.navigate('MaterialAdd')}}
-            p="0"
-            variant="ghost"
-            _icon={{
-              as: Ionicons ,
-              name: "pencil",
-              color: "#0078d4"
-            }}
-            />
-        </Flex>
-        <Text>1x10e = 10e</Text>
-        <Divider w="100%" marginTop="2"/>
-      </Box>
+
+      {
+        task.materials.map((material) => (
+          <Box key={material.id} marginTop="5">
+            <Flex direction="row" justify="space-between">
+              <Flex direction="row" justify="space-between" alignItems="center">
+                {
+                  material.done &&
+                  <MaterialIcons name="check-box" size={24} color="black" />
+                }
+                {
+                  !material.done &&
+                  <MaterialIcons name="check-box-outline-blank" size={24} color="black" />
+                }
+                <Heading variant="list" size="sm">{material.title}</Heading>
+              </Flex>
+              <IconButton
+                onPress={() => {navigation.navigate('MaterialAdd')}}
+                p="0"
+                variant="ghost"
+                _icon={{
+                  as: Ionicons ,
+                  name: "pencil",
+                  color: "#0078d4"
+                }}
+                />
+            </Flex>
+
+            <Flex direction="row" justify="space-between">
+              <Text>{`${material.quantity} x ${material.price} = ${material.quantity*material.price}e`}</Text>
+            </Flex>
+
+            <Divider w="100%" marginTop="2"/>
+          </Box>
+        ))
+      }
 
       <Box marginTop="5" alignItems="center">
         <IconButton
-          onPress={() => {navigation.navigate('MaterialAdd')}}
+          onPress={() => {navigation.navigate('SubtaskAdd')}}
           variant="solid"
           width="50px"
           borderRadius="20"
@@ -43,6 +65,7 @@ export default function TaskMaterial ( props ) {
           }}
           />
       </Box>
+
     </Box>
   );
 }

@@ -8,6 +8,12 @@ export default function TaskInfo ( props ) {
   const {
     navigation,
     taskId,
+    task,
+    currentUser,
+    accessRights,
+    companies,
+    users,
+    client,
   } = props;
 
   return (
@@ -27,17 +33,38 @@ export default function TaskInfo ( props ) {
             />
         </Flex>
         <Box bgColor="white" p="1">
-          <Text>Lorem ipsum...</Text>
+          <Text>{task.description.length > 0 ? task.description : "No description"}</Text>
         </Box>
       </Box>
 
       <Box marginTop="5">
         <Heading variant="list" size="sm">Tags</Heading>
+        {
+          task.tags.map((tag) => (
+            <Badge
+              key={tag.id}
+              color="white"
+              bgColor={tag.color}
+              _text={{
+                color: "white"
+              }}
+              >
+              {tag.title}
+            </Badge>
+          ))
+        }
         <Button variant="link" m="0" p="0" justifyContent="flex-start"> + Tags </Button>
       </Box>
 
       <Box marginTop="5">
         <Heading variant="list" size="sm">Attachments</Heading>
+        {
+          task.taskAttachments.map((attachment) => (
+            <Button variant="ghost" m="0" p="0" justifyContent="flex-start">
+              {attachment.filename}
+            </Button>
+          ))
+        }
         <Button variant="ghost" m="0" p="0" justifyContent="flex-start"> + Attachments </Button>
       </Box>
     </Box>

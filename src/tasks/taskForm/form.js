@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { Platform } from 'react-native';
-import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
+import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, InputGroup, InputLeftAddon, Button, Badge, CheckIcon  } from "native-base";
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 
 import Info from './components/info';
@@ -14,23 +14,45 @@ export default function TaskForm ( props ) {
   const {
     navigation,
     taskId,
+    task,
   } = props;
 
   const [displayCard, setDisplayCard] = useState("info");
+  const [editTitle, setEditTitle] = useState(false);
 
   return (
     <View>
+
       <Flex direction="row" justify="space-between">
-        <Heading variant="list" size="md">12: Task title</Heading>
+        {
+          editTitle &&
+          <Stack alignItems="left" w="80%">
+            <InputGroup w="100%">
+              <InputLeftAddon children={`${taskId}: `} />
+              <Input w="100%" type="text" defaultValue={task.title}/>
+            </InputGroup>
+          </Stack>
+        }
+        { !editTitle &&
+          <Heading w="90%" variant="list" size="md">{`${taskId}: ${task.title}`}</Heading>
+        }
         <IconButton
-          onPress={() => {}}
+          onPress={() => {setEditTitle(!editTitle); console.log("PRESS");}}
           p="0"
           variant="ghost"
-          _icon={{
-            as: Ionicons ,
-            name: "pencil",
-            color: "#0078d4"
-          }}
+          _icon={
+            editTitle ?
+            {
+              as: Ionicons ,
+              name: "pencil",
+              color: "#0078d4"
+            } :
+            {
+              as: Ionicons ,
+              name: "pencil",
+              color: "#0078d4"
+            }
+          }
           />
       </Flex>
       <Flex direction="row" justify="space-between"  marginTop="5">
@@ -85,27 +107,27 @@ export default function TaskForm ( props ) {
 
       {
         displayCard === "info" &&
-        <Info />
+        <Info {...props} />
       }
 
       {
         displayCard === "attributes" &&
-        <Attributes />
+        <Attributes {...props} />
       }
 
       {
         displayCard === "comments" &&
-        <Comments />
+        <Comments {...props} />
       }
 
       {
         displayCard === "subtasks" &&
-        <Subtasks />
+        <Subtasks {...props} />
       }
 
       {
         displayCard === "materials" &&
-        <Materials />
+        <Materials {...props} />
       }
     </View>
   );

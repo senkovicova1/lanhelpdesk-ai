@@ -3,62 +3,114 @@ import { Platform } from 'react-native';
 import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 
+import {
+  toSelArr,
+} from '../../../helperFunctions/select';
+
 export default function TaskAttributes ( props ) {
 
   const {
     navigation,
     taskId,
+    task,
+    currentUser,
+    accessRights,
+    companies,
+    users,
+    projects,
+    client,
   } = props;
+
+  const project = task.project === null ? null : projects.find( ( project ) => project.id === task.project.id );
+  const availableProjects = projects.filter( ( project ) => project.right.taskProjectWrite );
+  const requesters = ( project && project.project.lockedRequester ? toSelArr( project.usersWithRights.map( ( userWithRights ) => userWithRights.user ), 'fullName' ) : users );
+  const assignedTos = project ? users.filter( ( user ) => project.usersWithRights.some( ( userData ) => userData.assignable && userData.user.id === user.id ) ) : [];
 
   return (
     <Box>
       <Box marginTop="5">
         <Heading variant="list" size="sm">Status</Heading>
         <Select
-          defaultValue="web"
-          bgColor="#00d462"
+          defaultValue={task.status.id}
+          bgColor={task.status.color}
           >
-          <Select.Item label="New" value="ux" />
-          <Select.Item label="Open" value="web" />
-          <Select.Item label="Pending" value="cross" />
-          <Select.Item label="Closed" value="ui" />
-          <Select.Item label="Invalid" value="backend" />
+          {
+            (project ? toSelArr(project.project.statuses).filter((status)=>status.action !== 'Invoiced') : []).map((status) => (
+              <Select.Item
+                key={status.id}
+                label={status.label}
+                value={status.id}
+              />
+            ))
+          }
         </Select>
       </Box>
 
       <Box marginTop="5">
         <Heading variant="list" size="sm">Project</Heading>
         <Select
-          defaultValue="ux"
+          defaultValue={task.project.id}
           >
-          <Select.Item label="LanSystems" value="ux" />
+          {
+            availableProjects.map((project) => (
+              <Select.Item
+                key={project.id}
+                label={project.label}
+                value={project.id}
+              />
+            ))
+          }
         </Select>
       </Box>
 
       <Box marginTop="5">
         <Heading variant="list" size="sm">Requester</Heading>
         <Select
-          defaultValue="ux"
+          defaultValue={task.requester.id}
           >
-          <Select.Item label="Sonka" value="ux" />
+          {
+            requesters.map((user) => (
+              <Select.Item
+                key={user.id}
+                label={user.label}
+                value={user.id}
+              />
+            ))
+          }
         </Select>
       </Box>
 
       <Box marginTop="5">
         <Heading variant="list" size="sm">Company</Heading>
         <Select
-          defaultValue="ux"
+          defaultValue={task.requester.id}
           >
-          <Select.Item label="FakeBridge" value="ux" />
+          {
+            requesters.map((user) => (
+              <Select.Item
+                key={user.id}
+                label={user.label}
+                value={user.id}
+              />
+            ))
+          }
         </Select>
       </Box>
 
       <Box marginTop="5">
           <Heading variant="list" size="sm">Assigned</Heading>
           <Select
-            defaultValue="ux"
+            defaultValue={task.assignedTo[0].id}
             >
-            <Select.Item label="Sonka" value="ux" />
+            {
+              assignedTos.map((user) => (
+                <Select.Item
+                  key={user.id}
+                  label={user.label}
+                  value={user.id}
+                />
+              ))
+            }
           </Select>
       </Box>
 
