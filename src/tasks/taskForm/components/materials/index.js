@@ -12,8 +12,6 @@ export default function TaskMaterial ( props ) {
     task,
   } = props;
 
-  console.log(task.materials);
-
   return (
     <Box>
 

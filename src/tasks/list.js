@@ -27,6 +27,11 @@ import {
   ADD_TASK_SUBSCRIPTION,
 } from '../queries/tasks';
 
+import {
+  GET_MY_DATA,
+  USER_DATA_SUBSCRIPTION,
+} from '../apollo/globalQueries';
+
 export default function TaskList ( props ) {
   const {
     navigation,
@@ -95,6 +100,14 @@ export default function TaskList ( props ) {
     tasksRefetchFunc( taskVariables );
   }
 
+  const {
+    data: userDataData,
+    loading: userDataLoading,
+    refetch: userDataRefetch,
+  } = useQuery( GET_MY_DATA, {
+    fetchPolicy: 'network-only'
+  } );
+      
   //refetch tasks
   React.useEffect( () => {
     tasksRefetch();
@@ -103,6 +116,12 @@ export default function TaskList ( props ) {
   useSubscription( ADD_TASK_SUBSCRIPTION, {
     onSubscriptionData: () => {
       tasksRefetch();
+    }
+  } );
+
+  useSubscription( USER_DATA_SUBSCRIPTION, {
+    onSubscriptionData: () => {
+      userDataRefetch()
     }
   } );
 

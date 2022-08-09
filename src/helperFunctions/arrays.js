@@ -29,3 +29,14 @@ export const sortBy = ( originalArray, byAttributes = defaultByAttributes ) => {
     return result || 0;
   } );
 }
+
+
+export const updateArrayItem = ( array, item, key = 'id' ) => {
+  const index = array.findIndex( ( item2 ) => item2[ key ] === item[ key ] );
+  if ( index === -1 ) {
+    return array;
+  }
+  let newArray = [ ...array ];
+  newArray[ index ] = item;
+  return newArray;
+}

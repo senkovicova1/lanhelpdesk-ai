@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { Platform } from 'react-native';
 import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
+import moment from 'moment';
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 
 import {
@@ -19,6 +20,16 @@ export default function TaskAttributes ( props ) {
     users,
     projects,
     client,
+    setSaving,
+    status,
+    setStatus,
+    autoUpdateTask,
+    setImportant,
+    setPendingDate,
+    setPotentialPendingStatus,
+    setPendingChangable,
+    setCloseDate,
+    updateTask,
   } = props;
 
   const project = task.project === null ? null : projects.find( ( project ) => project.id === task.project.id );
@@ -26,13 +37,65 @@ export default function TaskAttributes ( props ) {
   const requesters = ( project && project.project.lockedRequester ? toSelArr( project.usersWithRights.map( ( userWithRights ) => userWithRights.user ), 'fullName' ) : users );
   const assignedTos = project ? users.filter( ( user ) => project.usersWithRights.some( ( userData ) => userData.assignable && userData.user.id === user.id ) ) : [];
 
+  const changeStatus = ( status ) => {
+    if ( status.action === 'PendingDate' ) {
+      setStatus( status );
+      setPendingDate( moment()
+        .add( 1, 'days' ) );
+      setPotentialPendingStatus( status );
+      setPendingChangable( true );
+      autoUpdateTask( {
+        status: status.id,
+        pendingDate: moment()
+          .add( 1, 'days' )
+          .valueOf()
+          .toString(),
+        pendingChangable: true,
+      } );
+    } else if ( status.action === 'CloseDate' || status.action === 'Invalid' ) {
+      setStatus( status );
+      setImportant( false );
+      setCloseDate( moment() );
+      autoUpdateTask( {
+        status: status.id,
+        closeDate: moment()
+          .valueOf()
+          .toString(),
+        important: false
+      } );
+    } else {
+      setStatus( status );
+      autoUpdateTask( {
+        status: status.id
+      } );
+    }
+  }
+
+  const changeProject = ( project ) => {
+    let variables = {
+      id: taskId,
+      fromInvoice: false,
+      project: project.id,
+    };
+    setSaving( true );
+    updateTask( {
+        variables
+      } )
+      .finally( () => {
+        setSaving( false );
+      } );
+  }
+
   return (
     <Box>
       <Box marginTop="5">
         <Heading variant="list" size="sm">Status</Heading>
         <Select
-          defaultValue={task.status.id}
-          bgColor={task.status.color}
+          value={status.id}
+          bgColor={status.color}
+          onValueChange={itemValue => {
+            changeStatus(toSelArr(project.project.statuses).filter((status)=>status.action !== 'Invoiced').find((status) => status.id === itemValue));
+          }}
           >
           {
             (project ? toSelArr(project.project.statuses).filter((status)=>status.action !== 'Invoiced') : []).map((status) => (
@@ -49,7 +112,10 @@ export default function TaskAttributes ( props ) {
       <Box marginTop="5">
         <Heading variant="list" size="sm">Project</Heading>
         <Select
-          defaultValue={task.project.id}
+          defaultValue={project.id}
+          onValueChange={itemValue => {
+            changeProject(availableProjects.find((project) => project.id === itemValue));
+          }}
           >
           {
             availableProjects.map((project) => (

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Platform } from 'react-native';
 import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, InputGroup, InputLeftAddon, Button, Badge, CheckIcon  } from "native-base";
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
@@ -15,6 +15,9 @@ export default function TaskForm ( props ) {
     navigation,
     taskId,
     task,
+    title,
+    setTitle,
+    autoUpdateTask,
   } = props;
 
   const [displayCard, setDisplayCard] = useState("info");
@@ -26,25 +29,36 @@ export default function TaskForm ( props ) {
       <Flex direction="row" justify="space-between">
         {
           editTitle &&
-          <Stack alignItems="left" w="80%">
+          <Stack w="95%">
             <InputGroup w="100%">
               <InputLeftAddon children={`${taskId}: `} />
-              <Input w="100%" type="text" defaultValue={task.title}/>
+              <Input
+                w="80%"
+                type="text"
+                defaultValue={title}
+                onChangeText={(text) => setTitle(text)}
+                />
             </InputGroup>
           </Stack>
         }
-        { !editTitle &&
-          <Heading w="90%" variant="list" size="md">{`${taskId}: ${task.title}`}</Heading>
+        {
+          !editTitle &&
+          <Heading lineHeight="46px" w="90%" variant="list" size="md">{`${taskId}: ${title}`}</Heading>
         }
         <IconButton
-          onPress={() => {setEditTitle(!editTitle); console.log("PRESS");}}
+          onPress={() => {
+            if (editTitle){
+              autoUpdateTask({ title });
+            }
+            setEditTitle(!editTitle);
+          }}
           p="0"
           variant="ghost"
           _icon={
             editTitle ?
             {
               as: Ionicons ,
-              name: "pencil",
+              name: "save",
               color: "#0078d4"
             } :
             {

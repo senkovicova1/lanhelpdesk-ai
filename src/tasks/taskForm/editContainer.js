@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   useQuery,
   useMutation,
@@ -17,7 +17,16 @@ import {
 
 import {
   toSelArr,
+  toSelItem,
 } from '../../helperFunctions/select';
+
+import {
+  localFilterToValues,
+} from '../../helperFunctions/filter';
+
+import {
+  updateArrayItem,
+} from '../../helperFunctions/arrays';
 
 /*
 import {
@@ -46,6 +55,11 @@ import {
   UPDATE_TASK,
 } from '../../queries/tasks';
 
+import {
+  GET_PROJECT,
+  GET_FILTER,
+} from '../../apollo/localSchema/queries';
+
 export default function EditContainer ( props ) {
 
   const {
@@ -59,7 +73,35 @@ export default function EditContainer ( props ) {
 
   const client = useApolloClient();
 
-  const currentUser = getMyData();
+  const [ important, setImportant ] = useState(false);
+  const [ title, setTitle ] = useState("");
+  const [ description, setDescription ] = useState("");
+  const [ tags, setTags ] = useState([]);
+  const [ project, setProject ] = useState({});
+  const [ status, setStatus ] = React.useState( null );
+
+  const [ pendingDate, setPendingDate ] = React.useState( null );
+  const [ potentialPendingStatus, setPotentialPendingStatus ] = React.useState( null );
+  const [ pendingChangable, setPendingChangable ] = React.useState( null );
+
+  const [ closeDate, setCloseDate ] = useState(false);
+
+  const [ saving, setSaving ] = useState(false);
+  const [ changes, setChanges ] = React.useState( {} );
+
+  //local
+  const {
+    data: filterData,
+    loading: filterLoading
+  } = useQuery( GET_FILTER );
+
+  const {
+    data: projectData,
+    loading: projectLoading,
+  } = useQuery( GET_PROJECT );
+
+  const localFilter = filterData.localFilter;
+  const localProject = projectData.localProject;
 
   //network
   const {
@@ -91,6 +133,9 @@ export default function EditContainer ( props ) {
     loading: myProjectsLoading,
     refetch: myProjectsRefetch,
   } = useQuery( GET_MY_PROJECTS, {
+    variables: {
+      fromInvoice: false,
+    },
     fetchPolicy: 'network-only'
   } );
 
@@ -119,13 +164,157 @@ export default function EditContainer ( props ) {
       } );
   }, [ taskId ] );
 
+
+  React.useEffect(() => {
+    if (taskData && myProjectsData){
+
+      setTitle(taskData.task.title);
+      setDescription(taskData.task.description);
+      setTags( toSelArr( taskData.task.tags ) );
+      const status = ( taskData.task.status ? toSelItem( taskData.task.status ) : null )
+      setStatus( status );
+
+      const project = taskData.task.project === null ? null : myProjectsData.myProjects.find( ( project ) => project.project.id === taskData.task.project.id );
+      setProject( project );
+    }
+  }, [taskLoading, taskData, myProjectsLoading, myProjectsData]);
+
+  const currentUser = getMyData();
+
+  //functions
+  const getCantSave = ( change = {} ) => {
+    const compare = {
+      title,
+      status,
+      tags,
+      saving,
+      ...change,
+    }
+    return (
+      compare.title === "" ||
+      //compare.status === null ||
+      //compare.project === null ||
+      //invoiced ||
+      //( compare.assignedTo.length === 0 && userRights.attributeRights.assigned.view && !projectAttributes.assigned.fixed ) ||
+      compare.saving
+    )
+  }
+
+  const [ updateTask ] = useMutation( UPDATE_TASK );
+
+  const autoUpdateTask = ( change, passFunc = null ) => {
+    if ( getCantSave( change ) ) {
+      setChanges( {
+        ...changes,
+        ...change
+      } );
+      return;
+    }
+    setSaving( true );
+    let variables = {
+      id: taskId,
+      ...changes,
+      ...change,
+    //  fromInvoice,
+    };
+
+    updateTask( {
+        variables
+      } )
+      .then( ( response ) => {
+        setChanges( {} );
+        //update task
+        const originalTask = client.readQuery( {
+            query: GET_TASK,
+            variables: {
+              id: taskId,
+              //fromInvoice
+            },
+          } )
+          .task;
+
+        const updatedTask = {
+          ...originalTask,
+          ...response.data.updateTask
+        }
+        client.writeQuery( {
+          query: GET_TASK,
+          variables: {
+            id: taskId,
+            //fromInvoice,
+          },
+          data: {
+            task: updatedTask
+          }
+        } );
+        try {
+          const filterValues = localFilterToValues(filterData.localFilter);
+          const originalProjectId = localProject.id;
+          //update tasks if project changed or not
+          let execTasks = client.readQuery( {
+              query: GET_TASKS,
+              variables: {
+                filterId: localFilter.id,
+                filter: filterValues,
+                projectId: originalProjectId
+              }
+            } )
+            .tasks;
+
+          if ( project.id !== originalProjectId && originalProjectId !== null ) {
+            client.writeQuery( {
+              query: GET_TASKS,
+              variables: {
+                filterId,
+                filter: filterValues,
+                projectId: originalProjectId
+              },
+              data: {
+                tasks: {
+                  ...execTasks,
+                  tasks: execTasks.tasks.filter( ( task ) => task.id !== id )
+                }
+              }
+            } );
+          } else {
+            client.writeQuery( {
+              query: GET_TASKS,
+              variables: {
+                filterId,
+                filter: filterValues,
+                projectId: originalProjectId
+              },
+              data: {
+                tasks: {
+                  ...execTasks,
+                  tasks: updateArrayItem( execTasks.tasks, updatedTask )
+                }
+              }
+            } );
+          }
+
+        } catch {}
+        passFunc && passFunc();
+      } )
+      .catch( ( err ) => {
+        setChanges( {
+          ...changes,
+          ...change
+        } );
+      //  addLocalError( err );
+      } );
+
+    setSaving( false );
+  }
+
   const dataLoading = (
+    !currentUser ||
     basicCompaniesLoading ||
     basicUsersLoading ||
     myProjectsLoading ||
     taskLoading
   )
-  console.log(currentUser);
+
   if (dataLoading){
     return (
       <ScrollView margin="5">
@@ -146,6 +335,30 @@ export default function EditContainer ( props ) {
         users={toSelArr(basicUsersData.basicUsers, 'fullName')}
         projects={toSelArr(myProjectsData.myProjects.map((project) => ({...project, id: project.project.id, title: project.project.title}) ))}
         client={client}
+        autoUpdateTask={autoUpdateTask}
+
+        title={title}
+        setTitle={setTitle}
+
+        description={description}
+        setDescription={setDescription}
+
+        tags={tags}
+        setTags={setTags}
+
+        project={project}
+
+        status={status}
+        setStatus={setStatus}
+
+        setImportant={setImportant}
+        setPendingDate={setPendingDate}
+        setPotentialPendingStatus={setPotentialPendingStatus}
+        setPendingChangable={setPendingChangable}
+        setCloseDate={setCloseDate}
+
+        setSaving={setSaving}
+        updateTask={updateTask}
          />
 
     </ScrollView>

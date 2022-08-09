@@ -80,5 +80,18 @@ export default extendTheme({
         backgroundColor: "white",
       },
     },
+    Badge: {
+      variants: {
+        outline: {
+          borderWidth: "5px",
+          _light: {
+             borderColor: "#0078d4",
+          },
+          _dark: {
+            borderColor: "white",
+          },
+        },
+      },
+    },
   }
 });

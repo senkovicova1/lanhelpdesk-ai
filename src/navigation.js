@@ -1,12 +1,14 @@
 import React from 'react';
+import {
+  useQuery,
+  useSubscription,
+} from "@apollo/client";
+
 import { Text, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Button, IconButton, Heading } from "native-base";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { FontAwesome, FontAwesome5, AntDesign  } from '@expo/vector-icons';
-import {
-  useQuery
-} from '@apollo/client'
 
 import Drawer from './drawer';
 import Login from './login';
@@ -24,6 +26,7 @@ import {
   GET_IS_LOGGED_IN,
 } from './apollo/localSchema/queries';
 
+
 const Stack = createNativeStackNavigator();
 
 export default function Navigation (props) {
@@ -31,6 +34,7 @@ export default function Navigation (props) {
   const {
     data
   } = useQuery( GET_IS_LOGGED_IN );
+
 
   console.log("isLoggedIn", data.isLoggedIn);
 
