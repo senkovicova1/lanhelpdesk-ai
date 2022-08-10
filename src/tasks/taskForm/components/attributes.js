@@ -1,12 +1,18 @@
 import React, {useState} from 'react';
-import { Platform } from 'react-native';
-import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
+import { Platform, Input as RNInput } from 'react-native';
+import { ScrollView, View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
+import DropDownPicker from 'react-native-dropdown-picker';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from 'moment';
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 
 import {
   toSelArr,
 } from '../../../helperFunctions/select';
+
+import {
+  timestampToString,
+} from '../../../helperFunctions/time';
 
 export default function TaskAttributes ( props ) {
 
@@ -15,6 +21,8 @@ export default function TaskAttributes ( props ) {
     taskId,
     task,
     currentUser,
+    autoUpdateTask,
+    updateTask,
     accessRights,
     companies,
     users,
@@ -23,19 +31,32 @@ export default function TaskAttributes ( props ) {
     setSaving,
     status,
     setStatus,
-    autoUpdateTask,
     setImportant,
     setPendingDate,
     setPotentialPendingStatus,
     setPendingChangable,
     setCloseDate,
-    updateTask,
+    requester,
+    setRequester,
+    company,
+    setCompany,
+    assignedTo,
+    setAssignedTo,
+    deadline,
+    setDeadline,
   } = props;
+
+  const [ assignedToPickerOpen, setAssignedToPickerOpen ] = useState(false);
+  const [ assignedTos, setAssignedTos ] = useState([]);
+  const [ deadlinePickerOpen, setDeadlinePickerOpen ] = useState(false);
 
   const project = task.project === null ? null : projects.find( ( project ) => project.id === task.project.id );
   const availableProjects = projects.filter( ( project ) => project.right.taskProjectWrite );
   const requesters = ( project && project.project.lockedRequester ? toSelArr( project.usersWithRights.map( ( userWithRights ) => userWithRights.user ), 'fullName' ) : users );
-  const assignedTos = project ? users.filter( ( user ) => project.usersWithRights.some( ( userData ) => userData.assignable && userData.user.id === user.id ) ) : [];
+
+  React.useEffect(() => {
+    setAssignedTos(project ? users.filter( ( user ) => project.usersWithRights.some( ( userData ) => userData.assignable && userData.user.id === user.id ) ) : []);
+  }, [project]);
 
   const changeStatus = ( status ) => {
     if ( status.action === 'PendingDate' ) {
@@ -86,12 +107,26 @@ export default function TaskAttributes ( props ) {
       } );
   }
 
+  const changeRequester = ( requester ) => {
+    setRequester( requester );
+    autoUpdateTask( {
+      requester: requester.id
+    } )
+  }
+
+  const changeCompany = ( company ) => {
+    setCompany( company );
+    autoUpdateTask( {
+      company: company.id,
+    } )
+  }
+
   return (
     <Box>
       <Box marginTop="5">
         <Heading variant="list" size="sm">Status</Heading>
         <Select
-          value={status.id}
+          defaultValue={status.id}
           bgColor={status.color}
           onValueChange={itemValue => {
             changeStatus(toSelArr(project.project.statuses).filter((status)=>status.action !== 'Invoiced').find((status) => status.id === itemValue));
@@ -132,7 +167,10 @@ export default function TaskAttributes ( props ) {
       <Box marginTop="5">
         <Heading variant="list" size="sm">Requester</Heading>
         <Select
-          defaultValue={task.requester.id}
+          defaultValue={requester.id}
+          onValueChange={itemValue => {
+            changeRequester(requesters.find((requester) => requester.id === itemValue));
+          }}
           >
           {
             requesters.map((user) => (
@@ -149,14 +187,17 @@ export default function TaskAttributes ( props ) {
       <Box marginTop="5">
         <Heading variant="list" size="sm">Company</Heading>
         <Select
-          defaultValue={task.requester.id}
+          defaultValue={company.id}
+          onValueChange={itemValue => {
+            changeCompany(companies.find((company) => company.id === itemValue));
+          }}
           >
           {
-            requesters.map((user) => (
+            companies.map((company) => (
               <Select.Item
-                key={user.id}
-                label={user.label}
-                value={user.id}
+                key={company.id}
+                label={company.label}
+                value={company.id}
               />
             ))
           }
@@ -165,24 +206,50 @@ export default function TaskAttributes ( props ) {
 
       <Box marginTop="5">
           <Heading variant="list" size="sm">Assigned</Heading>
-          <Select
-            defaultValue={task.assignedTo[0].id}
-            >
-            {
-              assignedTos.map((user) => (
-                <Select.Item
-                  key={user.id}
-                  label={user.label}
-                  value={user.id}
-                />
-              ))
-            }
-          </Select>
+          <DropDownPicker
+            multiple={true}
+            listMode="SCROLLVIEW"
+            mode="BADGE"
+            open={assignedToPickerOpen}
+            value={assignedTo.map((user) => user.value)}
+            items={assignedTos}
+            setOpen={setAssignedToPickerOpen}
+            onSelectItem={(items) => {
+              autoUpdateTask({assignedTo: items.map((user) => user.value)});
+            }}
+            setValue={setAssignedTo}
+            setItems={setAssignedTos}
+          />
       </Box>
 
       <Box marginTop="5">
         <Heading variant="list" size="sm">Deadline</Heading>
-        <Input type="datetime" defaultValue=""/>
+        <Pressable
+          onPress={() => {
+            console.log("PRESS");
+            setDeadlinePickerOpen(!deadlinePickerOpen);
+          }}
+          >
+          <Box height="46px" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#CCC" justifyContent="center" pl="10px">
+          <Text fontSize="xs">
+            {deadline ? timestampToString(deadline) : "No deadline"}
+          </Text>
+        </Box>
+        </Pressable>
+        <DateTimePickerModal
+          isVisible={deadlinePickerOpen}
+          mode="datetime"
+          date={deadline ? new Date(parseInt(deadline)) : new Date()}
+          onConfirm={(e) => {
+            const newDeadline = new Date(e).getTime();
+            setDeadline(newDeadline);
+            autoUpdateTask({deadline: newDeadline});
+            setDeadlinePickerOpen(false);
+          }}
+          onCancel={() => {
+            setDeadlinePickerOpen(false);
+          }}
+        />
       </Box>
 
       <Box marginTop="5">

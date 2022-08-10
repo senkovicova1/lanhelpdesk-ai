@@ -79,6 +79,10 @@ export default function EditContainer ( props ) {
   const [ tags, setTags ] = useState([]);
   const [ project, setProject ] = useState({});
   const [ status, setStatus ] = React.useState( null );
+  const [ requester, setRequester ] = React.useState( null );
+  const [ company, setCompany ] = React.useState( null );
+  const [ assignedTo, setAssignedTo ] = React.useState( [] );
+  const [ deadline, setDeadline ] = React.useState( null );
 
   const [ pendingDate, setPendingDate ] = React.useState( null );
   const [ potentialPendingStatus, setPotentialPendingStatus ] = React.useState( null );
@@ -166,7 +170,7 @@ export default function EditContainer ( props ) {
 
 
   React.useEffect(() => {
-    if (taskData && myProjectsData){
+    if (taskData && myProjectsData && basicUsersData){
 
       setTitle(taskData.task.title);
       setDescription(taskData.task.description);
@@ -176,8 +180,26 @@ export default function EditContainer ( props ) {
 
       const project = taskData.task.project === null ? null : myProjectsData.myProjects.find( ( project ) => project.project.id === taskData.task.project.id );
       setProject( project );
+
+      setRequester(
+        taskData.task.requester ? {
+          ...taskData.task.requester,
+          value: taskData.task.requester.id,
+          label: taskData.task.requester.fullName
+        } :
+        null
+      );
+      setCompany( ( taskData.task.company ? toSelItem( taskData.task.company ) : null ) );
+
+      const users = toSelArr(basicUsersData.basicUsers, 'fullName');
+      const assignableUserIds = users.filter( ( user ) => project && project.usersWithRights.some( ( userData ) => userData.assignable && userData.user.id === user.id ) ).map((user) => user.id);
+      const assignedUsers = toSelArr( taskData.task.assignedTo, 'fullName' )
+        .filter( ( user ) => assignableUserIds.includes( user.id ) );
+      setAssignedTo( assignedUsers );
+
+      setDeadline( taskData.task.deadline );
     }
-  }, [taskLoading, taskData, myProjectsLoading, myProjectsData]);
+  }, [taskLoading, taskData, myProjectsLoading, myProjectsData, basicUsersData, basicUsersLoading]);
 
   const currentUser = getMyData();
 
@@ -186,14 +208,15 @@ export default function EditContainer ( props ) {
     const compare = {
       title,
       status,
+      project,
       tags,
       saving,
       ...change,
     }
     return (
       compare.title === "" ||
-      //compare.status === null ||
-      //compare.project === null ||
+      compare.status === null ||
+      compare.project === null ||
       //invoiced ||
       //( compare.assignedTo.length === 0 && userRights.attributeRights.assigned.view && !projectAttributes.assigned.fixed ) ||
       compare.saving
@@ -203,6 +226,7 @@ export default function EditContainer ( props ) {
   const [ updateTask ] = useMutation( UPDATE_TASK );
 
   const autoUpdateTask = ( change, passFunc = null ) => {
+    console.log("change", change);
     if ( getCantSave( change ) ) {
       setChanges( {
         ...changes,
@@ -305,6 +329,7 @@ export default function EditContainer ( props ) {
       } );
 
     setSaving( false );
+    console.log("End");
   }
 
   const dataLoading = (
@@ -337,6 +362,9 @@ export default function EditContainer ( props ) {
         client={client}
         autoUpdateTask={autoUpdateTask}
 
+        setSaving={setSaving}
+        updateTask={updateTask}
+
         title={title}
         setTitle={setTitle}
 
@@ -357,8 +385,17 @@ export default function EditContainer ( props ) {
         setPendingChangable={setPendingChangable}
         setCloseDate={setCloseDate}
 
-        setSaving={setSaving}
-        updateTask={updateTask}
+        requester={requester}
+        setRequester={setRequester}
+
+        company={company}
+        setCompany={setCompany}
+
+        assignedTo={assignedTo}
+        setAssignedTo={setAssignedTo}
+
+        deadline={deadline}
+        setDeadline={setDeadline}
          />
 
     </ScrollView>
