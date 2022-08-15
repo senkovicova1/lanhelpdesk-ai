@@ -1,5 +1,9 @@
 import React, {useState} from 'react';
 import { Platform } from 'react-native';
+import {
+  useMutation,
+  useQuery
+} from "@apollo/client";
 import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 
@@ -8,13 +12,14 @@ export default function TaskSubtasks ( props ) {
   const {
     navigation,
     taskId,
-    task,
+    subtasks,
+    setSaving,
   } = props;
 
   return (
-    <Box>
+    <Box mb="10">
       {
-        task.subtasks.map((subtask) => (
+        subtasks.map((subtask) => (
           <Box key={subtask.id} marginTop="5">
             <Flex direction="row" justify="space-between">
               <Flex direction="row" justify="space-between" alignItems="center">
@@ -29,7 +34,19 @@ export default function TaskSubtasks ( props ) {
                 <Heading variant="list" size="sm">{subtask.title}</Heading>
               </Flex>
               <IconButton
-                onPress={() => {navigation.navigate('SubtaskAdd')}}
+                onPress={() => {
+                  navigation.navigate('SubtaskEdit',
+                    {
+                      users: props.users,
+                      taskId,
+                      subtaskId: subtask.id,
+                      subtaskDone: subtask.done,
+                      subtaskTitle: subtask.title,
+                      subtaskAssignedTo: subtask.assignedTo,
+                      subtaskQuantity: subtask.quantity,
+                    }
+                  )
+                }}
                 p="0"
                 variant="ghost"
                 _icon={{
@@ -52,7 +69,15 @@ export default function TaskSubtasks ( props ) {
 
       <Box marginTop="5" alignItems="center">
         <IconButton
-          onPress={() => {navigation.navigate('SubtaskAdd')}}
+          onPress={() => {
+            navigation.navigate('SubtaskAdd',
+              {
+                users: props.users,
+                newSubtaskOrder: subtasks.length,
+                taskId,
+              }
+            )
+          }}
           variant="solid"
           width="50px"
           borderRadius="20"

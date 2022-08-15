@@ -22,7 +22,7 @@ export default function TaskInfo ( props ) {
 
   const [ editDescription, setEditDescription ] = useState(false);
   const [ tagsOpen, setTagsOpen ] = useState(false);
-  console.log(tags);
+
   return (
     <Box>
       <Box marginTop="5">

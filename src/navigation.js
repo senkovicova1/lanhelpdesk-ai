@@ -14,8 +14,10 @@ import Drawer from './drawer';
 import Login from './login';
 import TaskDetail from './tasks/taskForm/editContainer';
 import CommentAdd from './addComment';
-import SubtaskAdd from './subtaskAdd';
-import MaterialAdd from './materialAdd';
+import SubtaskAdd from './tasks/taskForm/components/subtasks/addForm';
+import SubtaskEdit from './tasks/taskForm/components/subtasks/editForm';
+import MaterialAdd from './tasks/taskForm/components/materials/addForm';
+import MaterialEdit from './tasks/taskForm/components/materials/editForm';
 import Settings from './settings';
 import UserList from './userList';
 import UserAdd from './userAdd';
@@ -112,19 +114,17 @@ export default function Navigation (props) {
         component={SubtaskAdd}
         options={{
           headerTitle: (props) => <Heading variant="main">Add a subtask</Heading>,
-          headerRight: () => (
-            <View style={{display: "flex", flexDirection: "row"}}>
-              <IconButton
-                onPress={() => {}}
-                variant="ghost"
-                _icon={{
-                  as: Ionicons ,
-                  name: "save",
-                  color: "white"
-                }}
-                />
-          </View>
-          ),
+          headerStyle: {
+            backgroundColor: '#0078d4',
+          },
+          headerTintColor: "white"
+        }}
+      />
+      <Stack.Screen
+        name="SubtaskEdit"
+        component={SubtaskEdit}
+        options={{
+          headerTitle: (props) => <Heading variant="main">Edit a subtask</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },
@@ -136,19 +136,17 @@ export default function Navigation (props) {
         component={MaterialAdd}
         options={{
           headerTitle: (props) => <Heading variant="main">Add a material</Heading>,
-          headerRight: () => (
-            <View style={{display: "flex", flexDirection: "row"}}>
-              <IconButton
-                onPress={() => {}}
-                variant="ghost"
-                _icon={{
-                  as: Ionicons ,
-                  name: "save",
-                  color: "white"
-                }}
-                />
-          </View>
-          ),
+          headerStyle: {
+            backgroundColor: '#0078d4',
+          },
+          headerTintColor: "white"
+        }}
+      />
+      <Stack.Screen
+        name="MaterialEdit"
+        component={MaterialEdit}
+        options={{
+          headerTitle: (props) => <Heading variant="main">Edit a material</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },

@@ -226,7 +226,6 @@ export default function TaskAttributes ( props ) {
         <Heading variant="list" size="sm">Deadline</Heading>
         <Pressable
           onPress={() => {
-            console.log("PRESS");
             setDeadlinePickerOpen(!deadlinePickerOpen);
           }}
           >

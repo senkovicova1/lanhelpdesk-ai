@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { View } from 'react-native';
-import { ScrollView, Select, Button, IconButton, TextArea, FormControl, Checkbox, Input, Stack  } from "native-base";
+import { ScrollView, Select, Button, IconButton, TextArea, FormControl, Checkbox, Input, Stack, AlertDialog } from "native-base";
 import { Ionicons  } from '@expo/vector-icons';
 import {
   useMutation,
@@ -9,14 +9,15 @@ import {
 } from "@apollo/client";
 
 import {
-  ADD_SUBTASK,
+  UPDATE_SUBTASK,
+  DELETE_SUBTASK
 } from '../../../../queries/subtasks';
 
 import {
   GET_TASK,
 } from '../../../../queries/tasks';
 
-export default function SubtaskAdd ( props ) {
+export default function SubtaskEdit ( props ) {
 
   const {
     navigation,
@@ -25,18 +26,27 @@ export default function SubtaskAdd ( props ) {
 
   const {
     users,
-    newSubtaskOrder,
     taskId,
+    subtaskId,
+    subtaskDone,
+    subtaskTitle,
+    subtaskQuantity,
+    subtaskAssignedTo,
   } = route.params;
 
   const client = useApolloClient();
 
-  const [ addSubtask ] = useMutation( ADD_SUBTASK );
+  const [ updateSubtask ] = useMutation( UPDATE_SUBTASK );
+  const [ deleteSubtask ] = useMutation( DELETE_SUBTASK );
 
   const [ done, setDone ] = React.useState( false );
   const [ title, setTitle ] = React.useState( "" );
   const [ quantity, setQuantity ] = React.useState( 0 );
   const [ assignedTo, setAssignedTo ] = React.useState( null );
+
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const cancelRef = React.useRef(null);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -45,7 +55,19 @@ export default function SubtaskAdd ( props ) {
           <IconButton
             onPress={() => {
               //chceck title length
-              addSubtaskFunc({title, done, quantity, assignedTo});
+              showDeleteAlert();
+            }}
+            variant="ghost"
+            _icon={{
+              as: Ionicons ,
+              name: "trash",
+              color: "white"
+            }}
+          />
+          <IconButton
+            onPress={() => {
+              //chceck title length
+              updateSubtaskFunc({id: subtaskId, title, done, quantity, assignedTo});
             }}
             variant="ghost"
             _icon={{
@@ -57,41 +79,61 @@ export default function SubtaskAdd ( props ) {
       </View>
       ),
     });
-  }, [navigation, done, title, quantity, assignedTo]);
+  }, [navigation, subtaskId, done, title, quantity, assignedTo]);
+
+  React.useEffect(() => {
+    setDone(subtaskDone);
+    setTitle(subtaskTitle);
+    setQuantity(parseFloat(subtaskQuantity));
+    setAssignedTo(subtaskAssignedTo);
+  }, [subtaskId, subtaskDone, subtaskTitle, subtaskQuantity, subtaskAssignedTo]);
 
 
-  useEffect(() => {
-    setAssignedTo(users[0]);
-  }, [users]);
-
-  const addSubtaskFunc = ( work ) => {
-  //  setSaving( true );
-
-    addSubtask( {
+  const updateSubtaskFunc = ( work ) => {
+    updateSubtask( {
         variables: {
+          id: work.id,
           title: work.title,
           done: work.done,
-          quantity: isNaN(parseFloat(work.quantity)) ? 0 : parseFloat(work.quantity),
           assignedTo: work.assignedTo.id,
-          order: newSubtaskOrder,
-          approved: false,
-          discount: 0,
-          task: taskId,
-          scheduled: null,
-          fromInvoice: false,
+          quantity: isNaN(parseFloat(work.quantity)) ? 0 : parseFloat(work.quantity),
         }
       } )
       .then( ( response ) => {
-        updateCasheStorage( response.data.addSubtask, 'subtasks', 'ADD' );
+        updateCasheStorage( response.data.updateSubtask, 'subtasks', 'UPDATE' );
         navigation.goBack();
-    //    setSaving( false );
+      //  setSaving( false );
       } )
       .catch( ( err ) => {
-        console.log(err);
       //  addLocalError( err );
-    //    setSaving( false );
+      //  setSaving( false );
       } );
   }
+
+  const deleteSubtaskFunc = () => {
+    deleteSubtask( {
+        variables: {
+          id: subtaskId,
+        }
+      } )
+      .then( ( response ) => {
+        updateCasheStorage( {
+          id: subtaskId,
+        }, 'subtasks', 'DELETE' );
+        navigation.goBack();
+      } )
+      .catch( ( err ) => {
+      //  addLocalError( err );
+      } );
+  }
+
+  const showDeleteAlert = () => {
+    setIsOpen(true);
+  };
+
+  const closeDeleteAlert = () => {
+    setIsOpen(false);
+  };
 
   const updateCasheStorage = ( response, key, type ) => {
     const task = client.readQuery( {
@@ -99,14 +141,29 @@ export default function SubtaskAdd ( props ) {
         variables: {
           id: taskId,
         },
-      } );
-
+      } )
+      .task;
     let newTask = {
-      ...task.task,
+      ...task,
     };
     newTask[ key ] = [ ...newTask[ key ] ];
-    newTask[ key ].push( response );
-
+    switch ( type ) {
+      case 'ADD': {
+        newTask[ key ].push( response );
+        break;
+      }
+      case 'UPDATE': {
+        newTask[ key ][ newTask[ key ].findIndex( ( item ) => item.id === response.id ) ] = response;
+        break;
+      }
+      case 'DELETE': {
+        newTask[ key ] = newTask[ key ].filter( ( item ) => item.id !== response.id );
+        break;
+      }
+      default: {
+        return;
+      }
+    }
     client.writeQuery( {
       query: GET_TASK,
       variables: {
@@ -116,6 +173,30 @@ export default function SubtaskAdd ( props ) {
         task: newTask
       }
     } );
+  }
+
+  if (isOpen){
+    return (
+      <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={closeDeleteAlert}>
+        <AlertDialog.Content>
+          <AlertDialog.CloseButton />
+          <AlertDialog.Header>Delete a subtask</AlertDialog.Header>
+          <AlertDialog.Body>
+            Are you sure you want to delete this subtask?
+          </AlertDialog.Body>
+          <AlertDialog.Footer>
+            <Button.Group space={2}>
+              <Button variant="unstyled" colorScheme="coolGray" onPress={closeDeleteAlert} ref={cancelRef}>
+                Cancel
+              </Button>
+              <Button colorScheme="danger" onPress={deleteSubtaskFunc}>
+                Delete
+              </Button>
+            </Button.Group>
+          </AlertDialog.Footer>
+        </AlertDialog.Content>
+      </AlertDialog>
+    )
   }
 
   return (
@@ -172,7 +253,7 @@ export default function SubtaskAdd ( props ) {
             <Stack>
               <FormControl.Label>Assigned user</FormControl.Label>
               <Select
-                defaultValue={users[0].id}
+                selectedValue={assignedTo ? assignedTo.id : null}
                 onValueChange={itemValue => {
                   const user = users.find((user) => user.id === itemValue);
                   setAssignedTo(user);

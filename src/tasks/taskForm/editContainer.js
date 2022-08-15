@@ -90,6 +90,9 @@ export default function EditContainer ( props ) {
 
   const [ closeDate, setCloseDate ] = useState(false);
 
+  const [ subtasks, setSubtasks ] = useState([]);
+  const [ materials, setMaterials ] = useState([]);
+
   const [ saving, setSaving ] = useState(false);
   const [ changes, setChanges ] = React.useState( {} );
 
@@ -198,12 +201,18 @@ export default function EditContainer ( props ) {
       setAssignedTo( assignedUsers );
 
       setDeadline( taskData.task.deadline );
+
+      setSubtasks(taskData.task.subtasks.map( item => ( {
+        ...item,
+        assignedTo: toSelItem( item.assignedTo, 'fullName' ),
+      } ) ) );
+
+      setMaterials(taskData.task.materials);
     }
   }, [taskLoading, taskData, myProjectsLoading, myProjectsData, basicUsersData, basicUsersLoading]);
 
   const currentUser = getMyData();
 
-  //functions
   const getCantSave = ( change = {} ) => {
     const compare = {
       title,
@@ -348,10 +357,13 @@ export default function EditContainer ( props ) {
     );
   }
 
+  const invoiced = taskData.task.invoiced;
+
   return (
-    <ScrollView margin="5">
+    <ScrollView padding="5" pb="10">
 
       <Form
+        {...props}
         taskId={taskId}
         task={taskData.task}
         currentUser={currentUser}
@@ -396,6 +408,14 @@ export default function EditContainer ( props ) {
 
         deadline={deadline}
         setDeadline={setDeadline}
+
+        subtasks={subtasks}
+        setSubtasks={setSubtasks}
+
+        materials={materials}
+        setMaterials={setMaterials}
+
+        invoiced={invoiced}
          />
 
     </ScrollView>
