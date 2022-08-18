@@ -13,7 +13,7 @@ import { FontAwesome, FontAwesome5, AntDesign  } from '@expo/vector-icons';
 import Drawer from './drawer';
 import Login from './login';
 import TaskDetail from './tasks/taskForm/editContainer';
-import CommentAdd from './addComment';
+import CommentAdd from './tasks/taskForm/components/comments/addForm';
 import SubtaskAdd from './tasks/taskForm/components/subtasks/addForm';
 import SubtaskEdit from './tasks/taskForm/components/subtasks/editForm';
 import MaterialAdd from './tasks/taskForm/components/materials/addForm';
@@ -81,19 +81,6 @@ export default function Navigation (props) {
         component={CommentAdd}
         options={({navigation}) => ({
           headerTitle: (props) => <Heading variant="main" ml="0">Add a comment</Heading>,
-          headerRight: () => (
-            <View style={{display: "flex", flexDirection: "row"}}>
-              <IconButton
-                onPress={() => {}}
-                variant="ghost"
-                _icon={{
-                  as: Ionicons ,
-                  name: "save",
-                  color: "white"
-                }}
-                />
-          </View>
-          ),
           headerStyle: {
             backgroundColor: '#0078d4',
             margin: "0px !important",

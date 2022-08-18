@@ -7,9 +7,26 @@ import {
   toSelArr,
 } from '../../../helperFunctions/select';
 
+import * as DocumentPicker from 'expo-document-picker';
+import localStorage from 'react-native-sync-localstorage';
+
+import axios from 'react-native-axios';
+import {
+  useApolloClient,
+} from "@apollo/client";
+
+import {
+  REST_URL,
+} from '../../../configs/restAPI';
+
+import {
+  GET_TASK,
+} from '../../../queries/tasks';
+
 export default function TaskInfo ( props ) {
 
   const {
+    taskId,
     task,
     autoUpdateTask,
     project,
@@ -17,11 +34,94 @@ export default function TaskInfo ( props ) {
     setDescription,
     tags,
     setTags,
+    attachments,
   } = props;
 
+  const client = useApolloClient();
 
   const [ editDescription, setEditDescription ] = useState(false);
   const [ tagsOpen, setTagsOpen ] = useState(false);
+
+  const [singleFile, setSingleFile] = useState(null);
+
+  const selectFile = async () => {
+    try {
+      const res = await DocumentPicker.getDocumentAsync();
+      // Printing the log realted to the file
+      console.log("------------------------");
+      console.log(res);
+      console.log('res : ' + JSON.stringify(res));
+      // Setting the state to show single file attributes
+      setSingleFile(res);
+      uploadImage(res);
+    } catch (err) {
+      setSingleFile(null);
+      // Handling any exception (If any)
+      if (DocumentPicker.isCancel(err)) {
+        // If user canceled the document selection
+        console.log('Canceled');
+      } else {
+        // For Unknown Error
+        console.log('Unknown Error: ' + JSON.stringify(err));
+        throw err;
+      }
+    }
+  };
+
+  const uploadImage = async (file) => {
+    // Check if any file is selected or not
+    if (file != null) {
+      console.log("appending file");
+      // If file selected then create FormData
+      let fileToUpload = {
+        type: file.mimeType,
+        name: file.name,
+        uri: Platform.OS === 'android' ? file.uri : file.uri.replace('file://', ''),
+      };
+      const formData = new FormData();
+      formData.append( `file`, fileToUpload );
+      formData.append( "token", `Bearer ${localStorage.getItem('acctok')}` );
+      formData.append( "taskId", taskId );
+      formData.append( "fromInvoice", false );
+
+      console.log("posting w/ axios", formData);
+      // Please change file upload URL
+      axios.post( `${REST_URL}/upload-attachments`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          transformRequest: (data, headers) => {
+            return formData; // this is doing the trick
+          },
+        } )
+        .then( ( response ) => {
+          console.log("JEEEJ");
+          const newAttachments = response.data.attachments.map( ( attachment ) => ( {
+            ...attachment,
+            __typename: "TaskAttachment",
+          } ) )
+          const oldTask = client.readQuery( {
+              query: GET_TASK,
+              variables: {
+                id: taskId
+              }
+            } )
+            .task;
+          client.writeQuery( {
+            query: GET_TASK,
+            variables: {
+              id: taskId
+            },
+            data: {
+              task: {
+                ...oldTask,
+                taskAttachments: [ ...oldTask.taskAttachments, ...newAttachments ]
+              }
+            }
+          } )
+        } )
+    }
+  };
 
   return (
     <Box>
@@ -118,13 +218,13 @@ export default function TaskInfo ( props ) {
       <Box marginTop="5">
         <Heading variant="list" size="sm">Attachments</Heading>
         {
-          task.taskAttachments.map((attachment) => (
-            <Button variant="ghost" m="0" p="0" justifyContent="flex-start">
+          attachments.map((attachment) => (
+            <Button key={attachment.id} variant="ghost" m="0" p="0" justifyContent="flex-start">
               {attachment.filename}
             </Button>
           ))
         }
-        <Button variant="ghost" m="0" p="0" justifyContent="flex-start"> + Attachments </Button>
+        <Button key="addAttachment" variant="ghost" m="0" p="0" justifyContent="flex-start" onPress={selectFile}> + Attachments </Button>
       </Box>
     </Box>
 )

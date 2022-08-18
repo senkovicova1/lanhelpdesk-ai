@@ -28,13 +28,6 @@ import {
   updateArrayItem,
 } from '../../helperFunctions/arrays';
 
-/*
-import {
-  GET_TRIP_TYPES,
-  TRIP_TYPES_SUBSCRIPTION,
-} from 'helpdesk/settings/tripTypes/queries';
-*/
-
 import {
   GET_MY_PROJECTS,
   PROJECTS_SUBSCRIPTION,
@@ -59,6 +52,15 @@ import {
   GET_PROJECT,
   GET_FILTER,
 } from '../../apollo/localSchema/queries';
+
+import {
+  REST_URL,
+} from '../../configs/restAPI';
+
+import {
+  GET_COMMENTS,
+  COMMENTS_SUBSCRIPTION,
+} from '../../queries/comments';
 
 export default function EditContainer ( props ) {
 
@@ -145,6 +147,20 @@ export default function EditContainer ( props ) {
     },
     fetchPolicy: 'network-only'
   } );
+  const {
+    data: commentsData,
+    loading: commentsLoading,
+    refetch: commentsRefetch,
+    error: commentsError,
+  } = useQuery( GET_COMMENTS, {
+    variables: {
+      task: taskId,
+      page: 1,
+      limit: 5,
+    },
+    fetchPolicy: 'network-only'
+  } );
+
 
   //subscriptions
   useSubscription( USERS_SUBSCRIPTION, {
@@ -165,12 +181,32 @@ export default function EditContainer ( props ) {
     }
   } );
 
+  useSubscription( COMMENTS_SUBSCRIPTION, {
+    variables: {
+      taskId,
+    },
+    onSubscriptionData: () => {
+      commentsRefetch( {
+          task: taskId,
+          page: 1,
+          limit: 5,
+        });
+    }
+  } );
+
   React.useEffect( () => {
     taskRefetch( {
         id: taskId,
       } );
   }, [ taskId ] );
 
+  React.useEffect( () => {
+    commentsRefetch( {
+        task: taskId,
+        page: 1,
+        limit: 5,
+      } );
+  }, [ taskId ] );
 
   React.useEffect(() => {
     if (taskData && myProjectsData && basicUsersData){
@@ -341,11 +377,53 @@ export default function EditContainer ( props ) {
     console.log("End");
   }
 
+  const addAttachments = ( attachments ) => {
+    const formData = new FormData();
+    attachments.forEach( ( file ) => formData.append( `file`, file ) );
+    formData.append( "token", `Bearer ${localStorage.getItem('acctok')}` );
+    formData.append( "taskId", taskId );
+    formData.append( "fromInvoice", false );
+    axios.post( `${REST_URL}/upload-attachments`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      } )
+      .then( ( response ) => {
+        const newAttachments = response.data.attachments.map( ( attachment ) => ( {
+          ...attachment,
+          __typename: "TaskAttachment",
+        } ) )
+        const oldTask = client.readQuery( {
+            query: GET_TASK,
+            variables: {
+              id: taskId
+            }
+          } )
+          .task;
+        client.writeQuery( {
+          query: GET_TASK,
+          variables: {
+            id: taskId
+          },
+          data: {
+            task: {
+              ...oldTask,
+              taskAttachments: [ ...oldTask.taskAttachments, ...newAttachments ]
+            }
+          }
+        } )
+
+
+      } )
+  }
+
   const dataLoading = (
     !currentUser ||
     basicCompaniesLoading ||
     basicUsersLoading ||
     myProjectsLoading ||
+    commentsLoading ||
+    commentsError ||
     taskLoading
   )
 
@@ -358,6 +436,8 @@ export default function EditContainer ( props ) {
   }
 
   const invoiced = taskData.task.invoiced;
+  const comments = commentsData.comments;
+  const attachments = taskData.task.taskAttachments;
 
   return (
     <ScrollView padding="5" pb="10">
@@ -416,6 +496,9 @@ export default function EditContainer ( props ) {
         setMaterials={setMaterials}
 
         invoiced={invoiced}
+
+        comments={comments}
+        attachments={attachments}
          />
 
     </ScrollView>
