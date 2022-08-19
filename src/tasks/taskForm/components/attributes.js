@@ -6,6 +6,8 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from 'moment';
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 
+import CustomAttributes from './customAttributes';
+
 import {
   toSelArr,
 } from '../../../helperFunctions/select';
@@ -44,11 +46,16 @@ export default function TaskAttributes ( props ) {
     setAssignedTo,
     deadline,
     setDeadline,
+    customAttributes,
+    setCustomAttributes,
   } = props;
-
+// // TODO: customAttributes
+// TODO: editovat po btn press
   const [ assignedToPickerOpen, setAssignedToPickerOpen ] = useState(false);
   const [ assignedTos, setAssignedTos ] = useState([]);
   const [ deadlinePickerOpen, setDeadlinePickerOpen ] = useState(false);
+  const [ editOpen, setEditOpen ] = useState(false);
+  const [ attributeChanges, setAttributeChanges ] = useState({});
 
   const project = task.project === null ? null : projects.find( ( project ) => project.id === task.project.id );
   const availableProjects = projects.filter( ( project ) => project.right.taskProjectWrite );
@@ -65,196 +72,313 @@ export default function TaskAttributes ( props ) {
         .add( 1, 'days' ) );
       setPotentialPendingStatus( status );
       setPendingChangable( true );
-      autoUpdateTask( {
+      const newAttributeChanges = {
+        ...attributeChanges,
         status: status.id,
         pendingDate: moment()
           .add( 1, 'days' )
           .valueOf()
           .toString(),
         pendingChangable: true,
-      } );
+      };
+      setAttributeChanges(newAttributeChanges);
     } else if ( status.action === 'CloseDate' || status.action === 'Invalid' ) {
       setStatus( status );
       setImportant( false );
       setCloseDate( moment() );
-      autoUpdateTask( {
+      const newAttributeChanges = {
+        ...attributeChanges,
         status: status.id,
         closeDate: moment()
-          .valueOf()
-          .toString(),
+        .valueOf()
+        .toString(),
         important: false
-      } );
+      };
+      setAttributeChanges(newAttributeChanges);
     } else {
       setStatus( status );
-      autoUpdateTask( {
-        status: status.id
-      } );
+      const newAttributeChanges = {
+        ...attributeChanges,
+        status: status.id,
+      };
+      setAttributeChanges(newAttributeChanges);
     }
   }
 
   const changeProject = ( project ) => {
-    let variables = {
-      id: taskId,
-      fromInvoice: false,
+    const newAttributeChanges = {
+      ...attributeChanges,
       project: project.id,
     };
-    setSaving( true );
-    updateTask( {
-        variables
-      } )
-      .finally( () => {
-        setSaving( false );
-      } );
+    setAttributeChanges(newAttributeChanges);
   }
 
   const changeRequester = ( requester ) => {
     setRequester( requester );
-    autoUpdateTask( {
+    const newAttributeChanges = {
+      ...attributeChanges,
       requester: requester.id
-    } )
+    };
+    setAttributeChanges(newAttributeChanges);
   }
 
   const changeCompany = ( company ) => {
     setCompany( company );
-    autoUpdateTask( {
+    const newAttributeChanges = {
+      ...attributeChanges,
       company: company.id,
-    } )
+    };
+    setAttributeChanges(newAttributeChanges);
+  }
+
+  const saveChanges = () => {
+    const projectId = attributeChanges.project;
+    let newAttributeChanges = {...attributeChanges};
+    delete newAttributeChanges.project;
+    autoUpdateTask(newAttributeChanges);
+
+    if (projectId){
+      let variables = {
+        id: taskId,
+        fromInvoice: false,
+        project: projectId,
+      };
+      updateTask( {
+        variables
+      } )
+      .finally( () => {
+
+      } );
+    }
+
+    setAttributeChanges({});
   }
 
   return (
     <Box>
       <Box marginTop="5">
         <Heading variant="list" size="sm">Status</Heading>
-        <Select
-          defaultValue={status.id}
-          bgColor={status.color}
-          onValueChange={itemValue => {
-            changeStatus(toSelArr(project.project.statuses).filter((status)=>status.action !== 'Invoiced').find((status) => status.id === itemValue));
-          }}
-          >
-          {
-            (project ? toSelArr(project.project.statuses).filter((status)=>status.action !== 'Invoiced') : []).map((status) => (
-              <Select.Item
-                key={status.id}
-                label={status.label}
-                value={status.id}
-              />
-            ))
-          }
-        </Select>
+        {
+          !editOpen &&
+          <Text>{status.label}</Text>
+        }
+        {
+          editOpen &&
+          <Select
+            defaultValue={status.id}
+            bgColor={status.color}
+            onValueChange={itemValue => {
+              changeStatus(toSelArr(project.project.statuses).filter((status)=>status.action !== 'Invoiced').find((status) => status.id === itemValue));
+            }}
+            >
+            {
+              (project ? toSelArr(project.project.statuses).filter((status)=>status.action !== 'Invoiced') : []).map((status) => (
+                <Select.Item
+                  key={status.id}
+                  label={status.label}
+                  value={status.id}
+                />
+              ))
+            }
+          </Select>
+        }
       </Box>
 
       <Box marginTop="5">
         <Heading variant="list" size="sm">Project</Heading>
-        <Select
-          defaultValue={project.id}
-          onValueChange={itemValue => {
-            changeProject(availableProjects.find((project) => project.id === itemValue));
-          }}
-          >
-          {
-            availableProjects.map((project) => (
-              <Select.Item
-                key={project.id}
-                label={project.label}
-                value={project.id}
-              />
-            ))
-          }
-        </Select>
+        {
+          !editOpen &&
+          <Text>{project.label}</Text>
+        }
+        {
+          editOpen &&
+          <Select
+            defaultValue={project.id}
+            onValueChange={itemValue => {
+              changeProject(availableProjects.find((project) => project.id === itemValue));
+            }}
+            >
+            {
+              availableProjects.map((project) => (
+                <Select.Item
+                  key={project.id}
+                  label={project.label}
+                  value={project.id}
+                />
+              ))
+            }
+          </Select>
+        }
       </Box>
 
       <Box marginTop="5">
         <Heading variant="list" size="sm">Requester</Heading>
-        <Select
-          defaultValue={requester.id}
-          onValueChange={itemValue => {
-            changeRequester(requesters.find((requester) => requester.id === itemValue));
-          }}
-          >
-          {
-            requesters.map((user) => (
-              <Select.Item
-                key={user.id}
-                label={user.label}
-                value={user.id}
-              />
-            ))
-          }
-        </Select>
+        {
+          !editOpen &&
+          <Text>{requester.label}</Text>
+        }
+        {
+          editOpen &&
+          <Select
+            defaultValue={requester.id}
+            onValueChange={itemValue => {
+              changeRequester(requesters.find((requester) => requester.id === itemValue));
+            }}
+            >
+            {
+              requesters.map((user) => (
+                <Select.Item
+                  key={user.id}
+                  label={user.label}
+                  value={user.id}
+                />
+              ))
+            }
+          </Select>
+        }
       </Box>
 
       <Box marginTop="5">
         <Heading variant="list" size="sm">Company</Heading>
-        <Select
-          defaultValue={company.id}
-          onValueChange={itemValue => {
-            changeCompany(companies.find((company) => company.id === itemValue));
-          }}
-          >
-          {
-            companies.map((company) => (
-              <Select.Item
-                key={company.id}
-                label={company.label}
-                value={company.id}
-              />
-            ))
-          }
-        </Select>
+        {
+          !editOpen &&
+          <Text>{company.label}</Text>
+        }
+        {
+          editOpen &&
+          <Select
+            defaultValue={company.id}
+            onValueChange={itemValue => {
+              changeCompany(companies.find((company) => company.id === itemValue));
+            }}
+            >
+            {
+              companies.map((company) => (
+                <Select.Item
+                  key={company.id}
+                  label={company.label}
+                  value={company.id}
+                />
+              ))
+            }
+          </Select>
+        }
       </Box>
 
       <Box marginTop="5">
           <Heading variant="list" size="sm">Assigned</Heading>
-          <DropDownPicker
-            multiple={true}
-            listMode="SCROLLVIEW"
-            mode="BADGE"
-            open={assignedToPickerOpen}
-            value={assignedTo.map((user) => user.value)}
-            items={assignedTos}
-            setOpen={setAssignedToPickerOpen}
-            onSelectItem={(items) => {
-              autoUpdateTask({assignedTo: items.map((user) => user.value)});
-            }}
-            setValue={setAssignedTo}
-            setItems={setAssignedTos}
-          />
+          {
+            !editOpen &&
+            <Text>{assignedTo.map((user) => user.label).join(', ')}</Text>
+          }
+          {
+            editOpen &&
+            <DropDownPicker
+              multiple={true}
+              listMode="SCROLLVIEW"
+              mode="BADGE"
+              open={assignedToPickerOpen}
+              value={assignedTo.map((user) => user.value)}
+              items={assignedTos}
+              setOpen={setAssignedToPickerOpen}
+              onSelectItem={(items) => {
+                setAssignedTo(items);
+                const newAttributeChanges = {
+                  ...attributeChanges,
+                  assignedTo: items.map((user) => user.value)
+                };
+                setAttributeChanges(newAttributeChanges);
+              }}
+              setValue={setAssignedTo}
+              setItems={setAssignedTos}
+            />
+          }
       </Box>
 
       <Box marginTop="5">
         <Heading variant="list" size="sm">Deadline</Heading>
-        <Pressable
-          onPress={() => {
-            setDeadlinePickerOpen(!deadlinePickerOpen);
-          }}
-          >
-          <Box height="46px" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#CCC" justifyContent="center" pl="10px">
-          <Text fontSize="xs">
-            {deadline ? timestampToString(deadline) : "No deadline"}
-          </Text>
-        </Box>
-        </Pressable>
-        <DateTimePickerModal
-          isVisible={deadlinePickerOpen}
-          mode="datetime"
-          date={deadline ? new Date(parseInt(deadline)) : new Date()}
-          onConfirm={(e) => {
-            const newDeadline = new Date(e).getTime();
-            setDeadline(newDeadline);
-            autoUpdateTask({deadline: newDeadline});
-            setDeadlinePickerOpen(false);
-          }}
-          onCancel={() => {
-            setDeadlinePickerOpen(false);
-          }}
-        />
+        {
+          !editOpen &&
+          <Text>{deadline ? timestampToString(deadline) : "No deadline"}</Text>
+        }
+        {
+          editOpen &&
+          <Box>
+            <Pressable
+              onPress={() => {
+                setDeadlinePickerOpen(!deadlinePickerOpen);
+              }}
+              >
+              <Box height="46px" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#CCC" justifyContent="center" pl="10px">
+                <Text fontSize="xs">
+                  {deadline ? timestampToString(deadline) : "No deadline"}
+                </Text>
+              </Box>
+            </Pressable>
+            <DateTimePickerModal
+              isVisible={deadlinePickerOpen}
+              mode="datetime"
+              date={deadline ? new Date(parseInt(deadline)) : new Date()}
+              onConfirm={(e) => {
+                const newDeadline = new Date(e).getTime();
+                setDeadline(newDeadline);
+
+                const newAttributeChanges = {
+                  ...attributeChanges,
+                  deadline: newDeadline
+                };
+                setAttributeChanges(newAttributeChanges);
+
+                setDeadlinePickerOpen(false);
+              }}
+              onCancel={() => {
+                setDeadlinePickerOpen(false);
+              }}
+            />
+          </Box>
+        }
       </Box>
 
       <Box marginTop="5">
         <Heading variant="list" size="sm">Repeats</Heading>
         <Text>No repeat</Text>
       </Box>
+
+      <CustomAttributes
+        {...props}
+        editOpen={editOpen}
+        setEditOpen={setEditOpen}
+        attributeChanges={attributeChanges}
+        setAttributeChanges={setAttributeChanges}
+        />
+
+      <Box marginTop="5" alignItems="center">
+        <IconButton
+          onPress={() => {
+            if (editOpen){
+              saveCahnges();
+            }
+            setEditOpen(!editOpen);
+          }}
+          variant="solid"
+          width="50px"
+          borderRadius="20"
+          _icon={
+            editOpen ?
+            {
+              as: Ionicons ,
+              name: "save",
+              color: "#0078d4"
+            } :
+            {
+              as: Ionicons ,
+              name: "pencil",
+              color: "#0078d4"
+            }
+          }
+          />
+      </Box>
+
     </Box>
   )
 }

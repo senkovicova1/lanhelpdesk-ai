@@ -72,7 +72,8 @@ export default function EditContainer ( props ) {
   const {
     taskId
   } = route.params;
-
+  // // TODO: rights
+  // TODO: updateToProjectRules
   const client = useApolloClient();
 
   const [ important, setImportant ] = useState(false);
@@ -94,6 +95,8 @@ export default function EditContainer ( props ) {
 
   const [ subtasks, setSubtasks ] = useState([]);
   const [ materials, setMaterials ] = useState([]);
+
+  const [ customAttributes, setCustomAttributes ] = React.useState( [] );
 
   const [ saving, setSaving ] = useState(false);
   const [ changes, setChanges ] = React.useState( {} );
@@ -244,8 +247,42 @@ export default function EditContainer ( props ) {
       } ) ) );
 
       setMaterials(taskData.task.materials);
+
+      if (project){
+        let newCustomAttributes = [];
+        project.project.viewCustomAttributes.forEach((item, i) => {
+          let matchingTaskValue = taskData.task.customAttributes.find((customAttribute) => item.id === customAttribute.customAttribute.id);
+
+          if (!matchingTaskValue){
+            matchingTaskValue = {};
+          }
+
+          const value = {
+            text: matchingTaskValue.text,
+            number: matchingTaskValue.number,
+            selectValues: matchingTaskValue.selectValues
+          };
+
+          let newAttribute = {
+            ...item,
+            value,
+            label: item.title.substring(0,1).toUpperCase() + item.title.substring(1),
+            canEdit: project.project.editCustomAttributes.some((customAttribute) => item.id === customAttribute.id),
+            isEdit: true
+          };
+          delete newAttribute.__typename;
+          newCustomAttributes.push(newAttribute);
+        });
+
+        setCustomAttributes(newCustomAttributes.sort((a1, a2) => a1.order < a2.order ? -1 : 1));
+      }
     }
   }, [taskLoading, taskData, myProjectsLoading, myProjectsData, basicUsersData, basicUsersLoading]);
+/*
+  React.useEffect( () => {
+    updateToProjectRules( project );
+  }, [ project ] );
+*/
 
   const currentUser = getMyData();
 
@@ -377,6 +414,18 @@ export default function EditContainer ( props ) {
     console.log("End");
   }
 
+  const changeCustomAttributes = (newCustomAttributes) => {
+    setCustomAttributes(newCustomAttributes);
+  /*  autoUpdateTask( {
+      customAttributes : newCustomAttributes.map((item) => ({
+        text: item.value.text,
+        number: item.value.number,
+        selectValues: item.value.selectValues.map((value) => value.id).filter((value) => value !== null),
+        customAttribute: item.id,
+      }))
+    } );*/
+  }
+
   const addAttachments = ( attachments ) => {
     const formData = new FormData();
     attachments.forEach( ( file ) => formData.append( `file`, file ) );
@@ -488,6 +537,9 @@ export default function EditContainer ( props ) {
 
         deadline={deadline}
         setDeadline={setDeadline}
+
+        customAttributes={customAttributes}
+        setCustomAttributes={changeCustomAttributes}
 
         subtasks={subtasks}
         setSubtasks={setSubtasks}

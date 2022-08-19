@@ -56,18 +56,10 @@ export default function TaskInfo ( props ) {
       uploadImage(res);
     } catch (err) {
       setSingleFile(null);
-      // Handling any exception (If any)
-      if (DocumentPicker.isCancel(err)) {
-        // If user canceled the document selection
-        console.log('Canceled');
-      } else {
-        // For Unknown Error
-        console.log('Unknown Error: ' + JSON.stringify(err));
-        throw err;
-      }
+      console.log(err);
     }
   };
-
+  //// TODO: download attachment
   const uploadImage = async (file) => {
     // Check if any file is selected or not
     if (file != null) {
