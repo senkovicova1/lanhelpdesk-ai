@@ -28,6 +28,7 @@ export default function TaskInfo ( props ) {
   const {
     taskId,
     task,
+    isAddTask,
     autoUpdateTask,
     project,
     description,
@@ -120,33 +121,36 @@ export default function TaskInfo ( props ) {
       <Box marginTop="5">
         <Flex direction="row" justify="space-between">
           <Heading variant="list" size="sm">Description</Heading>
-          <IconButton
-            onPress={() => {
-              if (editDescription){
-                autoUpdateTask({ description });
+          {
+            !isAddTask &&
+            <IconButton
+              onPress={() => {
+                if (editDescription){
+                  autoUpdateTask({ description });
+                }
+                setEditDescription(!editDescription);
+              }}
+              p="0"
+              variant="ghost"
+              _icon={
+                editDescription ?
+                {
+                  as: Ionicons ,
+                  name: "save",
+                  color: "#0078d4"
+                } :
+                {
+                  as: Ionicons ,
+                  name: "pencil",
+                  color: "#0078d4"
+                }
               }
-              setEditDescription(!editDescription);
-            }}
-            p="0"
-            variant="ghost"
-            _icon={
-              editDescription ?
-              {
-                as: Ionicons ,
-                name: "save",
-                color: "#0078d4"
-              } :
-              {
-                as: Ionicons ,
-                name: "pencil",
-                color: "#0078d4"
-              }
-            }
-            />
+              />
+          }
         </Flex>
         <Box bgColor="white" p="1">
           {
-            editDescription &&
+            (isAddTask || editDescription) &&
             <TextArea
               value={description}
               onChangeText={(text) => {
@@ -155,6 +159,7 @@ export default function TaskInfo ( props ) {
               />
           }
           {
+            !isAddTask &&
             !editDescription &&
             <Text>{description.length > 0 ? description : "No description"}</Text>
           }

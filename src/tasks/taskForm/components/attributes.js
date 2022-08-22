@@ -4,7 +4,7 @@ import { ScrollView, View, Pressable, Select, Divider, Heading, Text, Flex, Box,
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from 'moment';
-import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
+import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign, Feather } from '@expo/vector-icons';
 
 import CustomAttributes from './customAttributes';
 
@@ -65,6 +65,7 @@ export default function TaskAttributes ( props ) {
     setAssignedTos(project ? users.filter( ( user ) => project.usersWithRights.some( ( userData ) => userData.assignable && userData.user.id === user.id ) ) : []);
   }, [project]);
 
+  // TODO: edit only changes
   const changeStatus = ( status ) => {
     if ( status.action === 'PendingDate' ) {
       setStatus( status );
@@ -131,11 +132,13 @@ export default function TaskAttributes ( props ) {
     setAttributeChanges(newAttributeChanges);
   }
 
+  // TODO: write changes to state?
   const saveChanges = () => {
     const projectId = attributeChanges.project;
     let newAttributeChanges = {...attributeChanges};
     delete newAttributeChanges.project;
     autoUpdateTask(newAttributeChanges);
+    setAttributeChanges({});
 
     if (projectId){
       let variables = {
@@ -154,6 +157,7 @@ export default function TaskAttributes ( props ) {
     setAttributeChanges({});
   }
 
+  // TODO: if attr is in attrChanges display changes otherwise state
   return (
     <Box>
       <Box marginTop="5">
@@ -352,11 +356,28 @@ export default function TaskAttributes ( props ) {
         setAttributeChanges={setAttributeChanges}
         />
 
-      <Box marginTop="5" alignItems="center">
+      <Flex direction="row" justify="space-between" marginTop="5" marginBottom="10" alignItems="center">
+        {
+          editOpen &&
+        <IconButton
+          onPress={() => {
+            setEditOpen(!editOpen);
+          }}
+          variant="solid"
+          width="50px"
+          borderRadius="20"
+          _icon={{
+              as: Feather,
+              name: "x",
+              color: "white"
+            }
+          }
+          />
+      }
         <IconButton
           onPress={() => {
             if (editOpen){
-              saveCahnges();
+              saveChanges();
             }
             setEditOpen(!editOpen);
           }}
@@ -368,16 +389,16 @@ export default function TaskAttributes ( props ) {
             {
               as: Ionicons ,
               name: "save",
-              color: "#0078d4"
+              color: "white"
             } :
             {
               as: Ionicons ,
               name: "pencil",
-              color: "#0078d4"
+              color: "white"
             }
           }
           />
-      </Box>
+      </Flex>
 
     </Box>
   )

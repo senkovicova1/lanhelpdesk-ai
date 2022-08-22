@@ -69,6 +69,21 @@ export default function CustomDrawerContent(props) {
       </Box>
 
       <Box>
+        <Button
+          variant="ghost"
+          px="5"
+          pt="2"
+          width="110px"
+          onPress={() => {navigation.navigate("TaskAdd")}}
+          >
+          <Flex direction="row" alignItems="center">
+            <Box mr="2" w="5" alignItems="center">
+              <AntDesign name="plus" size={16} color="#0078d4"/>
+            </Box>
+            <Text fontSize="md" color="#0078d4">Task</Text>
+          </Flex>
+        </Button>
+
         <Flex direction="row" alignItems="center" mx="5">
           <Box mr="2" w="5" alignItems="center">
             <Feather name="settings" size={16} color="black"/>

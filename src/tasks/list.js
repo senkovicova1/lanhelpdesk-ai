@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   useQuery,
   useSubscription,
@@ -72,6 +72,9 @@ export default function TaskList ( props ) {
   }
 
   const filterVariables = localFilterToValues( localFilter );
+
+  const [ limit, setLimit ] = useState(30);
+
   //apollo queries
   const taskVariables = {
     projectId: localProject.project.id === -1 ? null : localProject.project.id,
@@ -83,7 +86,7 @@ export default function TaskList ( props ) {
     },
     stringFilter: null,
     page: 1,
-    limit: 30,
+    limit,
   }
 
   //network
@@ -107,11 +110,11 @@ export default function TaskList ( props ) {
   } = useQuery( GET_MY_DATA, {
     fetchPolicy: 'network-only'
   } );
-      
+
   //refetch tasks
   React.useEffect( () => {
     tasksRefetch();
-  }, [ localFilter, localProject.id ] );
+  }, [ localFilter, localProject.id, limit ] );
 
   useSubscription( ADD_TASK_SUBSCRIPTION, {
     onSubscriptionData: () => {
@@ -187,6 +190,20 @@ export default function TaskList ( props ) {
             <Divider mt="5"/>
           </Pressable>
         ))
+      }
+
+      {
+        tasksData &&
+        tasksData.tasks.count > limit &&
+        <Button
+          shadow={2}
+          onPress={() => {
+            setLimit(limit + 10);
+            //// TODO: optimize
+          }}
+          >
+          Load more tasks
+        </Button>
       }
 
     </ScrollView>

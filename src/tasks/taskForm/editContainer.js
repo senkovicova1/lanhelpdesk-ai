@@ -260,12 +260,13 @@ export default function EditContainer ( props ) {
           const value = {
             text: matchingTaskValue.text,
             number: matchingTaskValue.number,
-            selectValues: matchingTaskValue.selectValues
+            selectValues: matchingTaskValue.selectValues ? matchingTaskValue.selectValues.map((value) => ({...value, label: value.label ? value.label : value.value.substring(0,1).toUpperCase() + value.value.substring(1)})) : [],
           };
 
           let newAttribute = {
             ...item,
             value,
+            selectValues: item.selectValues ? item.selectValues.map((value) => ({...value, label: value.label ? value.label : value.value.substring(0,1).toUpperCase() + value.value.substring(1)})) : [],
             label: item.title.substring(0,1).toUpperCase() + item.title.substring(1),
             canEdit: project.project.editCustomAttributes.some((customAttribute) => item.id === customAttribute.id),
             isEdit: true

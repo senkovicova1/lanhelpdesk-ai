@@ -5,7 +5,6 @@ import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo
 
 import Info from './components/info';
 import Attributes from './components/attributes';
-import Comments from './components/comments';
 import Subtasks from './components/subtasks';
 import Materials from './components/materials';
 
@@ -20,6 +19,8 @@ export default function TaskForm ( props ) {
     autoUpdateTask,
   } = props;
 
+  const isAddTask = !taskId;
+
   const [displayCard, setDisplayCard] = useState("info");
   const [editTitle, setEditTitle] = useState(false);
 
@@ -28,12 +29,15 @@ export default function TaskForm ( props ) {
 
       <Flex direction="row" justify="space-between">
         {
-          editTitle &&
-          <Stack w="95%">
+          (isAddTask || editTitle) &&
+          <Stack w={isAddTask ? "100%" : "95%"}>
             <InputGroup w="100%">
-              <InputLeftAddon children={`${taskId}: `} />
+              {
+                !isAddTask &&
+                <InputLeftAddon children={`${taskId}: `} />
+              }
               <Input
-                w="80%"
+                w={isAddTask ? "100%" : "80%"}
                 type="text"
                 defaultValue={title}
                 onChangeText={(text) => setTitle(text)}
@@ -42,32 +46,36 @@ export default function TaskForm ( props ) {
           </Stack>
         }
         {
+          !isAddTask &&
           !editTitle &&
           <Heading lineHeight="46px" w="90%" variant="list" size="md">{`${taskId}: ${title}`}</Heading>
         }
-        <IconButton
-          onPress={() => {
-            if (editTitle){
-              autoUpdateTask({ title });
+        {
+          !isAddTask &&
+          <IconButton
+            onPress={() => {
+              if (editTitle){
+                autoUpdateTask({ title });
+              }
+              setEditTitle(!editTitle);
+            }}
+            p="0"
+            variant="ghost"
+            _icon={
+              editTitle ?
+              {
+                as: Ionicons ,
+                name: "save",
+                color: "#0078d4"
+              } :
+              {
+                as: Ionicons ,
+                name: "pencil",
+                color: "#0078d4"
+              }
             }
-            setEditTitle(!editTitle);
-          }}
-          p="0"
-          variant="ghost"
-          _icon={
-            editTitle ?
-            {
-              as: Ionicons ,
-              name: "save",
-              color: "#0078d4"
-            } :
-            {
-              as: Ionicons ,
-              name: "pencil",
-              color: "#0078d4"
-            }
-          }
-          />
+            />
+        }
       </Flex>
       <Flex direction="row" justify="space-between"  marginTop="5">
         <IconButton
@@ -121,10 +129,13 @@ export default function TaskForm ( props ) {
 
       {
         displayCard === "info" &&
-        <Info {...props} />
+        <Info
+          {...props}
+          isAddTask={isAddTask}
+          />
       }
 
-      {
+      {/*
         displayCard === "attributes" &&
         <Attributes {...props} />
       }
@@ -142,7 +153,7 @@ export default function TaskForm ( props ) {
       {
         displayCard === "materials" &&
         <Materials {...props} />
-      }
+      */}
     </View>
   );
 }

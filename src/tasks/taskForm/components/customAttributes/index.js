@@ -9,8 +9,6 @@ export default function CustomAttributesList( props ) {
     customAttributes,
   } = props;
 
-  console.log(customAttributes.map(ca => ca.label + " " + ca.type).join(", "));
-
   return (
     <View>
       {

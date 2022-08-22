@@ -13,6 +13,7 @@ import { FontAwesome, FontAwesome5, AntDesign  } from '@expo/vector-icons';
 import Drawer from './drawer';
 import Login from './login';
 import TaskDetail from './tasks/taskForm/editContainer';
+import TaskAdd from './tasks/taskForm/addContainer';
 import CommentAdd from './tasks/taskForm/components/comments/addForm';
 import SubtaskAdd from './tasks/taskForm/components/subtasks/addForm';
 import SubtaskEdit from './tasks/taskForm/components/subtasks/editForm';
@@ -70,6 +71,18 @@ export default function Navigation (props) {
               <Text></Text>
             </Heading>
           ),
+          headerStyle: {
+            backgroundColor: '#0078d4',
+          },
+          headerTintColor: "white"
+        }}
+      />
+
+      <Stack.Screen
+        name="TaskAdd"
+        component={TaskAdd}
+        options={{
+          headerTitle: (props) => <Heading variant="main">Add a task</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },
