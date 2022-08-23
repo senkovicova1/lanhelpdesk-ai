@@ -28,8 +28,8 @@ export default function TaskInfo ( props ) {
   const {
     taskId,
     task,
-    isAddTask,
-    autoUpdateTask,
+    addingTask,
+    onSubmit,
     project,
     description,
     setDescription,
@@ -45,71 +45,12 @@ export default function TaskInfo ( props ) {
   const [ editDescription, setEditDescription ] = useState(false);
   const [ tagsOpen, setTagsOpen ] = useState(false);
 
-  // TODO: posun funkcie vyssie
   const selectFile = async () => {
     try {
       const res = await DocumentPicker.getDocumentAsync();
-      // Printing the log realted to the file
-      if (isAddTask){
-        addAttachment(res);
-      } else {
-        uploadImage(res);
-      }
+      addAttachment(res);
     } catch (err) {
-      setSingleFile(null);
       console.log(err);
-    }
-  };
-  //// TODO: download attachment
-  const uploadImage = async (file) => {
-    // Check if any file is selected or not
-    if (file != null) {
-      // If file selected then create FormData
-      let fileToUpload = {
-        type: file.mimeType,
-        name: file.name,
-        uri: Platform.OS === 'android' ? file.uri : file.uri.replace('file://', ''),
-      };
-      const formData = new FormData();
-      formData.append( `file`, fileToUpload );
-      formData.append( "token", `Bearer ${localStorage.getItem('acctok')}` );
-      formData.append( "taskId", taskId );
-      formData.append( "fromInvoice", false );
-
-      // Please change file upload URL
-      axios.post( `${REST_URL}/upload-attachments`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          transformRequest: (data, headers) => {
-            return formData; // this is doing the trick
-          },
-        } )
-        .then( ( response ) => {
-          const newAttachments = response.data.attachments.map( ( attachment ) => ( {
-            ...attachment,
-            __typename: "TaskAttachment",
-          } ) )
-          const oldTask = client.readQuery( {
-              query: GET_TASK,
-              variables: {
-                id: taskId
-              }
-            } )
-            .task;
-          client.writeQuery( {
-            query: GET_TASK,
-            variables: {
-              id: taskId
-            },
-            data: {
-              task: {
-                ...oldTask,
-                taskAttachments: [ ...oldTask.taskAttachments, ...newAttachments ]
-              }
-            }
-          } )
-        } )
     }
   };
 
@@ -119,11 +60,11 @@ export default function TaskInfo ( props ) {
         <Flex direction="row" justify="space-between">
           <Heading variant="list" size="sm">Description</Heading>
           {
-            !isAddTask &&
+            !addingTask &&
             <IconButton
               onPress={() => {
                 if (editDescription){
-                  autoUpdateTask({ description });
+                  onSubmit({ description });
                 }
                 setEditDescription(!editDescription);
               }}
@@ -147,7 +88,7 @@ export default function TaskInfo ( props ) {
         </Flex>
         <Box bgColor="white" p="1">
           {
-            (isAddTask || editDescription) &&
+            (addingTask || editDescription) &&
             <TextArea
               value={description}
               onChangeText={(text) => {
@@ -156,7 +97,7 @@ export default function TaskInfo ( props ) {
               />
           }
           {
-            !isAddTask &&
+            !addingTask &&
             !editDescription &&
             <Text>{description.length > 0 ? description : "No description"}</Text>
           }
@@ -199,8 +140,8 @@ export default function TaskInfo ( props ) {
           p="0"
           justifyContent="flex-start"
           onPress={() => {
-            if (tagsOpen){
-              autoUpdateTask({ tags: tags.map((tag) => tag.id ) });
+            if (tagsOpen && !addingTask){
+              onSubmit({ tags: tags.map((tag) => tag.id ) });
             }
             setTagsOpen(!tagsOpen);
           }}
@@ -214,6 +155,9 @@ export default function TaskInfo ( props ) {
         {
           attachments.map((attachment, index) => (
             <Flex>
+              {
+                //// TODO: download attachment
+              }
               <Button key={attachment.id} variant="ghost" m="0" p="0" justifyContent="flex-start">
                 {attachment.filename}
               </Button>

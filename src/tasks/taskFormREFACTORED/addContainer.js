@@ -72,32 +72,6 @@ export default function AddTaskContainer ( props ) {
 
   const client = useApolloClient();
 
-  const [ important, setImportant ] = useState(false);
-  const [ title, setTitle ] = useState("");
-  const [ description, setDescription ] = useState("");
-  const [ tags, setTags ] = useState([]);
-  const [ project, setProject ] = useState({});
-  const [ status, setStatus ] = React.useState( null );
-  const [ requester, setRequester ] = React.useState( null );
-  const [ company, setCompany ] = React.useState( null );
-  const [ assignedTo, setAssignedTo ] = React.useState( [] );
-  const [ deadline, setDeadline ] = React.useState( null );
-
-  const [ pendingDate, setPendingDate ] = React.useState( null );
-  const [ potentialPendingStatus, setPotentialPendingStatus ] = React.useState( null );
-  const [ pendingChangable, setPendingChangable ] = React.useState( false );
-
-  const [ closeDate, setCloseDate ] = useState(false);
-
-  const [ subtasks, setSubtasks ] = useState([]);
-  const [ materials, setMaterials ] = useState([]);
-
-  const [ customAttributes, setCustomAttributes ] = React.useState( [] );
-
-  const [ attachments, setAttachments ] = React.useState( [] );
-
-  const [ saving, setSaving ] = useState(false);
-
   //local
   const {
     data: filterData,
@@ -157,7 +131,59 @@ export default function AddTaskContainer ( props ) {
     }
   } );
 
+  const projects = projectsData ? toSelArr(projectsData.myProjects.map((myProject) => ({
+    ...myProject.project,
+    right: myProject.right,
+    attributeRights: myProject.attributeRights,
+    users: myProject.usersWithRights
+  }) )).filter((project) => project.right.addTask ) : [];
+
+  const initialProject = localProject.id ? projects.find( p => p.id === localProject.id ) : null;
+  const initialAssignableUsers = usersData ? toSelArr(usersData.basicUsers, 'fullName').filter( ( user ) => initialProject && initialProject.users.some( ( userData ) => userData.assignable && userData.user.id === user.id ) ) : [];
+
+  const [ important, setImportant ] = useState(false);
+  const [ title, setTitle ] = useState("");
+  const [ description, setDescription ] = useState("");
+  const [ tags, setTags ] = useState([]);
+  const [ project, setProject ] = useState(initialProject);
+  const [ status, setStatus ] = React.useState( null );
+  const [ requester, setRequester ] = React.useState( null );
+  const [ company, setCompany ] = React.useState( null );
+  const [ assignedTo, setAssignedTo ] = React.useState( [] );
+  const [ deadline, setDeadline ] = React.useState( null );
+
+  const [ pendingDate, setPendingDate ] = React.useState( null );
+  const [ potentialPendingStatus, setPotentialPendingStatus ] = React.useState( null );
+  const [ pendingChangable, setPendingChangable ] = React.useState( false );
+
+  const [ closeDate, setCloseDate ] = useState(false);
+
+  const [ subtasks, setSubtasks ] = useState([]);
+  const [ materials, setMaterials ] = useState([]);
+
+  const [ customAttributes, setCustomAttributes ] = React.useState( [] );
+
+  const [ attachments, setAttachments ] = React.useState( [] );
+
+  const [ saving, setSaving ] = useState(false);
+
+  const cannotSave = (
+    saving /*||
+    loading ||
+    hasAddTaskIssues( {
+    ...getTaskData(),
+    userRights,
+    projectAttributes,
+    customAttributes,
+    currentUser,
+    }, t )*/
+  );
+
+
   //functions
+  const addTaskFunc = () => {
+
+  }
 
   const addAttachment = (attachment) => {
     const time = moment().valueOf();
@@ -225,23 +251,10 @@ export default function AddTaskContainer ( props ) {
     }
   };*/
 
-  const addTaskFunc = () => {
-
+  const currentUserIfInProject = ( project ) => {
+    return project && project.users.some( ( userData ) => userData.user.id === currentUser.id ) ? users.find( ( user ) => user.id === currentUser.id ) : null;
   }
-
   const currentUser = getMyData();
-
-  const cannotSave = (
-    saving /*||
-    loading ||
-    hasAddTaskIssues( {
-      ...getTaskData(),
-      userRights,
-      projectAttributes,
-      customAttributes,
-      currentUser,
-    }, t )*/
-  );
 
   const dataLoading = (
     !currentUser ||
@@ -263,11 +276,12 @@ export default function AddTaskContainer ( props ) {
 
       <Form
         {...props}
+        addingTask={true}
         currentUser={currentUser}
         accessRights={currentUser ? currentUser.role.accessRights : {}}
         companies={toSelArr(basicCompaniesData.basicCompanies)}
         users={toSelArr(basicUsersData.basicUsers, 'fullName')}
-        projects={toSelArr(myProjectsData.myProjects.map((project) => ({...project, id: project.project.id, title: project.project.title}) ))}
+        projects={projects}
         client={client}
 
         onSubmit={addTaskFunc}
