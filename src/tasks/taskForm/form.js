@@ -5,6 +5,7 @@ import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo
 
 import Info from './components/info';
 import Attributes from './components/attributes';
+import Comments from './components/comments';
 import Subtasks from './components/subtasks';
 import Materials from './components/materials';
 
@@ -135,7 +136,7 @@ export default function TaskForm ( props ) {
           />
       }
 
-      {/*
+      {
         displayCard === "attributes" &&
         <Attributes {...props} />
       }
@@ -153,7 +154,7 @@ export default function TaskForm ( props ) {
       {
         displayCard === "materials" &&
         <Materials {...props} />
-      */}
+      }
     </View>
   );
 }

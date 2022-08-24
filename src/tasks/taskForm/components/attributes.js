@@ -356,24 +356,24 @@ export default function TaskAttributes ( props ) {
         setAttributeChanges={setAttributeChanges}
         />
 
-      <Flex direction="row" justify="space-between" marginTop="5" marginBottom="10" alignItems="center">
+      <Flex direction="row" justify={editOpen ? "space-between" : "center"} marginTop="5" marginBottom="10" alignItems="center">
         {
           editOpen &&
-        <IconButton
-          onPress={() => {
-            setEditOpen(!editOpen);
-          }}
-          variant="solid"
-          width="50px"
-          borderRadius="20"
-          _icon={{
-              as: Feather,
-              name: "x",
-              color: "white"
+          <IconButton
+            onPress={() => {
+              setEditOpen(!editOpen);
+            }}
+            variant="solid"
+            width="50px"
+            borderRadius="20"
+            _icon={{
+                as: Feather,
+                name: "x",
+                color: "white"
+              }
             }
-          }
-          />
-      }
+            />
+        }
         <IconButton
           onPress={() => {
             if (editOpen){

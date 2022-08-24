@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Platform } from 'react-native';
+import { DeviceEventEmitter } from "react-native"
 import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, InputGroup, InputLeftAddon, Button, Badge, CheckIcon  } from "native-base";
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 
@@ -11,74 +11,34 @@ import Materials from './addComponents/materials';
 export default function TaskForm ( props ) {
 
   const {
-    navigation,
-    addingTask,
-    taskId,
-    task,
     title,
     setTitle,
-    autoUpdateTask,
   } = props;
 
   const [displayCard, setDisplayCard] = useState("info");
-  const [editTitle, setEditTitle] = useState(false);
 
   return (
     <View>
 
-      <Flex direction="row" justify="space-between">
-        {
-          (addingTask || editTitle) &&
-          <Stack w={addingTask ? "100%" : "95%"}>
-            <InputGroup w="100%">
-              {
-                !addingTask &&
-                <InputLeftAddon children={`${taskId}: `} />
-              }
-              <Input
-                w={addingTask ? "100%" : "80%"}
-                type="text"
-                defaultValue={title}
-                onChangeText={(text) => setTitle(text)}
-                />
-            </InputGroup>
-          </Stack>
-        }
-        {
-          !addingTask &&
-          !editTitle &&
-          <Heading lineHeight="46px" w="90%" variant="list" size="md">{`${taskId}: ${title}`}</Heading>
-        }
-        {
-          !addingTask &&
-          <IconButton
-            onPress={() => {
-              if (editTitle){
-                autoUpdateTask({ title });
-              }
-              setEditTitle(!editTitle);
-            }}
-            p="0"
-            variant="ghost"
-            _icon={
-              editTitle ?
-              {
-                as: Ionicons ,
-                name: "save",
-                color: "#0078d4"
-              } :
-              {
-                as: Ionicons ,
-                name: "pencil",
-                color: "#0078d4"
-              }
-            }
-            />
-        }
-      </Flex>
+      <Stack>
+        <Input
+          type="text"
+          defaultValue={title}
+          onChangeText={(text) => setTitle(text)}
+          />
+      </Stack>
       <Flex direction="row" justify="space-between"  marginTop="5">
         <IconButton
-          onPress={() => setDisplayCard("info")}
+          onPress={() => {
+            setDisplayCard("info");
+            DeviceEventEmitter.removeAllListeners("event.addSubtask");
+            DeviceEventEmitter.removeAllListeners("event.editSubtask");
+            DeviceEventEmitter.removeAllListeners("event.removeSubtask");
+
+            DeviceEventEmitter.removeAllListeners("event.addMaterial");
+            DeviceEventEmitter.removeAllListeners("event.editMaterial");
+            DeviceEventEmitter.removeAllListeners("event.removeMaterial");
+          }}
           variant={displayCard === "info" ? "solid" : "ghost"}
           _icon={{
             as: FontAwesome5 ,
@@ -87,7 +47,16 @@ export default function TaskForm ( props ) {
           }}
           />
         <IconButton
-          onPress={() => setDisplayCard("attributes")}
+          onPress={() => {
+            setDisplayCard("attributes")
+            DeviceEventEmitter.removeAllListeners("event.addSubtask");
+            DeviceEventEmitter.removeAllListeners("event.editSubtask");
+            DeviceEventEmitter.removeAllListeners("event.removeSubtask");
+
+            DeviceEventEmitter.removeAllListeners("event.addMaterial");
+            DeviceEventEmitter.removeAllListeners("event.editMaterial");
+            DeviceEventEmitter.removeAllListeners("event.removeMaterial");
+          }}
           variant={displayCard === "attributes" ? "solid" : "ghost"}
           _icon={{
             as: MaterialIcons ,
@@ -96,16 +65,13 @@ export default function TaskForm ( props ) {
           }}
           />
         <IconButton
-          onPress={() => setDisplayCard("comments")}
-          variant={displayCard === "comments" ? "solid" : "ghost"}
-          _icon={{
-            as: Ionicons  ,
-            name: "chatbubbles-sharp",
-            color: displayCard === "comments" ? "white" : "#0078d4"
+          onPress={() => {
+            setDisplayCard("subtasks");
+
+            DeviceEventEmitter.removeAllListeners("event.addMaterial");
+            DeviceEventEmitter.removeAllListeners("event.editMaterial");
+            DeviceEventEmitter.removeAllListeners("event.removeMaterial");
           }}
-          />
-        <IconButton
-          onPress={() => setDisplayCard("subtasks")}
           variant={displayCard === "subtasks" ? "solid" : "ghost"}
           _icon={{
             as: Entypo  ,
@@ -114,7 +80,12 @@ export default function TaskForm ( props ) {
           }}
           />
         <IconButton
-          onPress={() => setDisplayCard("materials")}
+          onPress={() => {
+            setDisplayCard("materials")
+            DeviceEventEmitter.removeAllListeners("event.addSubtask");
+            DeviceEventEmitter.removeAllListeners("event.editSubtask");
+            DeviceEventEmitter.removeAllListeners("event.removeSubtask");
+          }}
           variant={displayCard === "materials" ? "solid" : "ghost"}
           _icon={{
             as: FontAwesome5  ,
@@ -130,18 +101,12 @@ export default function TaskForm ( props ) {
         displayCard === "info" &&
         <Info
           {...props}
-          addingTask={addingTask}
           />
       }
 
       {
         displayCard === "attributes" &&
         <Attributes {...props} />
-      }
-
-      {/*
-        displayCard === "comments" &&
-        <Comments {...props} />
       }
 
       {
@@ -152,7 +117,7 @@ export default function TaskForm ( props ) {
       {
         displayCard === "materials" &&
         <Materials {...props} />
-      */}
+      }
     </View>
   );
 }
