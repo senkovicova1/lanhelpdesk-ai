@@ -101,7 +101,7 @@ export default function TaskAttributes ( props ) {
       setCompany(newCompany);
     }
   }
-
+// TODO: rights aj na ostatne podkategorie
   return (
     <Box>
       {/*Status*/}

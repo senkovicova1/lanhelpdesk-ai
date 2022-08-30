@@ -9,6 +9,7 @@ export default function TaskMaterial ( props ) {
     navigation,
     materials,
     setMaterials,
+    userRights,
   } = props;
 
   const getMinId = () => {
@@ -76,25 +77,29 @@ export default function TaskMaterial ( props ) {
                 }
                 <Heading variant="list" size="sm">{material.title}</Heading>
               </Flex>
-              <IconButton
-                onPress={() => {
-                  navigation.navigate('MaterialEdit', {
-                    addingTask: true,
-                    materialId: material.id,
-                    materialDone: material.done,
-                    materialTitle: material.title,
-                    materialQuantity: material.quantity,
-                    materialPrice: material.price,
-                  })
-                }}
-                p="0"
-                variant="ghost"
-                _icon={{
-                  as: Ionicons ,
-                  name: "pencil",
-                  color: "#0078d4"
-                }}
-                />
+
+              {
+                userRights.rights.taskMaterialsWrite &&
+                <IconButton
+                  onPress={() => {
+                    navigation.navigate('TaskAddMaterialEdit', {
+                      addingTask: true,
+                      materialId: material.id,
+                      materialDone: material.done,
+                      materialTitle: material.title,
+                      materialQuantity: material.quantity,
+                      materialPrice: material.price,
+                    })
+                  }}
+                  p="0"
+                  variant="ghost"
+                  _icon={{
+                    as: Ionicons ,
+                    name: "pencil",
+                    color: "#0078d4"
+                  }}
+                  />
+              }
             </Flex>
 
             <Flex direction="row" justify="space-between">
@@ -106,22 +111,26 @@ export default function TaskMaterial ( props ) {
         ))
       }
 
-      <Box marginTop="5" alignItems="center">
-        <IconButton
-          onPress={() => {navigation.navigate('MaterialAdd',
-            {
-              addingTask: true,
-              newMaterialOrder: materials.order,
-            })}}
-          variant="solid"
-          width="50px"
-          borderRadius="20"
-          _icon={{
-            as: AntDesign,
-            name: "plus",
-          }}
-          />
-      </Box>
+
+      {
+        userRights.rights.taskMaterialsWrite &&
+        <Box marginTop="5" alignItems="center">
+          <IconButton
+            onPress={() => {navigation.navigate('TaskAddMaterialAdd',
+              {
+                addingTask: true,
+                newMaterialOrder: materials.order,
+              })}}
+            variant="solid"
+            width="50px"
+            borderRadius="20"
+            _icon={{
+              as: AntDesign,
+              name: "plus",
+            }}
+            />
+        </Box>
+      }
 
     </Box>
   );

@@ -5,6 +5,7 @@ import { Select, Heading, Text, FormControl, Modal, Flex, Box, Stack, IconButton
 
 export default function ProjectSelectModal( props ) {
   const {
+    navigation,
     projects,
     onSubmit,
     loading,
@@ -47,6 +48,7 @@ export default function ProjectSelectModal( props ) {
                 variant="ghost"
                 onPress={() => {
                   setShowModal(false);
+                  navigation.goBack();
                 }}
                 >
                 Cancel

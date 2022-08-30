@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
-import { Platform } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon, TextArea } from "native-base";
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 
 import {
   toSelArr,
 } from '../../../helperFunctions/select';
+import RenderHtml from 'react-native-render-html';
 
 import * as DocumentPicker from 'expo-document-picker';
 import localStorage from 'react-native-sync-localstorage';
@@ -40,7 +41,7 @@ export default function TaskInfo ( props ) {
     removeAttachment,
   } = props;
 
-  const client = useApolloClient();
+  const { width } = useWindowDimensions();
 
   const [ editDescription, setEditDescription ] = useState(false);
   const [ tagsOpen, setTagsOpen ] = useState(false);
@@ -59,8 +60,6 @@ export default function TaskInfo ( props ) {
       <Box marginTop="5">
         <Flex direction="row" justify="space-between">
           <Heading variant="list" size="sm">Description</Heading>
-          {
-            !addingTask &&
             <IconButton
               onPress={() => {
                 if (editDescription){
@@ -84,11 +83,10 @@ export default function TaskInfo ( props ) {
                 }
               }
               />
-          }
         </Flex>
         <Box bgColor="white" p="1">
           {
-            (addingTask || editDescription) &&
+            editDescription &&
             <TextArea
               value={description}
               onChangeText={(text) => {
@@ -97,9 +95,19 @@ export default function TaskInfo ( props ) {
               />
           }
           {
-            !addingTask &&
             !editDescription &&
-            <Text>{description.length > 0 ? description : "No description"}</Text>
+            description.length > 0 &&
+              <RenderHtml
+                contentWidth={width}
+                source={{
+                  html: `${description}`
+                }}
+              />
+          }
+          {
+            !editDescription &&
+            description.length === 0 &&
+            <Text>No description</Text>
           }
         </Box>
       </Box>
@@ -140,7 +148,7 @@ export default function TaskInfo ( props ) {
           p="0"
           justifyContent="flex-start"
           onPress={() => {
-            if (tagsOpen && !addingTask){
+            if (tagsOpen){
               onSubmit({ tags: tags.map((tag) => tag.id ) });
             }
             setTagsOpen(!tagsOpen);
@@ -158,7 +166,13 @@ export default function TaskInfo ( props ) {
               {
                 //// TODO: download attachment
               }
-              <Button key={attachment.id} variant="ghost" m="0" p="0" justifyContent="flex-start">
+              <Button
+                key={attachment.id} variant="ghost"
+                m="0"
+                p="0"
+                justifyContent="flex-start"
+                onPress={() => {}}
+                >
                 {attachment.filename}
               </Button>
               <IconButton

@@ -213,7 +213,7 @@ export default function TaskInfo ( props ) {
         <Heading variant="list" size="sm">Attachments</Heading>
         {
           attachments.map((attachment, index) => (
-            <Flex>
+            <Flex key={attachment.id}>
               <Button key={attachment.id} variant="ghost" m="0" p="0" justifyContent="flex-start">
                 {attachment.filename}
               </Button>

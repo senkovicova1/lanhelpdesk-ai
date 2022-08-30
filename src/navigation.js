@@ -12,13 +12,17 @@ import { FontAwesome, FontAwesome5, AntDesign  } from '@expo/vector-icons';
 
 import Drawer from './drawer';
 import Login from './login';
-import TaskDetail from './tasks/taskForm/editContainer';
+import TaskDetail from './tasks/taskFormREFACTORED/edit';
 import TaskAdd from './tasks/taskFormREFACTORED/add';
-import CommentAdd from './tasks/taskForm/components/comments/addForm';
-import SubtaskAdd from './tasks/taskFormREFACTORED/addComponents/subtasks/addForm';
-import SubtaskEdit from './tasks/taskFormREFACTORED/addComponents/subtasks/editForm';
-import MaterialAdd from './tasks/taskFormREFACTORED/addComponents/materials/addForm';
-import MaterialEdit from './tasks/taskFormREFACTORED/addComponents/materials/editForm';
+import CommentAdd from './tasks/taskFormREFACTORED/components/comments/addForm';
+import TaskAddSubtaskAdd from './tasks/taskFormREFACTORED/addComponents/subtasks/addForm';
+import TaskAddSubtaskEdit from './tasks/taskFormREFACTORED/addComponents/subtasks/editForm';
+import TaskAddMaterialAdd from './tasks/taskFormREFACTORED/addComponents/materials/addForm';
+import TaskAddMaterialEdit from './tasks/taskFormREFACTORED/addComponents/materials/editForm';
+import TaskEditSubtaskAdd from './tasks/taskFormREFACTORED/components/subtasks/addForm';
+import TaskEditSubtaskEdit from './tasks/taskFormREFACTORED/components/subtasks/editForm';
+import TaskEditMaterialAdd from './tasks/taskFormREFACTORED/components/materials/addForm';
+import TaskEditMaterialEdit from './tasks/taskFormREFACTORED/components/materials/editForm';
 import Settings from './settings';
 import UserList from './userList';
 import UserAdd from './userAdd';
@@ -110,8 +114,8 @@ export default function Navigation (props) {
         })}
       />
       <Stack.Screen
-        name="SubtaskAdd"
-        component={SubtaskAdd}
+        name="TaskAddSubtaskAdd"
+        component={TaskAddSubtaskAdd}
         options={{
           headerTitle: (props) => <Heading variant="main">Add a subtask</Heading>,
           headerStyle: {
@@ -121,8 +125,8 @@ export default function Navigation (props) {
         }}
       />
       <Stack.Screen
-        name="SubtaskEdit"
-        component={SubtaskEdit}
+        name="TaskAddSubtaskEdit"
+        component={TaskAddSubtaskEdit}
         options={{
           headerTitle: (props) => <Heading variant="main">Edit a subtask</Heading>,
           headerStyle: {
@@ -132,8 +136,8 @@ export default function Navigation (props) {
         }}
       />
       <Stack.Screen
-        name="MaterialAdd"
-        component={MaterialAdd}
+        name="TaskAddMaterialAdd"
+        component={TaskAddMaterialAdd}
         options={{
           headerTitle: (props) => <Heading variant="main">Add a material</Heading>,
           headerStyle: {
@@ -143,8 +147,8 @@ export default function Navigation (props) {
         }}
       />
       <Stack.Screen
-        name="MaterialEdit"
-        component={MaterialEdit}
+        name="TaskAddMaterialEdit"
+        component={TaskAddMaterialEdit}
         options={{
           headerTitle: (props) => <Heading variant="main">Edit a material</Heading>,
           headerStyle: {
@@ -153,6 +157,52 @@ export default function Navigation (props) {
           headerTintColor: "white"
         }}
       />
+
+      <Stack.Screen
+        name="TaskEditSubtaskAdd"
+        component={TaskEditSubtaskAdd}
+        options={{
+          headerTitle: (props) => <Heading variant="main">Add a subtask</Heading>,
+          headerStyle: {
+            backgroundColor: '#0078d4',
+          },
+          headerTintColor: "white"
+        }}
+      />
+      <Stack.Screen
+        name="TaskEditSubtaskEdit"
+        component={TaskEditSubtaskEdit}
+        options={{
+          headerTitle: (props) => <Heading variant="main">Edit a subtask</Heading>,
+          headerStyle: {
+            backgroundColor: '#0078d4',
+          },
+          headerTintColor: "white"
+        }}
+      />
+      <Stack.Screen
+        name="TaskEditMaterialAdd"
+        component={TaskEditMaterialAdd}
+        options={{
+          headerTitle: (props) => <Heading variant="main">Add a material</Heading>,
+          headerStyle: {
+            backgroundColor: '#0078d4',
+          },
+          headerTintColor: "white"
+        }}
+      />
+      <Stack.Screen
+        name="TaskEditMaterialEdit"
+        component={TaskEditMaterialEdit}
+        options={{
+          headerTitle: (props) => <Heading variant="main">Edit a material</Heading>,
+          headerStyle: {
+            backgroundColor: '#0078d4',
+          },
+          headerTintColor: "white"
+        }}
+      />
+
       <Stack.Screen
         name="Settings"
         component={Settings}

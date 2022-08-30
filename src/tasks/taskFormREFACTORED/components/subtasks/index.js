@@ -14,6 +14,7 @@ export default function TaskSubtasks ( props ) {
     taskId,
     subtasks,
     setSaving,
+    userRights,
   } = props;
 
   return (
@@ -33,28 +34,31 @@ export default function TaskSubtasks ( props ) {
                 }
                 <Heading variant="list" size="sm">{subtask.title}</Heading>
               </Flex>
-              <IconButton
-                onPress={() => {
-                  navigation.navigate('SubtaskEdit',
-                    {
-                      users: props.users,
-                      taskId,
-                      subtaskId: subtask.id,
-                      subtaskDone: subtask.done,
-                      subtaskTitle: subtask.title,
-                      subtaskAssignedTo: subtask.assignedTo,
-                      subtaskQuantity: subtask.quantity,
-                    }
-                  )
-                }}
-                p="0"
-                variant="ghost"
-                _icon={{
-                  as: Ionicons ,
-                  name: "pencil",
-                  color: "#0078d4"
-                }}
-                />
+              {
+                userRights.rights.taskWorksWrite &&
+                <IconButton
+                  onPress={() => {
+                    navigation.navigate('TaskEditSubtaskEdit',
+                      {
+                        users: props.users,
+                        taskId,
+                        subtaskId: subtask.id,
+                        subtaskDone: subtask.done,
+                        subtaskTitle: subtask.title,
+                        subtaskAssignedTo: subtask.assignedTo,
+                        subtaskQuantity: subtask.quantity,
+                      }
+                    )
+                  }}
+                  p="0"
+                  variant="ghost"
+                  _icon={{
+                    as: Ionicons ,
+                    name: "pencil",
+                    color: "#0078d4"
+                  }}
+                  />
+              }
             </Flex>
 
             <Flex direction="row" justify="space-between">
@@ -67,26 +71,29 @@ export default function TaskSubtasks ( props ) {
         ))
       }
 
-      <Box marginTop="5" alignItems="center">
-        <IconButton
-          onPress={() => {
-            navigation.navigate('SubtaskAdd',
-              {
-                users: props.users,
-                newSubtaskOrder: subtasks.length,
-                taskId,
-              }
-            )
-          }}
-          variant="solid"
-          width="50px"
-          borderRadius="20"
-          _icon={{
-            as: AntDesign,
-            name: "plus",
-          }}
-          />
-      </Box>
+      {
+        userRights.rights.taskWorksWrite &&
+        <Box marginTop="5" alignItems="center">
+          <IconButton
+            onPress={() => {
+              navigation.navigate('TaskEditSubtaskAdd',
+                {
+                  users: props.users,
+                  newSubtaskOrder: subtasks.length,
+                  taskId,
+                }
+              )
+            }}
+            variant="solid"
+            width="50px"
+            borderRadius="20"
+            _icon={{
+              as: AntDesign,
+              name: "plus",
+            }}
+            />
+        </Box>
+      }
     </Box>
   );
 }

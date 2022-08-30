@@ -19,12 +19,14 @@ import {
 export default function TaskAttributes ( props ) {
 
   const {
+    currentUser,
+    projectAttributes,
+    userRights,
+    invoiced,
     navigation,
-    addingTask,
     taskId,
     task,
-    currentUser,
-    onSubmit,
+    autoUpdateTask,
     updateTask,
     accessRights,
     companies,
@@ -32,6 +34,7 @@ export default function TaskAttributes ( props ) {
     projects,
     client,
     setSaving,
+    project,
     status,
     setStatus,
     setImportant,
@@ -43,6 +46,7 @@ export default function TaskAttributes ( props ) {
     setRequester,
     company,
     setCompany,
+    taskAssignedTos,
     assignedTo,
     setAssignedTo,
     deadline,
@@ -56,130 +60,71 @@ export default function TaskAttributes ( props ) {
   const [ deadlinePickerOpen, setDeadlinePickerOpen ] = useState(false);
   const [ editOpen, setEditOpen ] = useState(false);
   const [ attributeChanges, setAttributeChanges ] = useState({});
-  const [ attributeChangesDisplayValues, setAttributeChangesDisplayValues ] = useState({});
 
-  const project = task.project === null ? null : projects.find( ( project ) => project.id === task.project.id );
   const availableProjects = projects.filter( ( project ) => project.right.taskProjectWrite );
   const requesters = ( project && project.project.lockedRequester ? toSelArr( project.usersWithRights.map( ( userWithRights ) => userWithRights.user ), 'fullName' ) : users );
 
   React.useEffect(() => {
-    setAssignedTos(project ? users.filter( ( user ) => project.usersWithRights.some( ( userData ) => userData.assignable && userData.user.id === user.id ) ) : []);
-  }, [project]);
+    setAssignedTos(taskAssignedTos);
+  }, [taskAssignedTos]);
 
   const changeStatus = ( status ) => {
     if ( status.action === 'PendingDate' ) {
-      if (addingTask){
-        setStatus( status );
-        setPendingDate( moment()
-          .add( 1, 'days' ) );
-        setPotentialPendingStatus( status );
-        setPendingChangable( true );
-      } else {
-        const newAttributeChanges = {
-          ...attributeChanges,
-          status: status.id,
-          pendingDate: moment()
-            .add( 1, 'days' )
-            .valueOf()
-            .toString(),
-          pendingChangable: true,
-        };
-        setAttributeChanges(newAttributeChanges);
-        const newAttributeChangesDisplayValues = {
-          ...attributeChangesDisplayValues,
-          status: status.label,
-        };
-        setAttributeChangesDisplayValues(newAttributeChangesDisplayValues);
-      }
-    } else if ( status.action === 'CloseDate' || status.action === 'Invalid' ) {
-      if (addingTask){
-        setStatus( status );
-        setImportant( false );
-        setCloseDate( moment() );
-      } else {
-        const newAttributeChanges = {
-          ...attributeChanges,
-          status: status.id,
-          closeDate: moment()
+      const newAttributeChanges = {
+        ...attributeChanges,
+        status: status.id,
+        statusColor: status.color,
+        pendingDate: moment()
+          .add( 1, 'days' )
           .valueOf()
           .toString(),
-          important: false
-        };
-        setAttributeChanges(newAttributeChanges);
-        const newAttributeChangesDisplayValues = {
-          ...attributeChangesDisplayValues,
-          status: status.label,
-        };
-        setAttributeChangesDisplayValues(newAttributeChangesDisplayValues);
-      }
+        pendingChangable: true,
+      };
+      setAttributeChanges(newAttributeChanges);
+    } else if ( status.action === 'CloseDate' || status.action === 'Invalid' ) {
+      const newAttributeChanges = {
+        ...attributeChanges,
+        status: status.id,
+        statusColor: status.color,
+        closeDate: moment()
+        .valueOf()
+        .toString(),
+        important: false
+      };
+      setAttributeChanges(newAttributeChanges);
     } else {
-      if (addingTask){
-        setStatus( status );
-      } else {
-        const newAttributeChanges = {
-          ...attributeChanges,
-          status: status.id,
-        };
-        setAttributeChanges(newAttributeChanges);
-        const newAttributeChangesDisplayValues = {
-          ...attributeChangesDisplayValues,
-          status: status.label,
-        };
-        setAttributeChangesDisplayValues(newAttributeChangesDisplayValues);
-      }
+      const newAttributeChanges = {
+        ...attributeChanges,
+        status: status.id,
+        statusColor: status.color,
+      };
+      setAttributeChanges(newAttributeChanges);
     }
+
   }
 
   const changeProject = ( project ) => {
-    if (addingTask){
-      setProject(project);
-      // TODO: prompt change of other stuff in task
-    } else {
-      const newAttributeChanges = {
-        ...attributeChanges,
-        project: project.id,
-      };
-      setAttributeChanges(newAttributeChanges);
-      const newAttributeChangesDisplayValues = {
-        ...attributeChangesDisplayValues,
-        project: project.label,
-      };
-      setAttributeChangesDisplayValues(newAttributeChangesDisplayValues);
-    }
+    const newAttributeChanges = {
+      ...attributeChanges,
+      project: project.id,
+    };
+    setAttributeChanges(newAttributeChanges);
   }
 
   const changeRequester = ( requester ) => {
-    if (addingTask){
-      setRequester( requester );
-    } else {
-      const newAttributeChanges = {
-        ...attributeChanges,
-        requester: requester.id
-      };
-      setAttributeChanges(newAttributeChanges);
-      const newAttributeChangesDisplayValues = {
-        ...attributeChangesDisplayValues,
-        requester: requester.label,
-      };
-      setAttributeChangesDisplayValues(newAttributeChangesDisplayValues);
-    }
+    const newAttributeChanges = {
+      ...attributeChanges,
+      requester: requester.id
+    };
+    setAttributeChanges(newAttributeChanges);
   }
 
   const changeCompany = ( company ) => {
-    if (addingTask){
-      setCompany( company );
-    } else {
-      const newAttributeChanges = {
-        ...attributeChanges,
-        company: company.id,
-      };
-      setAttributeChanges(newAttributeChanges);
-      const newAttributeChangesDisplayValues = {
-        ...attributeChangesDisplayValues,
-        company: company.label,
-      };
-      setAttributeChangesDisplayValues(newAttributeChangesDisplayValues);
-    }
+    const newAttributeChanges = {
+      ...attributeChanges,
+      company: company.id,
+    };
+    setAttributeChanges(newAttributeChanges);
   }
 
   // TODO: write changes to state?
@@ -187,12 +132,13 @@ export default function TaskAttributes ( props ) {
     const projectId = attributeChanges.project;
     let newAttributeChanges = {...attributeChanges};
     delete newAttributeChanges.project;
-    onSubmit(newAttributeChanges);
+    delete newAttributeChanges.statusColor;
+    autoUpdateTask(newAttributeChanges);
 
     if (projectId){
       let variables = {
         id: taskId,
-        fromInvoice: false,
+        fromInvoice: undefined,
         project: projectId,
       };
       updateTask( {
@@ -204,49 +150,64 @@ export default function TaskAttributes ( props ) {
     }
 
     setAttributeChanges({});
-    setAttributeChangesDisplayValues({});
   }
 
   return (
     <Box>
       {/*Status*/}
-      <Box marginTop="5">
-        <Heading variant="list" size="sm">Status</Heading>
-        {
-          (!addingTask && !editOpen) &&
-          <Text>{attributeChangesDisplayValues.status ? attributeChangesDisplayValues.status : status.label}</Text>
-        }
-        {
-          (addingTask || editOpen) &&
-          <Select
-            defaultValue={status.id}
-            bgColor={status.color}
-            onValueChange={itemValue => {
-              changeStatus(toSelArr(project.project.statuses).filter((status)=>status.action !== 'Invoiced').find((status) => status.id === itemValue));
-            }}
-            >
-            {
-              (project ? toSelArr(project.project.statuses).filter((status)=>status.action !== 'Invoiced') : []).map((status) => (
-                <Select.Item
-                  key={status.id}
-                  label={status.label}
-                  value={status.id}
-                />
-              ))
-            }
-          </Select>
-        }
-      </Box>
+      {
+        userRights.attributeRights.status.view &&
+        <Box marginTop="5">
+          <Heading variant="list" size="sm">Status</Heading>
+          {
+            (
+              !editOpen ||
+              projectAttributes.status.fixed ||
+              !userRights.attributeRights.status.edit ||
+              invoiced
+            ) &&
+            <Text>{status ? status.label : "None"}</Text>
+          }
+          {
+            editOpen &&
+            !projectAttributes.status.fixed && userRights.attributeRights.status.edit &&
+            !invoiced &&
+            <Select
+              defaultValue={status.id}
+              bgColor={attributeChanges.statusColor ? attributeChanges.statusColor : status.color}
+              onValueChange={itemValue => {
+                changeStatus(toSelArr(project.project.statuses).filter((status)=>status.action !== 'Invoiced').find((status) => status.id === itemValue));
+              }}
+              >
+              {
+                (project ? toSelArr(project.project.statuses).filter((status)=>status.action !== 'Invoiced') : []).map((status) => (
+                  <Select.Item
+                    key={status.id}
+                    label={status.label}
+                    value={status.id}
+                  />
+                ))
+              }
+            </Select>
+          }
+        </Box>
+      }
 
       {/*Project*/}
       <Box marginTop="5">
         <Heading variant="list" size="sm">Project</Heading>
         {
-          (!addingTask && !editOpen) &&
-          <Text>{attributeChangesDisplayValues.project ? attributeChangesDisplayValues.project : project.label}</Text>
+          (
+            !editOpen ||
+            !userRights.rights.taskProjectWrite ||
+            invoiced
+          ) &&
+          <Text>{project ? project.label : "None"}</Text>
         }
         {
-          (addingTask || editOpen) &&
+          editOpen &&
+          userRights.rights.taskProjectWrite &&
+          !invoiced &&
           <Select
             defaultValue={project.id}
             onValueChange={itemValue => {
@@ -267,70 +228,95 @@ export default function TaskAttributes ( props ) {
       </Box>
 
       {/*Requester*/}
-      <Box marginTop="5">
-        <Heading variant="list" size="sm">Requester</Heading>
-        {
-          (!addingTask && !editOpen) &&
-          <Text>{attributeChangesDisplayValues.requester ? attributeChangesDisplayValues.requester : requester.label}</Text>
-        }
-        {
-          (addingTask || editOpen) &&
-          <Select
-            defaultValue={requester.id}
-            onValueChange={itemValue => {
-              changeRequester(requesters.find((requester) => requester.id === itemValue));
-            }}
-            >
-            {
-              requesters.map((user) => (
-                <Select.Item
-                  key={user.id}
-                  label={user.label}
-                  value={user.id}
-                />
-              ))
-            }
-          </Select>
-        }
-      </Box>
-
-      {/*Company*/}
-      <Box marginTop="5">
-        <Heading variant="list" size="sm">Company</Heading>
-        {
-          (!addingTask && !editOpen) &&
-          <Text>{attributeChangesDisplayValues.company ? attributeChangesDisplayValues.company : company.label}</Text>
-        }
-        {
-          (addingTask || editOpen) &&
-          <Select
-            defaultValue={company.id}
-            onValueChange={itemValue => {
-              changeCompany(companies.find((company) => company.id === itemValue));
-            }}
-            >
-            {
-              companies.map((company) => (
-                <Select.Item
-                  key={company.id}
-                  label={company.label}
-                  value={company.id}
-                />
-              ))
-            }
-          </Select>
-        }
-      </Box>
-
-      {/*Assigned*/}
-      <Box marginTop="5">
-          <Heading variant="list" size="sm">Assigned</Heading>
+      { userRights.attributeRights.requester.view &&
+        <Box marginTop="5">
+          <Heading variant="list" size="sm">Requester</Heading>
           {
-            (!addingTask && !editOpen) &&
-            <Text>{attributeChangesDisplayValues.assignedTo ? attributeChangesDisplayValues.assignedTo : assignedTo.map((user) => user.label).join(', ')}</Text>
+            (
+              !editOpen ||
+              projectAttributes.requester.fixed ||
+              !userRights.attributeRights.requester.edit ||
+              invoiced
+             ) &&
+            <Text>{requester ? requester.label : "None"}</Text>
           }
           {
-            (addingTask || editOpen) &&
+            editOpen &&
+            !projectAttributes.requester.fixed && userRights.attributeRights.requester.edit && !invoiced &&
+            <Select
+              defaultValue={requester.id}
+              onValueChange={itemValue => {
+                changeRequester(requesters.find((requester) => requester.id === itemValue));
+              }}
+              >
+              {
+                requesters.map((user) => (
+                  <Select.Item
+                    key={user.id}
+                    label={user.label}
+                    value={user.id}
+                  />
+                ))
+              }
+            </Select>
+          }
+        </Box>
+      }
+
+      {/*Company*/}
+      { userRights.attributeRights.company.view &&
+        <Box marginTop="5">
+          <Heading variant="list" size="sm">Company</Heading>
+          {
+            (
+              !editOpen ||
+              projectAttributes.company.fixed || !userRights.attributeRights.company.edit || invoiced
+            ) &&
+            <Text>{company ? company.label : "None"}</Text>
+          }
+          {
+            editOpen &&
+            !projectAttributes.company.fixed &&
+            userRights.attributeRights.company.edit &&
+            !invoiced &&
+            <Select
+              defaultValue={company.id}
+              onValueChange={itemValue => {
+                changeCompany(companies.find((company) => company.id === itemValue));
+              }}
+              >
+              {
+                companies.map((company) => (
+                  <Select.Item
+                    key={company.id}
+                    label={company.label}
+                    value={company.id}
+                  />
+                ))
+              }
+            </Select>
+          }
+        </Box>
+      }
+
+      {/*Assigned*/}
+      { userRights.attributeRights.assigned.view &&
+        <Box marginTop="5">
+          <Heading variant="list" size="sm">Assigned</Heading>
+          {
+            (
+              !editOpen ||
+              projectAttributes.assigned.fixed ||
+              !userRights.attributeRights.assigned.edit ||
+              invoiced
+            ) &&
+            <Text>{assignedTo.length > 0 ? assignedTo.map((user) => user.label).join(', ') : "None"}</Text>
+          }
+          {
+            editOpen &&
+            !projectAttributes.assigned.fixed &&
+            userRights.attributeRights.assigned.edit &&
+            !invoiced &&
             <DropDownPicker
               multiple={true}
               listMode="SCROLLVIEW"
@@ -346,86 +332,87 @@ export default function TaskAttributes ( props ) {
                   assignedTo: items.map((user) => user.value)
                 };
                 setAttributeChanges(newAttributeChanges);
-                const newAttributeChangesDisplayValues = {
-                  ...attributeChangesDisplayValues,
-                  assignedTo: items.map((user) => user.label).join(", "),
-                };
-                setAttributeChangesDisplayValues(newAttributeChangesDisplayValues);
               }}
               setValue={setAssignedTo}
               setItems={setAssignedTos}
             />
           }
-      </Box>
+        </Box>
+      }
 
       {/*Deadline*/}
+      { userRights.attributeRights.deadline.view &&
       <Box marginTop="5">
         <Heading variant="list" size="sm">Deadline</Heading>
         {
-          (!addingTask && !editOpen) &&
+          (
+            !editOpen ||
+            projectAttributes.deadline.fixed ||
+            !userRights.attributeRights.deadline.edit ||
+            invoiced
+          ) &&
           <Text>{deadline ? timestampToString(deadline) : "No deadline"}</Text>
         }
         {
-          (addingTask || editOpen) &&
-          <Box>
-            <Pressable
-              onPress={() => {
-                setDeadlinePickerOpen(!deadlinePickerOpen);
-              }}
-              >
-              <Box height="46px" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#CCC" justifyContent="center" pl="10px">
-                <Text fontSize="xs">
-                  {deadline ? timestampToString(deadline) : "No deadline"}
-                </Text>
-              </Box>
-            </Pressable>
-            <DateTimePickerModal
-              isVisible={deadlinePickerOpen}
-              mode="datetime"
-              date={deadline ? new Date(parseInt(deadline)) : new Date()}
-              onConfirm={(e) => {
-                const newDeadline = new Date(e).getTime();
-                setDeadline(newDeadline);
+          editOpen &&
+          !projectAttributes.deadline.fixed &&
+          userRights.attributeRights.deadline.edit &&
+          !invoiced &&
+            <Box>
+              <Pressable
+                onPress={() => {
+                  setDeadlinePickerOpen(!deadlinePickerOpen);
+                }}
+                >
+                <Box height="46px" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#CCC" justifyContent="center" pl="10px">
+                  <Text fontSize="xs">
+                    {deadline ? timestampToString(deadline) : "No deadline"}
+                  </Text>
+                </Box>
+              </Pressable>
+              <DateTimePickerModal
+                isVisible={deadlinePickerOpen}
+                mode="datetime"
+                date={deadline ? new Date(parseInt(deadline)) : new Date()}
+                onConfirm={(e) => {
+                  const newDeadline = new Date(e).getTime();
+                  setDeadline(newDeadline);
 
-                const newAttributeChanges = {
-                  ...attributeChanges,
-                  deadline: newDeadline
-                };
-                setAttributeChanges(newAttributeChanges);
+                  const newAttributeChanges = {
+                    ...attributeChanges,
+                    deadline: newDeadline
+                  };
+                  setAttributeChanges(newAttributeChanges);
 
-                setDeadlinePickerOpen(false);
-              }}
-              onCancel={() => {
-                setDeadlinePickerOpen(false);
-              }}
-            />
-          </Box>
-        }
-      </Box>
+                  setDeadlinePickerOpen(false);
+                }}
+                onCancel={() => {
+                  setDeadlinePickerOpen(false);
+                }}
+              />
+            </Box>
+          }
+        </Box>
+      }
 
-      <Box marginTop="5">
-        <Heading variant="list" size="sm">Repeats</Heading>
-        <Text>No repeat</Text>
-      </Box>
-
+      {
       <CustomAttributes
         {...props}
         editOpen={editOpen}
         setEditOpen={setEditOpen}
         attributeChanges={attributeChanges}
         setAttributeChanges={setAttributeChanges}
-        attributeChangesDisplayValues={attributeChangesDisplayValues}
-        setAttributeChangesDisplayValues={setAttributeChangesDisplayValues}
         />
+      }
 
-      {
-        !addingTask &&
-        <Flex direction="row" justify="space-between" marginTop="5" marginBottom="10" alignItems="center">
-          {
-            editOpen &&
+      <Flex direction="row" justify="space-between" marginTop="5" marginBottom="10" alignItems="center">
+        {
+          editOpen &&
           <IconButton
             onPress={() => {
-              setEditOpen(!editOpen);
+              console.log("HEJ");
+              setAttributeChanges({});
+              setEditOpen(false);
             }}
             variant="solid"
             width="50px"
@@ -438,32 +425,32 @@ export default function TaskAttributes ( props ) {
             }
             />
         }
-          <IconButton
-            onPress={() => {
-              if (editOpen){
-                saveChanges();
-              }
-              setEditOpen(!editOpen);
-            }}
-            variant="solid"
-            width="50px"
-            borderRadius="20"
-            _icon={
-              editOpen ?
-              {
-                as: Ionicons ,
-                name: "save",
-                color: "white"
-              } :
-              {
-                as: Ionicons ,
-                name: "pencil",
-                color: "white"
-              }
+        <IconButton
+          onPress={() => {
+            console.log("YO");
+            if (editOpen){
+              saveChanges();
             }
-            />
-        </Flex>
-      }
+            setEditOpen(true);
+          }}
+          variant="solid"
+          width="50px"
+          borderRadius="20"
+          _icon={
+            editOpen ?
+            {
+              as: Ionicons ,
+              name: "save",
+              color: "white"
+            } :
+            {
+              as: Ionicons ,
+              name: "pencil",
+              color: "white"
+            }
+          }
+          />
+      </Flex>
 
     </Box>
   )

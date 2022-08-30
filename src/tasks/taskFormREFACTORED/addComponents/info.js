@@ -110,7 +110,7 @@ export default function TaskInfo ( props ) {
         <Heading variant="list" size="sm">Attachments</Heading>
         {
           attachments.map((attachment, index) => (
-            <Flex>
+            <Flex direction="row" justify="space-between">
               {
                 //// TODO: download attachment
               }
@@ -125,7 +125,7 @@ export default function TaskInfo ( props ) {
                 variant="ghost"
                 _icon={{
                     as: Ionicons ,
-                    name: "pencil",
+                    name: "trash",
                     color: "#0078d4"
                 }}
                 />

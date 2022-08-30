@@ -88,7 +88,6 @@ export default function EditContainer ( props ) {
   const [ deadline, setDeadline ] = React.useState( null );
 
   const [ pendingDate, setPendingDate ] = React.useState( null );
-  const [ potentialPendingStatus, setPotentialPendingStatus ] = React.useState( null );
   const [ pendingChangable, setPendingChangable ] = React.useState( null );
 
   const [ closeDate, setCloseDate ] = useState(false);

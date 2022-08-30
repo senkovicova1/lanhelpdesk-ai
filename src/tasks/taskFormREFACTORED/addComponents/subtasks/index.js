@@ -14,6 +14,7 @@ export default function TaskSubtasks ( props ) {
     subtasks,
     setSubtasks,
     assignedTo,
+    userRights,
   } = props;
 
   const getMinId = () => {
@@ -83,28 +84,32 @@ export default function TaskSubtasks ( props ) {
                 }
                 <Heading variant="list" size="sm">{subtask.title}</Heading>
               </Flex>
-              <IconButton
-                onPress={() => {
-                  navigation.navigate('SubtaskEdit',
-                    {
-                      addingTask: true,
-                      users: assignedTo,
-                      subtaskId: subtask.id,
-                      subtaskDone: subtask.done,
-                      subtaskTitle: subtask.title,
-                      subtaskAssignedTo: subtask.assignedTo,
-                      subtaskQuantity: subtask.quantity,
-                    }
-                  )
-                }}
-                p="0"
-                variant="ghost"
-                _icon={{
-                  as: Ionicons ,
-                  name: "pencil",
-                  color: "#0078d4"
-                }}
-                />
+
+              {
+                userRights.rights.taskWorksWrite &&
+                <IconButton
+                  onPress={() => {
+                    navigation.navigate('TaskAddSubtaskEdit',
+                      {
+                        addingTask: true,
+                        users: assignedTo,
+                        subtaskId: subtask.id,
+                        subtaskDone: subtask.done,
+                        subtaskTitle: subtask.title,
+                        subtaskAssignedTo: subtask.assignedTo,
+                        subtaskQuantity: subtask.quantity,
+                      }
+                    )
+                  }}
+                  p="0"
+                  variant="ghost"
+                  _icon={{
+                    as: Ionicons ,
+                    name: "pencil",
+                    color: "#0078d4"
+                  }}
+                  />
+              }
             </Flex>
 
             <Flex direction="row" justify="space-between">
@@ -124,9 +129,10 @@ export default function TaskSubtasks ( props ) {
         }
         {
           assignedTo.length > 0 &&
+          userRights.rights.taskWorksWrite &&
           <IconButton
             onPress={() => {
-              navigation.navigate('SubtaskAdd',
+              navigation.navigate('TaskAddSubtaskAdd',
                 {
                   users: assignedTo,
                   addingTask: true,

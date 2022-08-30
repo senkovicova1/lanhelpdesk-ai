@@ -87,6 +87,7 @@ export default function SubtaskAdd ( props ) {
     //    setSaving( false );
       } )
       .catch( ( err ) => {
+        // TODO: show error
         console.log(err);
       //  addLocalError( err );
     //    setSaving( false );

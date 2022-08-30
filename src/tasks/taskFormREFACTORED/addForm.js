@@ -13,6 +13,7 @@ export default function TaskForm ( props ) {
   const {
     title,
     setTitle,
+    userRights
   } = props;
 
   const [displayCard, setDisplayCard] = useState("info");
@@ -64,21 +65,24 @@ export default function TaskForm ( props ) {
             color: displayCard === "attributes" ? "white" : "#0078d4"
           }}
           />
-        <IconButton
-          onPress={() => {
-            setDisplayCard("subtasks");
+        {
+          userRights.rights.taskWorksRead &&
+          <IconButton
+            onPress={() => {
+              setDisplayCard("subtasks");
 
-            DeviceEventEmitter.removeAllListeners("event.addMaterial");
-            DeviceEventEmitter.removeAllListeners("event.editMaterial");
-            DeviceEventEmitter.removeAllListeners("event.removeMaterial");
-          }}
-          variant={displayCard === "subtasks" ? "solid" : "ghost"}
-          _icon={{
-            as: Entypo  ,
-            name: "list",
-            color: displayCard === "subtasks" ? "white" : "#0078d4"
-          }}
-          />
+              DeviceEventEmitter.removeAllListeners("event.addMaterial");
+              DeviceEventEmitter.removeAllListeners("event.editMaterial");
+              DeviceEventEmitter.removeAllListeners("event.removeMaterial");
+            }}
+            variant={displayCard === "subtasks" ? "solid" : "ghost"}
+            _icon={{
+              as: Entypo  ,
+              name: "list",
+              color: displayCard === "subtasks" ? "white" : "#0078d4"
+            }}
+            />
+        }
         <IconButton
           onPress={() => {
             setDisplayCard("materials")

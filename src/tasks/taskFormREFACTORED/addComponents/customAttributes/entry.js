@@ -20,6 +20,8 @@ export default function CustomAttribtueEntry( props ) {
     selectValues: []
   });
 
+  const [selectValues, setSelectValues] = useState([]);
+
   const [multiselectIsOpen, setMultiselectIsOpen] = useState(false);
 
   React.useEffect( () => {
@@ -28,136 +30,122 @@ export default function CustomAttribtueEntry( props ) {
         text: customAttribute.value.text,
         number: customAttribute.value.number,
         selectValues: customAttribute.value.selectValues,
-      })
+      });
+      setSelectValues(customAttribute.value.selectValues)
     }
   }, [ customAttribute ] );
 
   // TODO: refactor
-  const assignOnChangeFunction = () => {
+  const assignOnChangeFunction = (e) => {
     switch (customAttribute.type) {
       case "textarea":
-        return ((e) => {
-            setValue({
-              ...value,
-              text: e.target.value.replace("↵", "\n"),
-            });
-
-            const newCustomAttributes = customAttributes.map((item) => {
-              if (item.id === customAttribute.id){
-                return ({
-                  ...item,
-                  value: {
-                    ...value,
-                    text: e.target.value.replace("↵", "\n"),
-                  }
-                })
-              }
-              return item;
-            });
-
-            setCustomAttributes(newCustomAttributes);
+        setValue({
+          ...value,
+          text: e.replace("↵", "\n"),
         });
+
+        const newCustomAttributes = customAttributes.map((item) => {
+          if (item.id === customAttribute.id){
+            return ({
+              ...item,
+              value: {
+                ...value,
+                text: e.replace("↵", "\n"),
+              }
+            })
+          }
+          return item;
+        });
+
+        setCustomAttributes(newCustomAttributes);
         break;
       case "number":
-        return ( (e) => {
-            setValue({
-              ...value,
-              number: parseFloat(e.target.value),
-            });
-
-            const newCustomAttributes = customAttributes.map((item) => {
-              if (item.id === customAttribute.id){
-                return ({
-                  ...item,
-                  value: {
-                    ...value,
-                    number: parseFloat(e.target.value),
-                  }
-                })
-              }
-              return item;
-            });
-
-            setCustomAttributes(newCustomAttributes);
-
+        if (e.length > 0 && e !== "-" && isNaN(e)){
+          return;
+        }
+        setValue({
+          ...value,
+          number: e.length === 0 ? "" : parseFloat(e),
         });
+
+        const newCustomAttributes2 = customAttributes.map((item) => {
+          if (item.id === customAttribute.id){
+            return ({
+              ...item,
+              value: {
+                ...value,
+                number: e.length === 0 ? "" : parseFloat(e),
+              }
+            })
+          }
+          return item;
+        });
+
+        setCustomAttributes(newCustomAttributes2);
+
         break;
       case "select":
-      return ((e) => {
-        const newValue = [customAttribute.selectValues.find((selectValue) => selectValue.label === e)];
+        const newValue1 = [customAttribute.selectValues.find((selectValue) => selectValue.value === e)];
 
-          setValue({
-            ...value,
-            selectValues: newValue,
-          });
+        setValue({
+          ...value,
+          selectValues: newValue1,
+        });
 
-          const newCustomAttributes = customAttributes.map((item) => {
-            if (item.id === customAttribute.id){
-              return ({
-                ...item,
-                value: {
-                  ...value,
-                  selectValues: newValue,
-                }
-              })
-            }
-            return item;
-          });
+        const newCustomAttributes3 = customAttributes.map((item) => {
+          if (item.id === customAttribute.id){
+            return ({
+              ...item,
+              value: {
+                ...value,
+                selectValues: newValue1,
+              }
+            })
+          }
+          return item;
+        });
 
-          setCustomAttributes(newCustomAttributes);
-
-      });
-      break;
+        setCustomAttributes(newCustomAttributes3);
+        break;
       case "multiselect":
-        return ((e) => {
-          const newValue = [customAttribute.selectValues.find((selectValue) => selectValue.label === e)];
+        const newCustomAttributes4 = customAttributes.map((item) => {
+          if (item.id === customAttribute.id){
+            return ({
+              ...item,
+              value: {
+                ...value,
+                selectValues: [...e],
+              }
+            })
+          }
+          return item;
+        });
 
-          setValue({
-            ...value,
-            selectValues: newValue,
-          });
+        setCustomAttributes(newCustomAttributes4);
 
-          const newCustomAttributes = customAttributes.map((item) => {
-            if (item.id === customAttribute.id){
-              return ({
-                ...item,
-                value: {
-                  ...value,
-                  selectValues: newValue,
-                }
-              })
-            }
-            return item;
-          });
+        break;
+      default:
+        setValue({
+          ...value,
+          text: e,
+        });
 
-          setCustomAttributes(newCustomAttributes);
+        const newCustomAttributes5 = customAttributes.map((item) => {
+          if (item.id === customAttribute.id){
+            return ({
+              ...item,
+              value: {
+                ...value,
+                text: e,
+              }
+            })
+          }
+          return item;
 
         });
-      break;
-      default:
-      return ((e) => {
-          setValue({
-            ...value,
-            text: e.target.value,
-          });
 
-          const newCustomAttributes = customAttributes.map((item) => {
-            if (item.id === customAttribute.id){
-              return ({
-                ...item,
-                value: {
-                  ...value,
-                  text: e.target.value,
-                }
-              })
-            }
-            return item;
+        setCustomAttributes(newCustomAttributes5);
 
-          });
-
-          setCustomAttributes(newCustomAttributes);
-
-      });
     }
   }
 
@@ -194,8 +182,8 @@ export default function CustomAttribtueEntry( props ) {
                 keyboardType='numeric'
                 bgColor="white"
                 type="text"
-                value={value.number.toString()}
-                onChange={assignOnChangeFunction}
+                value={value.number + ""}
+                onChangeText={assignOnChangeFunction}
                 placeholder={placeholder}
               />
             </Stack>
@@ -203,48 +191,48 @@ export default function CustomAttribtueEntry( props ) {
         );
         break;
       case "select":
-      return (
-        <FormControl key={customAttribute.id} isDisabled={disabled}>
-          <Stack>
-            <Heading variant="list" size="sm">{label}</Heading>
-            <Select
-              selectedValue={value.selectValues.length > 0 ? value.selectValues[0].value : null}
-              onValueChange={assignOnChangeFunction}
-            >
-              {
-                items.map((option) => (
-                  <Select.Item
-                    key={option.value}
-                    label={option.label}
-                    value={option.value}
-                  />
-                ))
-              }
-            </Select>
-          </Stack>
-        </FormControl>
-      )
-      break;
+        return (
+          <FormControl key={customAttribute.id} isDisabled={disabled}>
+            <Stack>
+              <Heading variant="list" size="sm">{label}</Heading>
+              <Select
+                selectedValue={value.selectValues.length > 0 ? value.selectValues[0].value : null}
+                onValueChange={assignOnChangeFunction}
+              >
+                {
+                  items.map((option) => (
+                    <Select.Item
+                      key={option.value}
+                      label={option.label}
+                      value={option.value}
+                    />
+                  ))
+                }
+              </Select>
+            </Stack>
+          </FormControl>
+        )
+        break;
       case "multiselect":
-      return (
-        <FormControl key={customAttribute.id} isDisabled={disabled}>
-          <Stack>
-            <Heading variant="list" size="sm">{label}</Heading>
-              <DropDownPicker
-                multiple={true}
-                listMode="SCROLLVIEW"
-                mode="BADGE"
-                value={value.selectValues.map((value) => value.value)}
-                setValue={setValue}
-                items={items}
-                setItems={setCustomAttributes}
-                open={multiselectIsOpen}
-                setOpen={setMultiselectIsOpen}
-                onSelectItem={assignOnChangeFunction}
-              />
-          </Stack>
-        </FormControl>
-      )
+        return (
+          <FormControl key={customAttribute.id} isDisabled={disabled}>
+            <Stack>
+              <Heading variant="list" size="sm">{label}</Heading>
+                <DropDownPicker
+                  multiple={true}
+                  listMode="SCROLLVIEW"
+                  mode="BADGE"
+                  value={selectValues.map((value) => value.value)}
+                  setValue={setSelectValues}
+                  items={items}
+                  setItems={(e) => {}}
+                  open={multiselectIsOpen}
+                  setOpen={setMultiselectIsOpen}
+                  onSelectItem={assignOnChangeFunction}
+                />
+            </Stack>
+          </FormControl>
+        )
       break;
       default:
       return (
@@ -254,6 +242,7 @@ export default function CustomAttribtueEntry( props ) {
             <Input
               value={value.text}
               type="text"
+              bgColor="white"
               onChangeText={assignOnChangeFunction}
               placeholder={placeholder}
               />

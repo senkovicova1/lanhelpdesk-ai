@@ -21,8 +21,10 @@ export default function CustomAttribtueEntry( props ) {
   const [value, setValue] = useState({
     text: "",
     number: "",
-    selectValues: [] //iba item.value, nie cely object item
+    selectValues: []
   });
+
+  const [selectValues, setSelectValues] = useState([]);
 
   const [multiselectIsOpen, setMultiselectIsOpen] = useState(false);
 
@@ -32,336 +34,131 @@ export default function CustomAttribtueEntry( props ) {
         text: customAttribute.value.text,
         number: customAttribute.value.number,
         selectValues: customAttribute.value.selectValues,
-      })
+      });
+      setSelectValues(customAttribute.value.selectValues)
     }
   }, [ customAttribute ] );
 
   // TODO: refactor
-  const assignOnChangeFunction = () => {
+  const assignOnChangeFunction = (e) => {
     switch (customAttribute.type) {
       case "textarea":
-        return ((e) => {
-          if (addingTask){
-            setValue({
-              ...value,
-              text: e.target.value.replace("↵", "\n"),
-            });
-
-            let newCustomAttributes = customAttributes.map((item) => {
-              if (item.id === customAttribute.id){
-                return ({
-                  ...item,
-                  value: {
-                    ...value,
-                    text: e.target.value.replace("↵", "\n"),
-                  }
-                })
+        const newCustomAttributes1 = customAttributes.map((item) => {
+          if (item.id === customAttribute.id){
+            return ({
+              ...item,
+              value: {
+                ...value,
+                text: e.replace("↵", "\n"),
               }
-              return item;
-            });
-
-            setCustomAttributes(newCustomAttributes);
+            })
           } else {
-
-            let newCustomAttributes = customAttributes.map((item) => {
-              if (item.id === customAttribute.id){
-                return ({
-                  ...item,
-                  value: {
-                    ...value,
-                    text: e.target.value.replace("↵", "\n"),
-                  }
-                })
-              } else {
-                const changedCustomAttribute = attributeChanges.customAttributes ? attributeChanges.customAttributes.find((change) => change.customAttribute === item.id ) : null;
-                if (changedCustomAttribute){
-                  return {
-                    ...item,
-                    ...changedCustomAttribute
-                  };
-                } else {
-                  return item;
-                }
-              }
-            });
-
-            const newAttributeChanges = {
-              ...attributeChanges,
-              customAttributes: newCustomAttributes.map((item) => ({
-                text: item.value.text,
-                number: item.value.number,
-                selectValues: item.value.selectValues.map((value) => value.id).filter((value) => value !== null),
-                customAttribute: item.id,
-              })),
-            };
-            setAttributeChanges(newAttributeChanges);
-            const newAttributeChangesDisplayValues = {
-              customAttributes: newCustomAttributes.map((item) => {
-                if (['select', 'multiselect'].includes(item.type)){
-                  return item.value.selectValues.map((value) => value.label).join(", ");
-                }
-                if (item.type === "number"){
-                  return item.value.number;
-                }
-                return item.value.text;
-              }),
+            const changedCustomAttribute = attributeChanges.customAttributes ? attributeChanges.customAttributes.find((change) => change.customAttribute === item.id ) : null;
+            if (changedCustomAttribute){
+              return {
+                ...item,
+                ...changedCustomAttribute
+              };
+            } else {
+              return item;
             }
-            setAttributeChangesDisplayValues(newAttributeChangesDisplayValues);
           }
         });
+
+        const newAttributeChanges1 = {
+          ...attributeChanges,
+          customAttributes: newCustomAttributes1.map((item) => ({
+            text: item.value.text,
+            number: item.value.number,
+            selectValues: item.value.selectValues.map((value) => value.id).filter((value) => value !== null),
+            customAttribute: item.id,
+          })),
+        };
+        setAttributeChanges(newAttributeChanges1);
         break;
       case "number":
-        return ( (e) => {
-          if (addingTask){
-            setValue({
-              ...value,
-              number: parseFloat(e.target.value),
-            });
+        if (e.length > 0 && e !== "-" && isNaN(e)){
+          return;
+        }
 
-            let newCustomAttributes = customAttributes.map((item) => {
-              if (item.id === customAttribute.id){
-                return ({
-                  ...item,
-                  value: {
-                    ...value,
-                    number: parseFloat(e.target.value),
-                  }
-                })
+        const newCustomAttributes2 = customAttributes.map((item) => {
+          if (item.id === customAttribute.id){
+            return ({
+              ...item,
+              value: {
+                ...value,
+                number: e.length === 0 ? "" : parseFloat(e),
               }
-                return item;
-              }
-            });
-
-            setCustomAttributes(newCustomAttributes);
+            })
           } else {
-
-            let newCustomAttributes = customAttributes.map((item) => {
-              if (item.id === customAttribute.id){
-                return ({
-                  ...item,
-                  value: {
-                    ...value,
-                    number: parseFloat(e.target.value),
-                  }
-                })
-              } else {
-                const changedCustomAttribute = attributeChanges.customAttributes ? attributeChanges.customAttributes.find((change) => change.customAttribute === item.id ) : null;
-                if (changedCustomAttribute){
-                  return {
-                    ...item,
-                    ...changedCustomAttribute
-                  };
-                } else {
-                  return item;
-                }
-              }
-            });
-
-            const newAttributeChanges = {
-              ...attributeChanges,
-              customAttributes: newCustomAttributes.map((item) => ({
-                text: item.value.text,
-                number: item.value.number,
-                selectValues: item.value.selectValues.map((value) => value.id).filter((value) => value !== null),
-                customAttribute: item.id,
-              })),
-            };
-            setAttributeChanges(newAttributeChanges);
-            const newAttributeChangesDisplayValues = {
-              customAttributes: newCustomAttributes.map((item) => {
-                if (['select', 'multiselect'].includes(item.type)){
-                  return item.value.selectValues.map((value) => value.label).join(", ");
-                }
-                if (item.type === "number"){
-                  return item.value.number;
-                }
-                return item.value.text;
-              }),
+            const changedCustomAttribute = attributeChanges.customAttributes ? attributeChanges.customAttributes.find((change) => change.customAttribute === item.id ) : null;
+            if (changedCustomAttribute){
+              return {
+                ...item,
+                ...changedCustomAttribute
+              };
+            } else {
+              return item;
             }
-            setAttributeChangesDisplayValues(newAttributeChangesDisplayValues);
           }
         });
+
+        const newAttributeChanges2 = {
+          ...attributeChanges,
+          customAttributes: newCustomAttributes2.map((item) => ({
+            text: item.value.text,
+            number: item.value.number,
+            selectValues: item.value.selectValues.map((value) => value.id).filter((value) => value !== null),
+            customAttribute: item.id,
+          })),
+        };
+        setAttributeChanges(newAttributeChanges2);
+
         break;
       case "select":
-      return ((e) => {
-        const newValue = [customAttribute.selectValues.find((selectValue) => selectValue.label === e)];
-        if (addingTask){
+        const newValue1 = [customAttribute.selectValues.find((selectValue) => selectValue.value === e)];
 
-          setValue({
-            ...value,
-            selectValues: newValue,
-          });
-
-          let newCustomAttributes = customAttributes.map((item) => {
-            if (item.id === customAttribute.id){
-              return ({
+        const newCustomAttributes3 = customAttributes.map((item) => {
+          if (item.id === customAttribute.id){
+            return ({
+              ...item,
+              value: {
+                ...value,
+                selectValues: newValue1,
+              }
+            })
+          } else {
+            const changedCustomAttribute = attributeChanges.customAttributes ? attributeChanges.customAttributes.find((change) => change.customAttribute === item.id ) : null;
+            if (changedCustomAttribute){
+              return {
                 ...item,
-                value: {
-                  ...value,
-                  selectValues: newValue,
-                }
-              })
-            }
+                ...changedCustomAttribute
+              };
+            } else {
               return item;
             }
-          });
-
-          setCustomAttributes(newCustomAttributes);
-        } else {
-
-          let newCustomAttributes = customAttributes.map((item) => {
-            if (item.id === customAttribute.id){
-              return ({
-                ...item,
-                value: {
-                  ...value,
-                  selectValues: newValue,
-                }
-              })
-            } else {
-              const changedCustomAttribute = attributeChanges.customAttributes ? attributeChanges.customAttributes.find((change) => change.customAttribute === item.id ) : null;
-              if (changedCustomAttribute){
-                return {
-                  ...item,
-                  ...changedCustomAttribute
-                };
-              } else {
-                return item;
-              }
-            }
-          });
-
-          const newAttributeChanges = {
-            ...attributeChanges,
-            customAttributes: newCustomAttributes.map((item) => ({
-              text: item.value.text,
-              number: item.value.number,
-              selectValues: item.value.selectValues.map((value) => value.id).filter((value) => value !== null),
-              customAttribute: item.id,
-            })),
-          };
-          setAttributeChanges(newAttributeChanges);
-          const newAttributeChangesDisplayValues = {
-            customAttributes: newCustomAttributes.map((item) => {
-              if (['select', 'multiselect'].includes(item.type)){
-                return item.value.selectValues.map((value) => value.label).join(", ");
-              }
-              if (item.type === "number"){
-                return item.value.number;
-              }
-              return item.value.text;
-            }),
-          }
-          setAttributeChangesDisplayValues(newAttributeChangesDisplayValues);
-        }
-      });
-      break;
-      case "multiselect":
-        return ((e) => {
-          const newValue = [customAttribute.selectValues.find((selectValue) => selectValue.label === e)];
-          if (addingTask){
-
-            setValue({
-              ...value,
-              selectValues: newValue,
-            });
-
-            let newCustomAttributes = customAttributes.map((item) => {
-              if (item.id === customAttribute.id){
-                return ({
-                  ...item,
-                  value: {
-                    ...value,
-                    selectValues: newValue,
-                  }
-                })
-              }
-                return item;
-              }
-            });
-
-            setCustomAttributes(newCustomAttributes);
-          } else {
-
-            let newCustomAttributes = customAttributes.map((item) => {
-              if (item.id === customAttribute.id){
-                return ({
-                  ...item,
-                  value: {
-                    ...value,
-                    selectValues: newValue,
-                  }
-                })
-              } else {
-                const changedCustomAttribute = attributeChanges.customAttributes ? attributeChanges.customAttributes.find((change) => change.customAttribute === item.id ) : null;
-                if (changedCustomAttribute){
-                  return {
-                    ...item,
-                    ...changedCustomAttribute
-                  };
-                } else {
-                  return item;
-                }
-              }
-            });
-
-            const newAttributeChanges = {
-              ...attributeChanges,
-              customAttributes: newCustomAttributes.map((item) => ({
-                text: item.value.text,
-                number: item.value.number,
-                selectValues: item.value.selectValues.map((value) => value.id).filter((value) => value !== null),
-                customAttribute: item.id,
-              })),
-            };
-            setAttributeChanges(newAttributeChanges);
-            const newAttributeChangesDisplayValues = {
-              customAttributes: newCustomAttributes.map((item) => {
-                if (['select', 'multiselect'].includes(item.type)){
-                  return item.value.selectValues.map((value) => value.label).join(", ");
-                }
-                if (item.type === "number"){
-                  return item.value.number;
-                }
-                return item.value.text;
-              }),
-            }
-            setAttributeChangesDisplayValues(newAttributeChangesDisplayValues);
           }
         });
-      break;
-      default:
-      return ((e) => {
-        if (addingTask){
-          setValue({
-            ...value,
-            text: e.target.value,
-          });
 
-          let newCustomAttributes = customAttributes.map((item) => {
+        const newAttributeChanges3 = {
+          ...attributeChanges,
+          customAttributes: newCustomAttributes3.map((item) => ({
+            text: item.value.text,
+            number: item.value.number,
+            selectValues: item.value.selectValues.map((value) => value.id).filter((value) => value !== null),
+            customAttribute: item.id,
+          })),
+        };
+        setAttributeChanges(newAttributeChanges3);
+        break;
+      case "multiselect":
+          const newCustomAttributes4 = customAttributes.map((item) => {
             if (item.id === customAttribute.id){
               return ({
                 ...item,
                 value: {
                   ...value,
-                  text: e.target.value,
-                }
-              })
-            }
-              return item;
-            }
-          });
-
-          setCustomAttributes(newCustomAttributes);
-        } else {
-
-          let newCustomAttributes = customAttributes.map((item) => {
-            if (item.id === customAttribute.id){
-              return ({
-                ...item,
-                value: {
-                  ...value,
-                  text: e.target.value,
+                  selectValues: [...e],
                 }
               })
             } else {
@@ -377,79 +174,72 @@ export default function CustomAttribtueEntry( props ) {
             }
           });
 
-          const newAttributeChanges = {
+          const newAttributeChanges4 = {
             ...attributeChanges,
-            customAttributes: newCustomAttributes.map((item) => ({
+            customAttributes: newCustomAttributes4.map((item) => ({
               text: item.value.text,
               number: item.value.number,
               selectValues: item.value.selectValues.map((value) => value.id).filter((value) => value !== null),
               customAttribute: item.id,
             })),
           };
-          setAttributeChanges(newAttributeChanges);
-          const newAttributeChangesDisplayValues = {
-            customAttributes: newCustomAttributes.map((item) => {
-              if (['select', 'multiselect'].includes(item.type)){
-                return item.value.selectValues.map((value) => value.label).join(", ");
+          setAttributeChanges(newAttributeChanges4);
+      break;
+      default:
+          const newCustomAttributes5 = customAttributes.map((item) => {
+            if (item.id === customAttribute.id){
+              return ({
+                ...item,
+                value: {
+                  ...value,
+                  text: e,
+                }
+              })
+            } else {
+              const changedCustomAttribute = attributeChanges.customAttributes ? attributeChanges.customAttributes.find((change) => change.customAttribute === item.id ) : null;
+              if (changedCustomAttribute){
+                return {
+                  ...item,
+                  ...changedCustomAttribute
+                };
+              } else {
+                return item;
               }
-              if (item.type === "number"){
-                return item.value.number;
-              }
-              return item.value.text;
-            }),
-          }
-          setAttributeChangesDisplayValues(newAttributeChangesDisplayValues);
-        }
-      });
+            }
+          });
+
+          const newAttributeChanges5 = {
+            ...attributeChanges,
+            customAttributes: newCustomAttributes5.map((item) => ({
+              text: item.value.text,
+              number: item.value.number,
+              selectValues: item.value.selectValues.map((value) => value.id).filter((value) => value !== null),
+              customAttribute: item.id,
+            })),
+          };
+          setAttributeChanges(newAttributeChanges5);
     }
   }
 
   const renderCustomAttribute = () => {
 
-    const id = customAttribute.id;
     const placeholder = customAttribute.label;
-    const type = customAttribute.type;
     const label = `${customAttribute.label}${!customAttribute.isEdit && customAttribute.required ? "*" : ""}`;
-    const onChangeValue = assignOnChangeFunction;
-    const options = customAttribute.type === "select" ? [{label: "Empty", value: null, id: null}, ...customAttribute.selectValues] : customAttribute.selectValues;
+
+    const items = customAttribute.type === "select" ? [{label: "Empty", value: null, id: null}, ...customAttribute.selectValues] : customAttribute.selectValues;
     const disabled = !customAttribute.canEdit;
-    const setOptions = setCustomAttributes;
-    const setMultiValue = setValue;
 
-    const displayedOptions = options.map((option) => ({...option, label: option.label ? option.label : option.value.substring(0,1).toUpperCase() + option.value.substring(1)}));
-
-    let displayValue = null;
-    if (addingTask){
-      displayValue = {...value};
-    }
-    if (!addingTask){
-      if (attributeChanges.customAttributes){
-        let change = attributeChanges.customAttributes.find((change) => change.customAttribute === customAttribute.id);
-        displayValue = {
-          text: change.text,
-          number: change.number,
-          selectValues: change.selectValues,
-        }
-      } else {
-        displayValue = {
-          text: customAttribute.value.text,
-          number: customAttribute.value.number,
-          selectValues: customAttribute.value.selectValues,
-        }
-      }
-    }
-
-    switch (type) {
+    switch (customAttribute.type) {
       case "textarea":
         return (
-          <FormControl key={id} isDisabled={disabled}>
+          <FormControl key={customAttribute.id} isDisabled={disabled}>
             <Stack>
               <FormControl.Label>{label}</FormControl.Label>
               <TextArea
-                key={id}
+                key={customAttribute.id}
                 bgColor="white"
-                value={displayValue.text}
-                onChangeText={onChangeValue}
+                value={value.text}
+                onChangeText={assignOnChangeFunction}
                 placeholder={placeholder}
               />
             </Stack>
@@ -458,15 +248,15 @@ export default function CustomAttribtueEntry( props ) {
         break;
       case "number":
         return (
-          <FormControl key={id} isDisabled={disabled}>
+          <FormControl key={customAttribute.id} isDisabled={disabled}>
             <Stack>
               <FormControl.Label>{label}</FormControl.Label>
               <Input
                 keyboardType='numeric'
                 bgColor="white"
                 type="text"
-                value={displayValue.number.toString()}
-                onChange={onChangeValue}
+                value={value.number + ""}
+                onChange={assignOnChangeFunction}
                 placeholder={placeholder}
               />
             </Stack>
@@ -474,16 +264,17 @@ export default function CustomAttribtueEntry( props ) {
         );
         break;
       case "select":
+      console.log(selectValues);
       return (
-        <FormControl key={id} isDisabled={disabled}>
+        <FormControl key={customAttribute.id} isDisabled={disabled}>
           <Stack>
             <FormControl.Label>{label}</FormControl.Label>
             <Select
-              defaultValue={displayValue.selectValues.length > 0 ? displayValue.selectValues[0] : null}
-              onValueChange={onChangeValue}
+              defaultValue={value.selectValues.length > 0 ? value.selectValues[0].value : null}
+              onValueChange={assignOnChangeFunction}
             >
               {
-                displayedOptions.map((option) => (
+                items.map((option) => (
                   <Select.Item
                     key={option.value}
                     label={option.label}
@@ -498,20 +289,20 @@ export default function CustomAttribtueEntry( props ) {
       break;
       case "multiselect":
       return (
-        <FormControl key={id} isDisabled={disabled}>
+        <FormControl key={customAttribute.id} isDisabled={disabled}>
           <Stack>
             <FormControl.Label>{label}</FormControl.Label>
               <DropDownPicker
                 multiple={true}
                 listMode="SCROLLVIEW"
                 mode="BADGE"
-                value={displayValue.selectValues}
-                setValue={setMultiValue}
-                items={displayedOptions}
-                setItems={setOptions}
+                value={selectValues.map((value) => value.value)}
+                setValue={setSelectValues}
+                items={items}
+                setItems={(e) => {}}
                 open={multiselectIsOpen}
                 setOpen={setMultiselectIsOpen}
-                onSelectItem={onChangeValue}
+                onSelectItem={assignOnChangeFunction}
               />
           </Stack>
         </FormControl>
@@ -519,13 +310,13 @@ export default function CustomAttribtueEntry( props ) {
       break;
       default:
       return (
-        <FormControl key={id} isDisabled={disabled}>
+        <FormControl key={customAttribute.id} isDisabled={disabled}>
           <Stack>
             <FormControl.Label>{label}</FormControl.Label>
             <Input
-              value={displayValue.text}
+              value={value.text}
               type="text"
-              onChangeText={onChangeValue}
+              onChangeText={assignOnChangeFunction}
               placeholder={placeholder}
               />
           </Stack>
@@ -536,32 +327,23 @@ export default function CustomAttribtueEntry( props ) {
 
   const renderViewValue = () => {
     let value = null
-    if (attributeChangesDisplayValues.customAttributes){
-      const change = attributeChangesDisplayValues.customAttributes.find((change) => change.customAttribute === customAttribute.id);
-    }
     switch (customAttribute.type) {
       case "textarea":
-        value = change ? change.text : customAttribute.value.text;
+        value = customAttribute.value.text;
         break;
       case "number":
-        value = change ? change.number : customAttribute.value.number;
+        value = customAttribute.value.number;
         break;
       case "select":
-        if (change){
-          value = change.selectValues;
-        } else {
-          value = customAttribute.value.selectValues ? customAttribute.value.selectValues[0].value.substring(0,1).toUpperCase() + customAttribute.value.selectValues[0].value.substring(1) : null;
-        }
+        value = customAttribute.value.selectValues && customAttribute.value.selectValues.length > 0 ? customAttribute.value.selectValues[0].label : null;
+
         break;
       case "multiselect":
-        if (change){
-          value = change.selectValues;
-        } else {
-          value = customAttribute.value.selectValues ? customAttribute.value.selectValues.map((value) => value.value.substring(0,1).toUpperCase() + value.value.substring(1)).join(", ") : null;
-        }
+        value = customAttribute.value.selectValues && customAttribute.value.selectValues.length > 0 ? customAttribute.value.selectValues.map((value) => value.label).join(", ") : null;
+
         break;
       default:
-        value = change ? change.text : customAttribute.value.text;
+        value = customAttribute.value.text;
     }
 
     return (<Text>{value ? value : "Unset"}</Text>);
@@ -570,11 +352,10 @@ export default function CustomAttribtueEntry( props ) {
   return (
     <Box key={customAttribute.id}>
         {
-          (addingTask || editOpen) &&
+          editOpen &&
           renderCustomAttribute()
         }
         {
-          !addingTask &&
           !editOpen &&
           <Box marginTop="5">
             <Heading variant="list" size="sm">{customAttribute.label}</Heading>

@@ -5,6 +5,8 @@ import {
   useSubscription,
 } from "@apollo/client";
 
+import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon, TextArea } from "native-base";
+
 import {
   getMyData,
 } from '../../../helperFunctions/userData';
@@ -40,7 +42,7 @@ import {
 } from '../../../apollo/localSchema/queries';
 
 export default function TaskAddContainer( props ) {
-  
+
   //local
   const {
     data: projectData,
@@ -93,7 +95,7 @@ export default function TaskAddContainer( props ) {
       usersRefetch();
     }
   } );
-
+  //// TODO: fix existing project
   //state
   const [ projectID, setProjectID ] = React.useState( localProject.project.id === -1 ? null : localProject.project.id );
   const [ showModal, setShowModal ] = React.useState( true );
@@ -115,6 +117,7 @@ export default function TaskAddContainer( props ) {
   if ( projectID === null ) {
     return (
       <ProjectSelectModal
+        navigation={props.navigation}
         projects={
           loading ? [] :
           toSelArr(projectsData.myProjects.map((myProject) => ({
@@ -134,12 +137,18 @@ export default function TaskAddContainer( props ) {
     )
   }
 
+  // TODO: loader
+  if (loading){
+    return (<View><Text>WAIT</Text></View>);
+  }
+
   return (
     <TaskAdd
       {...props}
       projectID={projectID}
       loading={loading}
       projects={
+        loading ? [] :
         toSelArr(projectsData.myProjects.map((myProject) => ({
           ...myProject.project,
           right: myProject.right,
@@ -149,7 +158,7 @@ export default function TaskAddContainer( props ) {
       }
       myProjects={loading ? [] : projectsData.myProjects}
       users={ usersData ? toSelArr(usersData.basicUsers, 'fullName') : [] }
-      companies={ toSelArr(companiesData.basicCompanies) }
+      companies={ loading ? [] : toSelArr(companiesData.basicCompanies) }
       currentUser={ currentUser }
       defaultUnit={null}
       addTask={addTask}

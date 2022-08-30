@@ -9,7 +9,7 @@ import {
 import moment from 'moment';
 import axios from 'react-native-axios';
 
-import { ScrollView, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
+import { ScrollView, View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 
 import localStorage from 'react-native-sync-localstorage';
@@ -179,9 +179,30 @@ export default function AddTaskContainer ( props ) {
     })
   );
 
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={{display: "flex", flexDirection: "row"}}>
+          <IconButton
+            onPress={() => {
+              console.log("HELLO");
+              addTaskFunc({title, important, title, closeDate, assignedTo, company, deadline, description, pendingDate, project, requester, status, tags, subtasks, materials, customAttributes});
+            }}
+            variant="ghost"
+            _icon={{
+              as: Ionicons ,
+              name: "save",
+              color: "white"
+            }}
+          />
+      </View>
+      ),
+    });
+  }, [navigation, important, title, closeDate, assignedTo, company, deadline, description, pendingDate, project, requester, status, tags, subtasks, materials, customAttributes]);
+
   React.useEffect( () => {
     setDefaults( project );
-  }, [ project.id ] );
+  }, [ project ] );
 
   React.useEffect( () => {
     if ( project ) {
@@ -190,14 +211,13 @@ export default function AddTaskContainer ( props ) {
         setProject( updatedProject );
         let newCustomAttributes = [];
         updatedProject.addCustomAttributes.forEach((item, i) => {
-          console.log(item);
-
           const value = {
             text: item.defaultValue ? item.defaultValue.text : "",
             number: item.defaultValue ? item.defaultValue.number : 0,
             selectValues: item.selectValues.filter((value) => value.def).map((value) => ({...value, label: value.value.substring(0,1).toUpperCase() + value.value.substring(1)})),
           };
           const selectValues = item.selectValues.map((value) => ({...value, label: value.value.substring(0,1).toUpperCase() + value.value.substring(1)}));
+
           let newAttribute = {
             ...item,
             value,
@@ -221,11 +241,15 @@ export default function AddTaskContainer ( props ) {
           const value = {
             text: item.defaultValue ? item.defaultValue.text : "",
             number: item.defaultValue ? item.defaultValue.number : 0,
-            selectValues: item.selectValues ? item.selectValues.filter((value) => value.def) : [],
+            selectValues: item.selectValues.filter((value) => value.def).map((value) => ({...value, label: value.value.substring(0,1).toUpperCase() + value.value.substring(1)})),
           };
+
+          const selectValues = item.selectValues.map((value) => ({...value, label: value.value.substring(0,1).toUpperCase() + value.value.substring(1)}));
+
           let newAttribute = {
             ...item,
             value,
+            selectValues,
             label: item.title.substring(0,1).toUpperCase() + item.title.substring(1),
             canEdit: true,
           };
@@ -387,8 +411,10 @@ export default function AddTaskContainer ( props ) {
     setStartsAt( newStartsAt );*/
   }
 
-  const addTaskFunc = () => {
+  const addTaskFunc = (data) => {
     setSaving( true );
+    const { important, title, closeDate, assignedTo, company, deadline, description, pendingDate, project, requester, status, tags, subtasks, materials, customAttributes } = data;
+
     addTask( {
         variables: {
           important,
@@ -402,7 +428,7 @@ export default function AddTaskContainer ( props ) {
             .toString() : null,
           description,
           milestone: null,
-          pendingChangable,
+          pendingChangable: false,
           pendingDate: pendingDate ? pendingDate.valueOf()
             .toString() : null,
           project: project.id,
@@ -417,7 +443,6 @@ export default function AddTaskContainer ( props ) {
             approved: item.approved,
             quantity: item.quantity,
             discount: item.discount,
-            type: item.type.id,
             assignedTo: item.assignedTo.id,
             scheduled: item.scheduled,
           } ) ),
@@ -441,6 +466,7 @@ export default function AddTaskContainer ( props ) {
         }
       } )
       .then( ( response ) => {
+        console.log("ADDED 1");
         if ( attachments.length > 0 ) {
           const formData = new FormData();
           attachments.map( ( attachment ) => attachment.data )
@@ -455,6 +481,8 @@ export default function AddTaskContainer ( props ) {
             } )
             .then( async ( response2 ) => {
               setSaving( false );
+              console.log("ADDED 2");
+              navigation.goBack();
             } )
             .catch( ( err ) => {
               // TODO: localError
@@ -463,6 +491,8 @@ export default function AddTaskContainer ( props ) {
             } );
         } else {
           setSaving( false );
+          console.log("ADDED 2");
+          navigation.goBack();
           return;
         }
       } )
@@ -470,17 +500,20 @@ export default function AddTaskContainer ( props ) {
         //addLocalError( err );
         setSaving( false );
       } );
+
   }
 
   const addAttachment = (attachment) => {
     const time = moment().valueOf();
     let fileToUpload = {
+      id: fakeID--,
       type: attachment.mimeType,
       name: attachment.name,
+      filename: attachment.name,
       uri: Platform.OS === 'android' ? attachment.uri : attachment.uri.replace('file://', ''),
       time,
     };
-    setAttachments([...attachments, ...newAttachments]);
+    setAttachments([...attachments, fileToUpload]);
   }
 
   const removeAttachment = (index) => {
