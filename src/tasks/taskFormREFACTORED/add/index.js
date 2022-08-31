@@ -5,7 +5,7 @@ import {
   useSubscription,
 } from "@apollo/client";
 
-import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon, TextArea } from "native-base";
+import { ScrollView, View, Pressable, Spinner, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon, TextArea } from "native-base";
 
 import {
   getMyData,
@@ -95,7 +95,7 @@ export default function TaskAddContainer( props ) {
       usersRefetch();
     }
   } );
-  //// TODO: fix existing project
+
   //state
   const [ projectID, setProjectID ] = React.useState( localProject.project.id === -1 ? null : localProject.project.id );
   const [ showModal, setShowModal ] = React.useState( true );
@@ -137,9 +137,12 @@ export default function TaskAddContainer( props ) {
     )
   }
 
-  // TODO: loader
   if (loading){
-    return (<View><Text>WAIT</Text></View>);
+    return (
+      <ScrollView m="5">
+        <Spinner size="lg" />
+      </ScrollView>
+     );
   }
 
   return (

@@ -59,7 +59,6 @@ export default function ProjectSelectModal( props ) {
                     onSubmit(projectId);
                     setShowModal(false);
                   }
-                  // TODO: else show error
                 }}
               >
                 Save

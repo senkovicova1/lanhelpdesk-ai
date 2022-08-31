@@ -16,6 +16,10 @@ import {
   timestampToString,
 } from '../../../helperFunctions/time';
 
+const lanHelpdeskTheme = require("../../../configs/rn-dropdown-picker-theme");
+DropDownPicker.addTheme("LanHelpdeskTheme", lanHelpdeskTheme);
+DropDownPicker.setTheme("LanHelpdeskTheme");
+
 export default function TaskAttributes ( props ) {
 
   const {
@@ -48,6 +52,7 @@ export default function TaskAttributes ( props ) {
   const [ assignedToPickerOpen, setAssignedToPickerOpen ] = useState(false);
   const [ deadlinePickerOpen, setDeadlinePickerOpen ] = useState(false);
   const [ assignableUsersPicker, setAssignableUsersPicker ] = useState([]);
+  const [ assignedUsersPicker, setAssignedUsersPicker ] = useState([]);
 
   const availableProjects = projects.filter((project) => currentUser.role.level === 0 || project.right.addTask );
   const availableStatuses = project ? toSelArr(project.statuses.filter((status) => status.action.toLowerCase() !== 'invoiced' )) : []
@@ -55,6 +60,10 @@ export default function TaskAttributes ( props ) {
   React.useEffect(() => {
     setAssignableUsersPicker(assignableUsers);
   }, [assignableUsers]);
+
+  React.useEffect(() => {
+    setAssignedUsersPicker(assignedTo);
+  }, [assignedTo]);
 
   const changeProject = (project) => {
     setTags([]);
@@ -101,7 +110,7 @@ export default function TaskAttributes ( props ) {
       setCompany(newCompany);
     }
   }
-// TODO: rights aj na ostatne podkategorie
+
   return (
     <Box>
       {/*Status*/}
@@ -246,19 +255,17 @@ export default function TaskAttributes ( props ) {
                   mode="BADGE"
                   open={assignedToPickerOpen}
                   value={assignedTo.map((user) => user.value)}
+                  setValue={setAssignedUsersPicker}
                   items={assignableUsersPicker}
+                  setItems={setAssignableUsersPicker}
                   setOpen={setAssignedToPickerOpen}
                   onSelectItem={(items) => {
                     setAssignedTo(items);
                   }}
-                  setValue={setAssignedTo}
-                  setItems={setAssignableUsersPicker}
                 />
             }
         </Box>
       }
-
-      {/*// TODO: Starts At ?*/}
 
       {/*Deadline*/}
       {

@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { View } from 'react-native';
-import { ScrollView, Select, Button, IconButton, TextArea, FormControl, Checkbox, Input, Stack  } from "native-base";
+import { ScrollView, Select, Button, Text, IconButton, TextArea, FormControl, Checkbox, Input, Stack, Alert, VStack, HStack } from "native-base";
 import { Ionicons  } from '@expo/vector-icons';
 import {
   useMutation,
@@ -37,6 +37,8 @@ export default function SubtaskAdd ( props ) {
   const [ title, setTitle ] = React.useState( "" );
   const [ quantity, setQuantity ] = React.useState( 0 );
   const [ assignedTo, setAssignedTo ] = React.useState( null );
+
+  const [ error, setError ] = React.useState( null );
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -83,13 +85,12 @@ export default function SubtaskAdd ( props ) {
       } )
       .then( ( response ) => {
         updateCasheStorage( response.data.addSubtask, 'subtasks', 'ADD' );
+        setError(null);
         navigation.goBack();
     //    setSaving( false );
       } )
       .catch( ( err ) => {
-        // TODO: show error
-        console.log(err);
-      //  addLocalError( err );
+        setError(err.message);
     //    setSaving( false );
       } );
   }
@@ -121,6 +122,23 @@ export default function SubtaskAdd ( props ) {
 
   return (
       <ScrollView margin="5">
+
+        {
+          error &&
+          <Alert w="100%" status={"error"} mb="5">
+            <VStack space={2} flexShrink={1} w="100%">
+              <HStack flexShrink={1} space={2} justifyContent="space-between">
+                <HStack space={2} flexShrink={1}>
+                  <Alert.Icon mt="1" />
+                  <Text fontSize="md" color="coolGray.800">
+                    {error}
+                  </Text>
+                </HStack>
+              </HStack>
+            </VStack>
+          </Alert>
+        }
+
         <FormControl>
             <Stack>
               <Checkbox

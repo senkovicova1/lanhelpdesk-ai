@@ -2,7 +2,6 @@ import {
   gql
 } from '@apollo/client';
 
-//// TODO: put these to constants
 export const groupRights = `
   projectRead
   projectWrite

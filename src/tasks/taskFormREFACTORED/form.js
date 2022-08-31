@@ -25,8 +25,6 @@ export default function TaskForm ( props ) {
   const [displayCard, setDisplayCard] = useState("info");
   const [editTitle, setEditTitle] = useState(false);
 
-  // TODO: print errors
-
   return (
     <View>
 

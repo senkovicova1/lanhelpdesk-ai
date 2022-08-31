@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { Platform, Input as RNInput } from 'react-native';
-import { ScrollView, View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
+import { ScrollView, View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon, Alert, VStack, HStack } from "native-base";
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from 'moment';
@@ -15,6 +15,10 @@ import {
 import {
   timestampToString,
 } from '../../../helperFunctions/time';
+
+const lanHelpdeskTheme = require("../../../configs/rn-dropdown-picker-theme");
+DropDownPicker.addTheme("LanHelpdeskTheme", lanHelpdeskTheme);
+DropDownPicker.setTheme("LanHelpdeskTheme");
 
 export default function TaskAttributes ( props ) {
 
@@ -56,6 +60,8 @@ export default function TaskAttributes ( props ) {
   } = props;
 
   const [ assignedToPickerOpen, setAssignedToPickerOpen ] = useState(false);
+  const [ assignedUsersPicker, setAssignedUsersPicker ] = useState([]);
+
   const [ assignedTos, setAssignedTos ] = useState([]);
   const [ deadlinePickerOpen, setDeadlinePickerOpen ] = useState(false);
   const [ editOpen, setEditOpen ] = useState(false);
@@ -67,6 +73,10 @@ export default function TaskAttributes ( props ) {
   React.useEffect(() => {
     setAssignedTos(taskAssignedTos);
   }, [taskAssignedTos]);
+
+  React.useEffect(() => {
+    setAssignedUsersPicker(assignedTo);
+  }, [assignedTo]);
 
   const changeStatus = ( status ) => {
     if ( status.action === 'PendingDate' ) {
@@ -127,7 +137,6 @@ export default function TaskAttributes ( props ) {
     setAttributeChanges(newAttributeChanges);
   }
 
-  // TODO: write changes to state?
   const saveChanges = () => {
     const projectId = attributeChanges.project;
     let newAttributeChanges = {...attributeChanges};
@@ -304,6 +313,23 @@ export default function TaskAttributes ( props ) {
         <Box marginTop="5">
           <Heading variant="list" size="sm">Assigned</Heading>
           {
+            assignedTo.length === 0 &&
+            userRights.attributeRights.assigned.view &&
+            !projectAttributes.assigned.fixed &&
+            <Alert w="100%" status={"error"} mb="1">
+              <VStack space={2} flexShrink={1} w="100%">
+                <HStack flexShrink={1} space={2} justifyContent="space-between">
+                  <HStack space={2} flexShrink={1}>
+                    <Alert.Icon mt="1" />
+                    <Text fontSize="md" color="coolGray.800">
+                      Task must be assigned to someone!
+                    </Text>
+                  </HStack>
+                </HStack>
+              </VStack>
+            </Alert>
+          }
+          {
             (
               !editOpen ||
               projectAttributes.assigned.fixed ||
@@ -323,7 +349,9 @@ export default function TaskAttributes ( props ) {
               mode="BADGE"
               open={assignedToPickerOpen}
               value={assignedTo.map((user) => user.value)}
+              setValue={setAssignedUsersPicker}
               items={assignedTos}
+              setItems={setAssignedTos}
               setOpen={setAssignedToPickerOpen}
               onSelectItem={(items) => {
                 setAssignedTo(items);
@@ -333,8 +361,6 @@ export default function TaskAttributes ( props ) {
                 };
                 setAttributeChanges(newAttributeChanges);
               }}
-              setValue={setAssignedTo}
-              setItems={setAssignedTos}
             />
           }
         </Box>
@@ -410,7 +436,6 @@ export default function TaskAttributes ( props ) {
           editOpen &&
           <IconButton
             onPress={() => {
-              console.log("HEJ");
               setAttributeChanges({});
               setEditOpen(false);
             }}
@@ -427,11 +452,10 @@ export default function TaskAttributes ( props ) {
         }
         <IconButton
           onPress={() => {
-            console.log("YO");
             if (editOpen){
               saveChanges();
             }
-            setEditOpen(true);
+            setEditOpen(!editOpen);
           }}
           variant="solid"
           width="50px"

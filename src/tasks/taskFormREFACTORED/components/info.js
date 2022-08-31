@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { useWindowDimensions } from 'react-native';
-import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon, TextArea } from "native-base";
+import { View, Pressable, AlertDialog, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon, TextArea } from "native-base";
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 
 import {
@@ -46,6 +46,8 @@ export default function TaskInfo ( props ) {
   const [ editDescription, setEditDescription ] = useState(false);
   const [ tagsOpen, setTagsOpen ] = useState(false);
 
+  const [ attachmentToDelete, setAttachmentToDelete ] = useState(null);
+
   const selectFile = async () => {
     try {
       const res = await DocumentPicker.getDocumentAsync();
@@ -54,6 +56,37 @@ export default function TaskInfo ( props ) {
       console.log(err);
     }
   };
+
+  const cancelRef = React.useRef(null);
+
+  if (attachmentToDelete){
+    return (
+      <AlertDialog leastDestructiveRef={cancelRef} isOpen={attachmentToDelete !== null} onClose={() => setAttachmentToDelete(null)}>
+        <AlertDialog.Content>
+          <AlertDialog.CloseButton />
+          <AlertDialog.Header>Delete an attachment</AlertDialog.Header>
+          <AlertDialog.Body>
+            {`Are you sure you want to delete attachment ${attachmentToDelete.filename}?`}
+          </AlertDialog.Body>
+          <AlertDialog.Footer>
+            <Button.Group space={2}>
+              <Button variant="unstyled" colorScheme="coolGray" onPress={() => setAttachmentToDelete(null)} ref={cancelRef}>
+                Cancel
+              </Button>
+              <Button
+                colorScheme="danger"
+                onPress={() => {
+                  removeAttachment(attachmentToDelete);
+                  setAttachmentToDelete(null);
+                }}>
+                Delete
+              </Button>
+            </Button.Group>
+          </AlertDialog.Footer>
+        </AlertDialog.Content>
+      </AlertDialog>
+    )
+  }
 
   return (
     <Box>
@@ -162,12 +195,13 @@ export default function TaskInfo ( props ) {
         <Heading variant="list" size="sm">Attachments</Heading>
         {
           attachments.map((attachment, index) => (
-            <Flex>
+            <Flex direction="row" justify="space-between">
               {
                 //// TODO: download attachment
               }
               <Button
-                key={attachment.id} variant="ghost"
+                key={attachment.id}
+                variant="ghost"
                 m="0"
                 p="0"
                 justifyContent="flex-start"
@@ -177,13 +211,13 @@ export default function TaskInfo ( props ) {
               </Button>
               <IconButton
                 onPress={() => {
-                  removeAttachment(attachment, index);
+                  setAttachmentToDelete(attachment);
                 }}
                 p="0"
                 variant="ghost"
                 _icon={{
                     as: Ionicons ,
-                    name: "pencil",
+                    name: "trash",
                     color: "#0078d4"
                 }}
                 />

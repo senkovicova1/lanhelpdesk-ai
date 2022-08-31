@@ -6,7 +6,9 @@ import {
   useSubscription,
 } from "@apollo/client";
 
-import { ScrollView, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
+import { ScrollView, Spinner, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
+
+import localStorage from 'react-native-sync-localstorage';
 
 import TaskEdit from './editContainer';
 import axios from 'react-native-axios';
@@ -339,41 +341,37 @@ export default function TaskEditContainer( props ) {
     }
   }
 
-  // TODO: proper delete
   const removeAttachment = ( attachment ) => {
-    /*
-    if ( window.confirm( t( 'generalConfirmation' ) ) ) {
-      deleteTaskAttachment( {
-          variables: {
-            id: attachment.id,
-            fromInvoice,
-          }
-        } )
-        .then( ( response ) => {
-          const oldTask = client.readQuery( {
-              query: GET_TASK,
-              variables: {
-                id: taskId,
-                fromInvoice,
-              }
-            } )
-            .task;
-          client.writeQuery( {
+    deleteTaskAttachment( {
+        variables: {
+          id: attachment.id,
+          fromInvoice,
+        }
+      } )
+      .then( ( response ) => {
+        const oldTask = client.readQuery( {
             query: GET_TASK,
             variables: {
               id: taskId,
               fromInvoice,
-            },
-            data: {
-              task: {
-                ...oldTask,
-                taskAttachments: oldTask.taskAttachments.filter( ( taskAttachment ) => taskAttachment.id !== attachment.id )
-              }
             }
           } )
+          .task;
+        client.writeQuery( {
+          query: GET_TASK,
+          variables: {
+            id: taskId,
+            fromInvoice,
+          },
+          data: {
+            task: {
+              ...oldTask,
+              taskAttachments: oldTask.taskAttachments.filter( ( taskAttachment ) => taskAttachment.id !== attachment.id )
+            }
+          }
         } )
-    }
-    */
+      } )
+
   }
 
   const currentUser = getMyData();
@@ -397,8 +395,8 @@ export default function TaskEditContainer( props ) {
 
   if ( dataLoading ) {
     return (
-      <ScrollView>
-        <Text>Loading</Text>
+      <ScrollView m="5">
+        <Spinner size="lg" />
       </ScrollView>
      );
   }

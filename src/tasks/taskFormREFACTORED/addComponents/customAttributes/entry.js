@@ -152,7 +152,7 @@ export default function CustomAttribtueEntry( props ) {
   const renderCustomAttribute = () => {
 
     const placeholder = customAttribute.label;
-    const label = `${customAttribute.label}${!customAttribute.isEdit && customAttribute.required ? "*" : ""}`;
+    const label = `${customAttribute.label}${!customAttribute.isEdit && customAttribute.required ? " *" : ""}`;
     const items = customAttribute.type === "select" ? [{label: "Empty", value: null, id: null}, ...customAttribute.selectValues] : customAttribute.selectValues;
     const disabled = !customAttribute.canEdit;
 

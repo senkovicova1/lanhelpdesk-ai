@@ -36,6 +36,8 @@ export default function TaskList ( props ) {
   const {
     navigation,
     markedDate,
+    showCalendar,
+    search,
   } = props;
 
   //local
@@ -78,14 +80,12 @@ export default function TaskList ( props ) {
   //apollo queries
   const taskVariables = {
     projectId: localProject.project.id === -1 ? null : localProject.project.id,
-    milestoneId: null,
     filter: filterVariables,
     sort: {
       asc: true,
       key: 'status'
     },
-    stringFilter: null,
-    page: 1,
+    search,
     limit,
   }
 
@@ -114,7 +114,7 @@ export default function TaskList ( props ) {
   //refetch tasks
   React.useEffect( () => {
     tasksRefetch();
-  }, [ localFilter, localProject.id, limit ] );
+  }, [ localFilter, localProject.id, limit, search ] );
 
   useSubscription( ADD_TASK_SUBSCRIPTION, {
     onSubscriptionData: () => {
@@ -144,7 +144,7 @@ export default function TaskList ( props ) {
   }
 
   return (
-    <ScrollView height="55%">
+    <ScrollView height={showCalendar ? "55%" : "100%"}>
 
       {
         tasks.map((task) => (
@@ -199,7 +199,6 @@ export default function TaskList ( props ) {
           shadow={2}
           onPress={() => {
             setLimit(limit + 10);
-            //// TODO: optimize
           }}
           >
           Load more tasks

@@ -6,7 +6,8 @@ import {
   IconButton,
   TextArea,
   FormControl,
-  Stack
+  Stack,
+  WarningOutlineIcon
 } from "native-base";
 import { Ionicons  } from '@expo/vector-icons';
 import axios from 'react-native-axios';
@@ -29,6 +30,7 @@ export default function CommentAdd ( props ) {
   } = route.params;
 
   const [ body, setBody ] = useState("");
+  const [ showError, setShowError ] = useState(false);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -36,9 +38,12 @@ export default function CommentAdd ( props ) {
         <View style={{display: "flex", flexDirection: "row"}}>
           <IconButton
             onPress={() => {
-              // TODO: add error if body empty
-              submitComment(body);
-              navigation.goBack();
+              if (body.length === 0){
+                setShowError(true);
+              } else {
+                submitComment(body);
+                navigation.goBack();
+              }
             }}
             variant="ghost"
             _icon={{
@@ -52,18 +57,13 @@ export default function CommentAdd ( props ) {
     });
   }, [taskId, navigation, body]);
 
-  const convertToReactComponent = (text) => {
-    /// TODO: convertToReactComponent
-    return `<p>${text}</p>`;
-  }
-
   const submitComment = (message) => {
     const formData = new FormData();
     //attachments.forEach( ( file ) => formData.append( `file`, file ) );
     //FORM DATA
     formData.append( "token", `Bearer ${localStorage.getItem('acctok')}` );
     formData.append( "taskId", taskId );
-    formData.append( "message", convertToReactComponent(message) );
+    formData.append( "message", `<p>${message}</p>` );
     formData.append( "parentCommentId", null );
     formData.append( "internal", false );
     formData.append( "fromInvoice", false );
@@ -76,6 +76,7 @@ export default function CommentAdd ( props ) {
         if ( response.data.ok ) {
           //setAttachments( [] );
           setBody( `<br>${currentUser.signature.replace(/(?:\r\n|\r|\n)/g, '<br>')}` );
+          setShowError(false);
           navigation.goBack();
         /*  commentsRefetch( {
               task: taskId,
@@ -107,6 +108,13 @@ export default function CommentAdd ( props ) {
               setBody(text)
             }}
           />
+          {
+            showError &&
+            body.length === 0 &&
+            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+              Your comment cannot be empty!
+            </FormControl.ErrorMessage>
+          }
       </FormControl>
 
       <FormControl>

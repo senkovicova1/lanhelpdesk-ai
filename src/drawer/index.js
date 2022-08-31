@@ -36,100 +36,27 @@ export default function MyDrawer(props) {
       >
       <Drawer.Screen
         name="List"
-        component={List}
-        options={({navigation}) => ({
-          headerTitle: (props) => (
-          <Heading variant="main">List</Heading>
-        ),
-        headerRight: () => (
-          <View style={{display: "flex", flexDirection: "row"}}>
-            <IconButton
-              onPress={() => navigation.navigate('Calendar')}
-              variant="ghost"
-              _icon={{
-                as: FontAwesome5 ,
-                name: "calendar-alt",
-                color: "white"
-              }}
-              />
-            <IconButton
-              onPress={() => alert('This is a button!')}
-              variant="ghost"
-              pr="5"
-              _icon={{
-                as: FontAwesome,
-                name: "search",
-                color: "white"
-              }}
-            />
-        </View>
-        ),
-        headerLeft: () => <IconButton
-          onPress={(props) => navigation.toggleDrawer()}
-          variant="ghost"
-          pl="5"
-          size="lg"
-          _icon={{
-            as: MaterialIcons,
-            name: "menu",
-            color: "white",
-          }}
-        />,
-        headerBackVisible: false,
-        headerBackTitleVisible: false,
-        headerStyle: {
-          backgroundColor: '#0078d4',
-        },
-      })}
-      />
-      <Drawer.Screen
-        name="Calendar"
         component={Calendar}
         options={({navigation}) => ({
-          headerTitle: (props) => (
-          <Heading variant="main">Calendar</Heading>
-        ),
-        headerRight: () => (
-          <View style={{display: "flex", flexDirection: "row"}}>
-            <IconButton
-              onPress={() => navigation.navigate('List')}
-              variant="ghost"
-              _icon={{
-                as: FontAwesome5 ,
-                name: "list-ul",
-                color: "white"
-              }}
-              />
-            <IconButton
-              onPress={() => alert('This is a button!')}
-              variant="ghost"
-              pr="5"
-              _icon={{
-                as: FontAwesome,
-                name: "search",
-                color: "white"
-              }}
-            />
-        </View>
-        ),
-        headerLeft: () => <IconButton
-          onPress={(props) => navigation.toggleDrawer()}
-          variant="ghost"
-          pl="5"
-          size="lg"
-          _icon={{
-            as: MaterialIcons,
-            name: "menu",
-            color: "white"
-          }}
-        />,
-        headerBackVisible: false,
-        headerBackTitleVisible: false,
-        headerStyle: {
-          backgroundColor: '#0078d4',
-        },
-      })}
-        />
+          headerLeft: () => <IconButton
+            onPress={(props) => navigation.toggleDrawer()}
+            variant="ghost"
+            pl="5"
+            size="lg"
+            _icon={{
+              as: MaterialIcons,
+              name: "menu",
+              color: "white",
+            }}
+          />,
+          headerBackVisible: false,
+          headerBackTitleVisible: false,
+          headerStyle: {
+            backgroundColor: '#0078d4',
+          },
+        })}
+      />
+
     </Drawer.Navigator>
   );
 }

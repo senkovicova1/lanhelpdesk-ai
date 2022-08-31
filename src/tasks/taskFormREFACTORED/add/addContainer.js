@@ -9,14 +9,14 @@ import {
 import moment from 'moment';
 import axios from 'react-native-axios';
 
-import { ScrollView, View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
+import { ScrollView, View, Spinner, Center, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 
 import localStorage from 'react-native-sync-localstorage';
 
 import Form from '../addForm.js';
 
-import {hasAddTaskIssues} from './addTaskErrors.js';
+import ErrorDisplay, {hasAddTaskIssues} from './addTaskErrors.js';
 
 import {
   getEmptyAttributeRights,
@@ -124,7 +124,6 @@ export default function AddTaskContainer ( props ) {
   const [ attachments, setAttachments ] = React.useState( [] );
 
   const [ saving, setSaving ] = useState(false);
-  const [ showLocalCreationError, setShowLocalCreationError ] = React.useState( false );
 
   const projectUsers = users.filter( ( user ) => project && project.users.some( ( userData ) => userData.user.id === user.id ) );
   const assignableUsers = users.filter( ( user ) => project && project.users.some( ( userData ) => userData.assignable && userData.user.id === user.id ) );
@@ -185,8 +184,11 @@ export default function AddTaskContainer ( props ) {
         <View style={{display: "flex", flexDirection: "row"}}>
           <IconButton
             onPress={() => {
-              console.log("HELLO");
-              addTaskFunc({title, important, title, closeDate, assignedTo, company, deadline, description, pendingDate, project, requester, status, tags, subtasks, materials, customAttributes});
+              if (cannotSave){
+                return;
+              } else {
+                addTaskFunc({title, important, title, closeDate, assignedTo, company, deadline, description, pendingDate, project, requester, status, tags, subtasks, materials, customAttributes});
+              }
             }}
             variant="ghost"
             _icon={{
@@ -198,7 +200,7 @@ export default function AddTaskContainer ( props ) {
       </View>
       ),
     });
-  }, [navigation, important, title, closeDate, assignedTo, company, deadline, description, pendingDate, project, requester, status, tags, subtasks, materials, customAttributes]);
+  }, [navigation, important, title, closeDate, assignedTo, company, deadline, description, pendingDate, project, requester, status, tags, subtasks, materials, customAttributes, cannotSave]);
 
   React.useEffect( () => {
     setDefaults( project );
@@ -406,9 +408,6 @@ export default function AddTaskContainer ( props ) {
 
     let newDeadline = projectAttributes.deadline.value ? moment( parseInt( projectAttributes.deadline.value ) ) : deadline;
     setDeadline( newDeadline );
-/*
-    let newStartsAt = projectAttributes.startsAt.value ? moment( parseInt( projectAttributes.startsAt.value ) ) : startsAt;
-    setStartsAt( newStartsAt );*/
   }
 
   const addTaskFunc = (data) => {
@@ -466,7 +465,6 @@ export default function AddTaskContainer ( props ) {
         }
       } )
       .then( ( response ) => {
-        console.log("ADDED 1");
         if ( attachments.length > 0 ) {
           const formData = new FormData();
           attachments.map( ( attachment ) => attachment.data )
@@ -481,23 +479,18 @@ export default function AddTaskContainer ( props ) {
             } )
             .then( async ( response2 ) => {
               setSaving( false );
-              console.log("ADDED 2");
-              navigation.goBack();
+              navigation.navigate("List");
             } )
             .catch( ( err ) => {
-              // TODO: localError
-              //addLocalError( err );
               setSaving( false );
             } );
         } else {
           setSaving( false );
-          console.log("ADDED 2");
-          navigation.goBack();
+          navigation.navigate("List");
           return;
         }
       } )
       .catch( ( err ) => {
-        //addLocalError( err );
         setSaving( false );
       } );
 
@@ -522,8 +515,30 @@ export default function AddTaskContainer ( props ) {
     setAttachments(newAttachments);
   }
 
+  if (saving){
+    return (
+      <ScrollView padding="5" pb="10">
+        <Flex direction="column" >
+          <Spinner size="lg" />
+          <Center>
+            <Text>Adding your task. Please wait.</Text>
+          </Center>
+        </Flex>
+      </ScrollView>
+    )
+  }
+
   return (
     <ScrollView padding="5" pb="10">
+
+      <ErrorDisplay
+        {...getTaskData()}
+        currentUser={currentUser}
+        userRights={userRights}
+        projectAttributes={projectAttributes}
+        customAttributes={customAttributes}
+        />
+
 
       <Form
         {...props}

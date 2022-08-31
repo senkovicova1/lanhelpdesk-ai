@@ -111,9 +111,6 @@ export default function TaskInfo ( props ) {
         {
           attachments.map((attachment, index) => (
             <Flex direction="row" justify="space-between">
-              {
-                //// TODO: download attachment
-              }
               <Button key={attachment.id} variant="ghost" m="0" p="0" justifyContent="flex-start">
                 {attachment.filename}
               </Button>

@@ -5,6 +5,7 @@ import React, {
 import { Box, ScrollView, Text, Select, Button, IconButton, TextArea, FormControl, Checkbox, Input, Stack, AlertDialog, Heading } from "native-base";
 import DropDownPicker from 'react-native-dropdown-picker';
 
+
 export default function CustomAttribtueEntry( props ) {
 
   const {
@@ -64,6 +65,11 @@ export default function CustomAttribtueEntry( props ) {
             }
           }
         });
+        setValue({
+          text: e.replace("↵", "\n"),
+          number: "",
+          selectValues: [],
+        });
 
         const newAttributeChanges1 = {
           ...attributeChanges,
@@ -101,6 +107,11 @@ export default function CustomAttribtueEntry( props ) {
               return item;
             }
           }
+        });
+        setValue({
+          text: "",
+          number: e,
+          selectValues: [],
         });
 
         const newAttributeChanges2 = {
@@ -140,6 +151,13 @@ export default function CustomAttribtueEntry( props ) {
           }
         });
 
+        setValue({
+          text: "",
+          number: "",
+          selectValues: newValue1,
+        });
+        setSelectValues(newValue1);
+
         const newAttributeChanges3 = {
           ...attributeChanges,
           customAttributes: newCustomAttributes3.map((item) => ({
@@ -174,6 +192,13 @@ export default function CustomAttribtueEntry( props ) {
             }
           });
 
+          setValue({
+            text: "",
+            number: "",
+            selectValues: e,
+          });
+          setSelectValues(e);
+
           const newAttributeChanges4 = {
             ...attributeChanges,
             customAttributes: newCustomAttributes4.map((item) => ({
@@ -186,45 +211,51 @@ export default function CustomAttribtueEntry( props ) {
           setAttributeChanges(newAttributeChanges4);
       break;
       default:
-          const newCustomAttributes5 = customAttributes.map((item) => {
-            if (item.id === customAttribute.id){
-              return ({
-                ...item,
-                value: {
-                  ...value,
-                  text: e,
-                }
-              })
-            } else {
-              const changedCustomAttribute = attributeChanges.customAttributes ? attributeChanges.customAttributes.find((change) => change.customAttribute === item.id ) : null;
-              if (changedCustomAttribute){
-                return {
-                  ...item,
-                  ...changedCustomAttribute
-                };
-              } else {
-                return item;
+        const newCustomAttributes5 = customAttributes.map((item) => {
+          if (item.id === customAttribute.id){
+            return ({
+              ...item,
+              value: {
+                ...value,
+                text: e,
               }
+            })
+          } else {
+            const changedCustomAttribute = attributeChanges.customAttributes ? attributeChanges.customAttributes.find((change) => change.customAttribute === item.id ) : null;
+            if (changedCustomAttribute){
+              return {
+                ...item,
+                ...changedCustomAttribute
+              };
+            } else {
+              return item;
             }
-          });
+          }
+        });
 
-          const newAttributeChanges5 = {
-            ...attributeChanges,
-            customAttributes: newCustomAttributes5.map((item) => ({
-              text: item.value.text,
-              number: item.value.number,
-              selectValues: item.value.selectValues.map((value) => value.id).filter((value) => value !== null),
-              customAttribute: item.id,
-            })),
-          };
-          setAttributeChanges(newAttributeChanges5);
+        setValue({
+          text: e,
+          number: "",
+          selectValues: [],
+        });
+
+        const newAttributeChanges5 = {
+          ...attributeChanges,
+          customAttributes: newCustomAttributes5.map((item) => ({
+            text: item.value.text,
+            number: item.value.number,
+            selectValues: item.value.selectValues.map((value) => value.id).filter((value) => value !== null),
+            customAttribute: item.id,
+          })),
+        };
+        setAttributeChanges(newAttributeChanges5);
     }
   }
 
   const renderCustomAttribute = () => {
 
     const placeholder = customAttribute.label;
-    const label = `${customAttribute.label}${!customAttribute.isEdit && customAttribute.required ? "*" : ""}`;
+    const label = `${customAttribute.label}${!customAttribute.isEdit && customAttribute.required ? " *" : ""}`;
 
     const items = customAttribute.type === "select" ? [{label: "Empty", value: null, id: null}, ...customAttribute.selectValues] : customAttribute.selectValues;
     const disabled = !customAttribute.canEdit;
@@ -264,7 +295,6 @@ export default function CustomAttribtueEntry( props ) {
         );
         break;
       case "select":
-      console.log(selectValues);
       return (
         <FormControl key={customAttribute.id} isDisabled={disabled}>
           <Stack>

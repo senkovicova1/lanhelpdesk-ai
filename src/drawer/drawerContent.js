@@ -1,6 +1,9 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import {
+  useMutation,
+} from "@apollo/client";
+import {
   Box,
   Button,
   Divider,
@@ -23,11 +26,17 @@ import {
 import DrawerContentFilters from './components/filters';
 import DrawerContentProjects from './components/projects';
 
+import {
+  LOGOUT_USER
+} from '../queries/login';
+
 export default function CustomDrawerContent(props) {
 
   const {
     navigation
   } = props;
+
+  const [ logoutUser ] = useMutation( LOGOUT_USER );
 
   return (
     <DrawerContentScrollView {...props}>
@@ -68,57 +77,30 @@ export default function CustomDrawerContent(props) {
 
       </Box>
 
-      <Box>
-        <Button
-          variant="ghost"
-          px="5"
-          pt="2"
-          width="110px"
-          onPress={() => {navigation.navigate("TaskAdd")}}
-          >
+      <Box mb="10">
+
+        <Pressable px="5" pt="2" onPress={() => navigation.navigate("TaskAdd")}>
           <Flex direction="row" alignItems="center">
             <Box mr="2" w="5" alignItems="center">
               <AntDesign name="plus" size={16} color="#0078d4"/>
             </Box>
             <Text fontSize="md" color="#0078d4">Task</Text>
           </Flex>
-        </Button>
-
-        <Flex direction="row" alignItems="center" mx="5">
-          <Box mr="2" w="5" alignItems="center">
-            <Feather name="settings" size={16} color="black"/>
-          </Box>
-          <Heading variant="list" size="md">Settings</Heading>
-        </Flex>
-
-        <Pressable px="5" pt="2" onPress={() => navigation.navigate("UserList")}>
-          <Flex direction="row" alignItems="center">
-            <Box mr="2" w="5" alignItems="center">
-            <FontAwesome5 name="users-cog" size={16} color="black"/>
-          </Box>
-            <Text fontSize="md">Users</Text>
-          </Flex>
         </Pressable>
 
-        <Pressable px="5" pt="2" onPress={() => navigation.navigate("CompanyList")}>
-          <Flex direction="row" alignItems="center">
-            <Box mr="2" w="5" alignItems="center">
-            <MaterialCommunityIcons name="office-building-cog" size={16} color="black"/>
-          </Box>
-            <Text fontSize="md">Companies</Text>
-          </Flex>
-        </Pressable>
 
-        <Pressable px="5" pt="2" onPress={() => navigation.navigate("CompanyList")}>
-          <Flex direction="row" alignItems="center">
-            <Box mr="2" w="5" alignItems="center">
-              <FontAwesome5 name="user" size={16} color="black"/>
-          </Box>
-            <Text fontSize="md">Sonka</Text>
-          </Flex>
-        </Pressable>
-
-        <Pressable px="5" pt="2" onPress={() => navigation.navigate("CompanyList")}>
+        <Pressable
+          px="5"
+          pt="2"
+          onPress={() => {
+            logoutUser().then(() => {
+              props.navigation.reset({
+                   index: 0,
+                   routes: [{ name: 'Login' }]
+              })
+            } );
+          }}
+          >
           <Flex direction="row" alignItems="center">
             <Box mr="2" w="5" alignItems="center">
               <MaterialIcons name="logout" size={16} color="black" />
@@ -127,20 +109,6 @@ export default function CustomDrawerContent(props) {
           </Flex>
         </Pressable>
 
-        <Button
-          variant="ghost"
-          px="5"
-          pt="2"
-          width="110px"
-          onPress={() => {}}
-          >
-          <Flex direction="row" alignItems="center">
-            <Box mr="2" w="5" alignItems="center">
-              <AntDesign name="plus" size={16} color="#0078d4"/>
-            </Box>
-            <Text fontSize="md" color="#0078d4">Konto</Text>
-          </Flex>
-        </Button>
 
       </Box>
     </Box>

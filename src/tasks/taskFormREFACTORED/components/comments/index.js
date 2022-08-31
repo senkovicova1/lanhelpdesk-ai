@@ -26,11 +26,6 @@ export default function TaskComments ( props ) {
     disabled,
   } = props;
 
-  const convertToNativeComponents = (text) => {
-    // TODO: convertToNativeComponents
-    return text;
-  }
-
   const { width } = useWindowDimensions();
 
   return (

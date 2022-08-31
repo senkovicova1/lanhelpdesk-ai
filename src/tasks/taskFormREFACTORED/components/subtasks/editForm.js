@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { View } from 'react-native';
-import { ScrollView, Select, Button, IconButton, TextArea, FormControl, Checkbox, Input, Stack, AlertDialog } from "native-base";
+import { ScrollView, Select, Button, IconButton, TextArea, FormControl, Checkbox, Input, Stack, AlertDialog, Text, Alert, VStack, HStack } from "native-base";
 import { Ionicons  } from '@expo/vector-icons';
 import {
   useMutation,
@@ -46,6 +46,8 @@ export default function SubtaskEdit ( props ) {
 
   const [isOpen, setIsOpen] = React.useState(false);
 
+  const [ error, setError ] = React.useState( null );
+
   const cancelRef = React.useRef(null);
 
   React.useLayoutEffect(() => {
@@ -86,6 +88,7 @@ export default function SubtaskEdit ( props ) {
     setTitle(subtaskTitle);
     setQuantity(parseFloat(subtaskQuantity));
     setAssignedTo(subtaskAssignedTo);
+    setError(null);
   }, [subtaskId, subtaskDone, subtaskTitle, subtaskQuantity, subtaskAssignedTo]);
 
 
@@ -101,11 +104,12 @@ export default function SubtaskEdit ( props ) {
       } )
       .then( ( response ) => {
         updateCasheStorage( response.data.updateSubtask, 'subtasks', 'UPDATE' );
+        setError(null);
         navigation.goBack();
       //  setSaving( false );
       } )
       .catch( ( err ) => {
-      //  addLocalError( err );
+        setError(err.message);
       //  setSaving( false );
       } );
   }
@@ -120,10 +124,11 @@ export default function SubtaskEdit ( props ) {
         updateCasheStorage( {
           id: subtaskId,
         }, 'subtasks', 'DELETE' );
+        setError(null);
         navigation.goBack();
       } )
       .catch( ( err ) => {
-      //  addLocalError( err );
+        setError(err.message);
       } );
   }
 
@@ -201,6 +206,22 @@ export default function SubtaskEdit ( props ) {
 
   return (
       <ScrollView margin="5">
+        {
+          error &&
+          <Alert w="100%" status={"error"} mb="5">
+            <VStack space={2} flexShrink={1} w="100%">
+              <HStack flexShrink={1} space={2} justifyContent="space-between">
+                <HStack space={2} flexShrink={1}>
+                  <Alert.Icon mt="1" />
+                  <Text fontSize="md" color="coolGray.800">
+                    {error}
+                  </Text>
+                </HStack>
+              </HStack>
+            </VStack>
+          </Alert>
+        }
+
         <FormControl>
             <Stack>
               <Checkbox

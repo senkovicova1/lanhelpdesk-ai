@@ -4,7 +4,11 @@ import Form from '../form.js';
 
 import moment from 'moment';
 
-import { ScrollView, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
+import { ScrollView, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon, Spinner, Center  } from "native-base";
+
+import localStorage from 'react-native-sync-localstorage';
+
+import ErrorDisplay from './editTaskErrors.js';
 
 import {
   toSelArr,
@@ -393,6 +397,39 @@ export default function TaskEdit( props ) {
     setSaving( false );
   }
 
+  const getTaskData = () => ( {
+    shortSubtasks: task.shortSubtasks,
+    subtasks: task.subtasks.map( item => ( {
+      ...item,
+      assignedTo: toSelItem( item.assignedTo, 'fullName' ),
+      type: item.type ? toSelItem( item.type ) : null,
+    } ) ),
+    workTrips: task.workTrips.map( item => ( {
+      ...item,
+      assignedTo: toSelItem( item.assignedTo, 'fullName' ),
+      type: toSelItem( item.type )
+    } ) ),
+    materials: task.materials,
+    assignedTo,
+    closeDate,
+    company,
+    startsAt: task.startsAt,
+    deadline,
+    description,
+    important,
+    milestone: task.milestone,
+    pendingChangable,
+    pendingDate,
+    potentialPendingStatus: null,
+    project,
+    requester,
+    status,
+    tags,
+    title,
+    ganttOrder: task.ganttOrder,
+    customAttributes
+  } );
+
   //vykazyTable
   const subtasks = task.subtasks.map( item => ( {
     ...item,
@@ -402,8 +439,27 @@ export default function TaskEdit( props ) {
     ...item,
   } ) );
 
+  if (saving){
+    return (
+      <ScrollView padding="5" pb="10">
+        <Flex direction="column" >
+          <Spinner size="lg" />
+          <Center>
+            <Text>Saving changes. Please wait.</Text>
+          </Center>
+        </Flex>
+      </ScrollView>
+    )
+  }
+
   return (
     <ScrollView padding="5" pb="10">
+
+      <ErrorDisplay
+        {...getTaskData()}
+        userRights={userRights}
+        projectAttributes={projectAttributes}
+        />
 
       <Form
         {...props}

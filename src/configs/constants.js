@@ -1,6 +1,6 @@
 
 let fakeID = -1;
-// TODO: split this into multiple files
+
 export const dashboard = {
   project: {
     id: -1,
