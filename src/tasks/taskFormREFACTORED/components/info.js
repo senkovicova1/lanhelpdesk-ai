@@ -30,7 +30,7 @@ export default function TaskInfo ( props ) {
     taskId,
     task,
     addingTask,
-    onSubmit,
+    autoUpdateTask,
     project,
     description,
     setDescription,
@@ -96,7 +96,7 @@ export default function TaskInfo ( props ) {
             <IconButton
               onPress={() => {
                 if (editDescription){
-                  onSubmit({ description });
+                  autoUpdateTask({ description });
                 }
                 setEditDescription(!editDescription);
               }}
@@ -182,7 +182,7 @@ export default function TaskInfo ( props ) {
           justifyContent="flex-start"
           onPress={() => {
             if (tagsOpen){
-              onSubmit({ tags: tags.map((tag) => tag.id ) });
+              autoUpdateTask({ tags: tags.map((tag) => tag.id ) });
             }
             setTagsOpen(!tagsOpen);
           }}
@@ -195,7 +195,7 @@ export default function TaskInfo ( props ) {
         <Heading variant="list" size="sm">Attachments</Heading>
         {
           attachments.map((attachment, index) => (
-            <Flex direction="row" justify="space-between">
+            <Flex direction="row" key={attachment.id} justify="space-between">
               {
                 //// TODO: download attachment
               }

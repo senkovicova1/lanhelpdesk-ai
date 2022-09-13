@@ -408,6 +408,29 @@ export default function AddTaskContainer ( props ) {
 
     let newDeadline = projectAttributes.deadline.value ? moment( parseInt( projectAttributes.deadline.value ) ) : deadline;
     setDeadline( newDeadline );
+
+    //custom attributes
+    let newCustomAttributes = [];
+    project.addCustomAttributes.forEach((item, i) => {
+      const value = {
+        text: item.defaultValue ? item.defaultValue.text : "",
+        number: item.defaultValue ? item.defaultValue.number : 0,
+        selectValues: item.selectValues.filter((value) => value.def).map((value) => ({...value, label: value.value.substring(0,1).toUpperCase() + value.value.substring(1)})),
+      };
+      const selectValues = item.selectValues.map((value) => ({...value, label: value.value.substring(0,1).toUpperCase() + value.value.substring(1)}));
+
+      let newAttribute = {
+        ...item,
+        value,
+        selectValues,
+        label: item.title.substring(0,1).toUpperCase() + item.title.substring(1),
+        canEdit: true,
+      };
+      delete newAttribute.__typename;
+      newCustomAttributes.push(newAttribute);
+    });
+
+    setCustomAttributes(newCustomAttributes.sort((a1, a2) => a1.order < a2.order ? -1 : 1));
   }
 
   const addTaskFunc = (data) => {
@@ -567,6 +590,7 @@ export default function AddTaskContainer ( props ) {
         setTags={setTags}
 
         project={project}
+        setProject={setProject}
 
         status={status}
         setStatus={setStatus}

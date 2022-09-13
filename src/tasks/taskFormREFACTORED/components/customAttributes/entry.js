@@ -287,7 +287,7 @@ export default function CustomAttribtueEntry( props ) {
                 bgColor="white"
                 type="text"
                 value={value.number + ""}
-                onChange={assignOnChangeFunction}
+                onChangeText={assignOnChangeFunction}
                 placeholder={placeholder}
               />
             </Stack>
