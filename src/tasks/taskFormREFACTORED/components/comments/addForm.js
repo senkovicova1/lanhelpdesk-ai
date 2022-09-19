@@ -17,6 +17,9 @@ import localStorage from 'react-native-sync-localstorage';
 import {
   REST_URL,
 } from '../../../../configs/restAPI';
+import {
+  useTranslation
+} from "react-i18next";
 
 export default function CommentAdd ( props ) {
 
@@ -28,6 +31,10 @@ export default function CommentAdd ( props ) {
   const {
     taskId,
   } = route.params;
+
+  const {
+    t
+  } = useTranslation();
 
   const [ body, setBody ] = useState("");
   const [ showError, setShowError ] = useState(false);
@@ -102,7 +109,7 @@ export default function CommentAdd ( props ) {
       <FormControl>
           <TextArea
             bgColor="white"
-            placeholder="Write your comment here"
+            placeholder={t('writeComment')}
             value={body}
             onChangeText={(text) => {
               setBody(text)
@@ -112,7 +119,7 @@ export default function CommentAdd ( props ) {
             showError &&
             body.length === 0 &&
             <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-              Your comment cannot be empty!
+              {t('commentCantBeEmpty')}
             </FormControl.ErrorMessage>
           }
       </FormControl>
@@ -126,7 +133,7 @@ export default function CommentAdd ( props ) {
             justifyContent="flex-start"
             onPress={() => {}}
             >
-            + Attachment
+            {t('plusAttachments')}
           </Button>
         </Stack>
       </FormControl>

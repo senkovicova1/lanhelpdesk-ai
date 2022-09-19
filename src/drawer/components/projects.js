@@ -29,12 +29,19 @@ import {
 import {
   GET_PROJECT,
 } from '../../apollo/localSchema/queries';
+import {
+  useTranslation
+} from "react-i18next";
 
 export default function DrawerContentProjects(props) {
 
   const {
     navigation
   } = props;
+
+  const {
+    t
+  } = useTranslation();
 
   //network
   const {
@@ -77,13 +84,13 @@ export default function DrawerContentProjects(props) {
   const localProject = projectData.localProject;
   const myProjects =  (myProjectsData ? [...myProjectsData.myProjects] : []).sort( ( project1, project2 ) => project1.project.title > project2.project.title ? 1 : -1 );
   const projects = [ dashboard, ...myProjects ];
-  
+
   return (
     <Box>
 
       <Flex direction="row" alignItems="center" mt="5" mx="5">
         <AntDesign name="folder1" size={16} color="black"/>
-        <Heading variant="list" size="md" ml="2">Project</Heading>
+        <Heading variant="list" size="md" ml="2">{t('project')}</Heading>
       </Flex>
 
       <Select

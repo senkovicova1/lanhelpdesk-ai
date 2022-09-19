@@ -22,6 +22,9 @@ import {
 import {
   GET_TASK,
 } from '../../../queries/tasks';
+import {
+  useTranslation
+} from "react-i18next";
 
 export default function TaskInfo ( props ) {
 
@@ -35,6 +38,10 @@ export default function TaskInfo ( props ) {
     addAttachment,
     removeAttachment,
   } = props;
+
+  const {
+    t
+  } = useTranslation();
 
   const client = useApolloClient();
 
@@ -52,7 +59,7 @@ export default function TaskInfo ( props ) {
   return (
     <Box>
       <Box marginTop="5">
-        <Heading variant="list" size="sm">Description</Heading>
+        <Heading variant="list" size="sm">{t('Description')}</Heading>
         <Box bgColor="white" p="1">
           <TextArea
             value={description}
@@ -64,7 +71,7 @@ export default function TaskInfo ( props ) {
       </Box>
 
       <Box marginTop="5">
-        <Heading variant="list" size="sm">Tags</Heading>
+        <Heading variant="list" size="sm">{t('tags')}</Heading>
         {
           (tagsOpen ? toSelArr(project === null ? [] : project.tags) : tags).map((tag) => (
             <Pressable
@@ -102,12 +109,12 @@ export default function TaskInfo ( props ) {
             setTagsOpen(!tagsOpen);
           }}
           >
-          {tagsOpen ? "Save tags" : "+ Tags"}
+          {tagsOpen ? t('saveTags') : t('plusTags')}
         </Button>
       </Box>
 
       <Box marginTop="5">
-        <Heading variant="list" size="sm">Attachments</Heading>
+        <Heading variant="list" size="sm">{t('attachments')}</Heading>
         {
           attachments.map((attachment, index) => (
             <Flex direction="row" justify="space-between">
@@ -129,7 +136,7 @@ export default function TaskInfo ( props ) {
             </Flex>
           ))
         }
-        <Button key="addAttachment" variant="ghost" m="0" p="0" justifyContent="flex-start" onPress={selectFile}> + Attachments </Button>
+        <Button key="addAttachment" variant="ghost" m="0" p="0" justifyContent="flex-start" onPress={selectFile}>{t('plusAttachments')}</Button>
       </Box>
     </Box>
 )

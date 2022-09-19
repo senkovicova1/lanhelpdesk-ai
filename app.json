@@ -2,6 +2,7 @@
   "expo": {
     "name": "lanhelpdesk-ai",
     "slug": "lanhelpdesk-ai",
+    "owner": "senkovicova.sona",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,16 +21,25 @@
     "ios": {
       "supportsTablet": true,
       "usesIcloudStorage": true,
+      "bundleIdentifier": "ios.lanhelpdeskai"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "permissions": ["READ_EXTERNAL_STORAGE"],
+      "permissions": [
+        "READ_EXTERNAL_STORAGE"
+      ],
+      "package": "android.lanhelpdeskai"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "53c653d7-f869-4898-b66e-4e874e4bbb3d"
+      }
     }
   }
 }

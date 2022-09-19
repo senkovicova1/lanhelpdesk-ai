@@ -15,6 +15,9 @@ import {
 import {
   GET_TASK,
 } from '../../../../queries/tasks';
+import {
+  useTranslation
+} from "react-i18next";
 
 export default function SubtaskAdd ( props ) {
 
@@ -29,6 +32,10 @@ export default function SubtaskAdd ( props ) {
     taskId,
     addingTask,
   } = route.params;
+
+  const {
+    t
+  } = useTranslation();
 
   const client = useApolloClient();
 
@@ -136,16 +143,16 @@ export default function SubtaskAdd ( props ) {
                   setDone(!done);
                 }}
                 >
-                Completed
+                {t('completed')}
               </Checkbox>
           </Stack>
         </FormControl>
 
         <FormControl>
-          <FormControl.Label>Subtask info</FormControl.Label>
+          <FormControl.Label>{t('subtasklInfo')}</FormControl.Label>
           <TextArea
             bgColor="white"
-            placeholder="Write subtask description here"
+            placeholder={t('writeSubtaskDesc')}
             value={title}
             onChangeText={(text) => {
               setTitle(text)
@@ -155,7 +162,7 @@ export default function SubtaskAdd ( props ) {
 
         <FormControl>
             <Stack>
-              <FormControl.Label>Quantity</FormControl.Label>
+              <FormControl.Label>{t('quantity')}</FormControl.Label>
               <Input
                 keyboardType = 'numeric'
                 bgColor="white"
@@ -177,7 +184,7 @@ export default function SubtaskAdd ( props ) {
 
         <FormControl>
             <Stack>
-              <FormControl.Label>Assigned user</FormControl.Label>
+              <FormControl.Label>{t('assignedUser')}</FormControl.Label>
               <Select
                 defaultValue={users[0].id}
                 onValueChange={itemValue => {

@@ -9,13 +9,15 @@ import {
   Box,
   Button,
   Divider,
+  Center,
   Flex,
   Heading,
   Text,
   Pressable,
   ScrollView,
+  Spinner,
 } from "native-base";
-import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
+import { MaterialCommunityIcons, FontAwesome, Feather  } from '@expo/vector-icons';
 
 import {
   GET_PROJECT,
@@ -31,6 +33,9 @@ import {
   GET_MY_DATA,
   USER_DATA_SUBSCRIPTION,
 } from '../apollo/globalQueries';
+import {
+  useTranslation
+} from "react-i18next";
 
 export default function TaskList ( props ) {
   const {
@@ -39,6 +44,10 @@ export default function TaskList ( props ) {
     showCalendar,
     search,
   } = props;
+
+  const {
+    t
+  } = useTranslation();
 
   //local
   const {
@@ -140,7 +149,33 @@ export default function TaskList ( props ) {
 
   let tasks = tasksLoading ? [] : tasksData.tasks.tasks;
   if (markedDate){
-    tasks = tasks.filter((task) => (task.startsAt && parseInt(task.startsAt) <= parseInt(markedDate)) || (task.deadline && parseInt(task.deadline) >= parseInt(markedDate)));
+    tasks = tasks.filter((task) => {
+      if (!task.startsAt && !task.deadline){
+        return false;
+      }
+      if (task.startsAt && !task.deadline){
+        return parseInt(task.startsAt) <= parseInt(markedDate);
+      }
+      if (!task.startsAt && task.deadline){
+        return parseInt(task.deadline) <= parseInt(markedDate);
+      }
+      if (task.startsAt && task.deadline){
+        return parseInt(task.startsAt) <= parseInt(markedDate) && parseInt(task.deadline) >= parseInt(markedDate)
+      }
+    });
+  }
+
+  if (tasksLoading){
+    return (
+      <ScrollView height={showCalendar ? "55%" : "100%"}>
+        <Flex direction="column" mt="5">
+          <Spinner size="lg" />
+          <Center>
+            <Text>{t('loadingTasks')}</Text>
+          </Center>
+        </Flex>
+      </ScrollView>
+    )
   }
 
   return (
@@ -157,8 +192,8 @@ export default function TaskList ( props ) {
             <Flex direction="row" justify="space-between">
             <Box width="60%">
               <Heading variant="list" size="sm">{task.title}</Heading>
-              <Text>{`Requester: ${task.requester.fullName}`}</Text>
-              <Text>{`Assigned: ${task.assignedTo.map((assigned) => assigned.fullName).join(", ")}`}</Text>
+              <Text>{`${t('requester')}: ${task.requester.fullName}`}</Text>
+              <Text>{`${t('assigned')}: ${task.assignedTo.map((assigned) => assigned.fullName).join(", ")}`}</Text>
             </Box>
             <Box>
               <Badge
@@ -170,12 +205,15 @@ export default function TaskList ( props ) {
                 >
                 {task.status.title}
               </Badge>
-              <Flex flexDirection="row" alignItems="center">
-                <MaterialCommunityIcons name="asterisk" size={12} color="black" mr="2" pr="2"/>
-                <Text>
-                  {timestampToString(task.createdAt, false, true)}
-                </Text>
-              </Flex>
+              {
+                task.startsAt &&
+                <Flex flexDirection="row" alignItems="center">
+                  <Feather name="clock" size={12} color="black" mr="2" pr="2"/>
+                  <Text>
+                    {timestampToString(task.startsAt, false, true)}
+                  </Text>
+                </Flex>
+              }
               {
                 task.deadline &&
                 <Flex flexDirection="row" alignItems="center">
@@ -201,7 +239,7 @@ export default function TaskList ( props ) {
             setLimit(limit + 10);
           }}
           >
-          Load more tasks
+          {t('loadTasks')}
         </Button>
       }
 

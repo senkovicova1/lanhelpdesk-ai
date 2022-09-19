@@ -13,11 +13,18 @@ import {
 } from 'react-native-calendars';
 import List from './list';
 import { FontAwesome5, FontAwesome, Ionicons, Feather  } from '@expo/vector-icons';
+import {
+  useTranslation
+} from "react-i18next";
 
 export default function CalendarView ( props ) {
   const {
     navigation
   } = props;
+
+  const {
+    t
+  } = useTranslation();
 
   const [ markedDates, setMarkedDays ] = useState({});
   const [ showCalendar, setShowCalendar ] = useState(false);
@@ -28,7 +35,7 @@ export default function CalendarView ( props ) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => (
-        <Heading variant="main">{showCalendar ? "Calendar" : "List"}</Heading>
+        <Heading variant="main">{showCalendar ? t('calendar') : t('list')}</Heading>
       ),
       headerRight: () => (
         <View style={{display: "flex", flexDirection: "row"}}>

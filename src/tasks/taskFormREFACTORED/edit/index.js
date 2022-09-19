@@ -383,7 +383,17 @@ export default function TaskEditContainer( props ) {
     commentsLoading ||
     commentsError ||
     taskLoading
-  )
+  );
+
+
+  console.log("*************************");
+  console.log("currentUser", currentUser);
+  console.log("basicCompaniesLoading", basicCompaniesLoading);
+  console.log("basicUsersLoading", basicUsersLoading);
+  console.log("myProjectsLoading", myProjectsLoading);
+  console.log("commentsLoading", commentsLoading);
+  console.log("commentsError", commentsError);
+  console.log("taskLoading", taskLoading);
 
   if ( taskError ) {
     return (

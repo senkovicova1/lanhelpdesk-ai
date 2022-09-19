@@ -2,8 +2,9 @@
 export const testing = true;
 const production = true;
 const port = production ? 8082 : 8083;
-// TODO: toto zmen na true pred push
-export const testingTranslations = true;
+
+export const testingTranslations = testing;
+
 //https://nodejs02.lanhelpdesk.com
 //173.212.231.78
 const protectedREST = `https://nodejs02.lanhelpdesk.com:${port}`;

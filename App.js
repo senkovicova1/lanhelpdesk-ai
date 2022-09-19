@@ -12,10 +12,13 @@ import LanHelpdeskTheme from './src/themeExtension';
 
 import Navigation from './src/navigation';
 
+import initializeTranslations from './src/configs/translations';
+
 const client = createClient();
+const i18n = initializeTranslations();
 
 export default function App() {
-  
+
   return (
     <ApolloProvider client={client}>
       <NavigationContainer>

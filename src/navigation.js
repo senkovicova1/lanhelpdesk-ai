@@ -29,9 +29,19 @@ import UserAdd from './userAdd';
 import CompanyList from './companyList';
 import CompanyAdd from './companyAdd';
 
+import i18n from "i18next";
+import {
+  getMyData,
+} from './helperFunctions/userData';
+
 import {
   GET_IS_LOGGED_IN,
 } from './apollo/localSchema/queries';
+
+import {
+  GET_MY_DATA,
+  USER_DATA_SUBSCRIPTION,
+} from './apollo/globalQueries';
 
 
 const Stack = createNativeStackNavigator();
@@ -42,8 +52,30 @@ export default function Navigation (props) {
     data
   } = useQuery( GET_IS_LOGGED_IN );
 
+  const {
+    data: userDataData,
+    loading: userDataLoading,
+    refetch: userDataRefetch,
+  } = useQuery( GET_MY_DATA, {
+    fetchPolicy: 'network-only'
+  } );
+
+  useSubscription( USER_DATA_SUBSCRIPTION, {
+    onSubscriptionData: () => {
+      userDataRefetch()
+    }
+  } );
+
+  const currentUser = getMyData();
+  React.useEffect( () => {
+    if ( currentUser ) {
+      i18n.changeLanguage( currentUser.language );
+      console.log(currentUser.language);
+    }
+  }, [ currentUser, currentUser ? currentUser.language : null ] );
 
   console.log("isLoggedIn", data.isLoggedIn);
+  console.log("currentUser", currentUser, userDataData, userDataLoading);
 
   return (
     <Stack.Navigator>

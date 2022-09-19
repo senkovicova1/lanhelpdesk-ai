@@ -15,6 +15,9 @@ import {
 import {
   GET_TASK,
 } from '../../../../queries/tasks';
+import {
+  useTranslation
+} from "react-i18next";
 
 export default function MaterialAdd ( props ) {
 
@@ -28,6 +31,10 @@ export default function MaterialAdd ( props ) {
     addingTask,
     newMaterialOrder,
   } = route.params;
+
+  const {
+    t
+  } = useTranslation();
 
   const client = useApolloClient();
 
@@ -129,16 +136,16 @@ export default function MaterialAdd ( props ) {
                   setDone(!done);
                 }}
                 >
-                Completed
+                {t('completed')}
               </Checkbox>
           </Stack>
         </FormControl>
 
         <FormControl>
-          <FormControl.Label>Material info</FormControl.Label>
+          <FormControl.Label>{t('materialInfo')}</FormControl.Label>
           <TextArea
             bgColor="white"
-            placeholder="Write material description here"
+            placeholder={t('writeMaterialDesc')}
             value={title}
             onChangeText={(text) => {
               setTitle(text)
@@ -148,7 +155,7 @@ export default function MaterialAdd ( props ) {
 
         <FormControl>
             <Stack>
-              <FormControl.Label>Quantity</FormControl.Label>
+              <FormControl.Label>{t('quantity')}</FormControl.Label>
               <Input
                 keyboardType = 'numeric'
                 bgColor="white"
@@ -169,7 +176,7 @@ export default function MaterialAdd ( props ) {
 
         <FormControl>
             <Stack>
-              <FormControl.Label>Price per unit</FormControl.Label>
+              <FormControl.Label>{t('pricePerUnit')}</FormControl.Label>
               <Input
                 keyboardType = 'numeric'
                 bgColor="white"

@@ -14,6 +14,10 @@ import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo
 
 import localStorage from 'react-native-sync-localstorage';
 
+import {
+  useTranslation
+} from "react-i18next";
+
 import Form from '../addForm.js';
 
 import ErrorDisplay, {hasAddTaskIssues} from './addTaskErrors.js';
@@ -89,6 +93,10 @@ export default function AddTaskContainer ( props ) {
     defaultUnit,
     addTask,
   } = props;
+
+  const {
+    t
+  } = useTranslation();
 
   const client = useApolloClient();
 
@@ -544,7 +552,7 @@ export default function AddTaskContainer ( props ) {
         <Flex direction="column" >
           <Spinner size="lg" />
           <Center>
-            <Text>Adding your task. Please wait.</Text>
+            <Text>{t('addingTask')}</Text>
           </Center>
         </Flex>
       </ScrollView>
@@ -556,6 +564,7 @@ export default function AddTaskContainer ( props ) {
 
       <ErrorDisplay
         {...getTaskData()}
+        t={t}
         currentUser={currentUser}
         userRights={userRights}
         projectAttributes={projectAttributes}

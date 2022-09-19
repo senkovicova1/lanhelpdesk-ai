@@ -36,12 +36,20 @@ import {
 import {
   setFilter,
 } from '../../apollo/localSchema/actions';
+import {
+  useTranslation
+} from "react-i18next";
 
 export default function DrawerContentFilters(props) {
 
   const {
     navigation
   } = props;
+
+  const {
+    t
+  } = useTranslation();
+
   //network
   const {
     data: myFiltersData,
@@ -140,7 +148,7 @@ export default function DrawerContentFilters(props) {
 
       <Flex direction="row" alignItems="center"  mx="5">
         <AntDesign name="filter" size={16} color="black" />
-        <Heading variant="list" size="md" ml="2">Filter</Heading>
+        <Heading variant="list" size="md" ml="2">{t('filter')}</Heading>
       </Flex>
 
       <Pressable
@@ -153,7 +161,7 @@ export default function DrawerContentFilters(props) {
         }}
         >
         <Text fontSize="md">
-          All tasks
+          {t('allTasks')}
         </Text>
       </Pressable>
       {
@@ -217,7 +225,7 @@ export default function DrawerContentFilters(props) {
         }}
         >
         <Text fontSize="md">
-          Repetitive tasks
+          {t('repetitiveTasks')}
         </Text>
       </Pressable>
 

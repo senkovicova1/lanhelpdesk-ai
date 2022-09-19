@@ -1,5 +1,5 @@
 import React from 'react';
-import { Center, Button, Checkbox, Input, Icon, FormControl, Stack, WarningOutlineIcon } from "native-base";
+import { Center, Button, Checkbox, Input, Icon, FormControl, Stack, WarningOutlineIcon, Text } from "native-base";
 import { MaterialIcons } from '@expo/vector-icons';
 
 import localStorage from 'react-native-sync-localstorage';
@@ -19,13 +19,19 @@ import {
 import {
   LOGIN_USER
 } from './queries/login';
-
+import {
+  useTranslation
+} from "react-i18next";
 
 export default function Login ( props ) {
 
   const {
     navigation
   } = props;
+
+  const {
+    t
+  } = useTranslation();
 
   const [ loginUser ] = useMutation( LOGIN_USER );
 
@@ -43,7 +49,6 @@ export default function Login ( props ) {
   const login = () => {
     setSigningIn( true );
     setError( null );
-    console.log("login");
 
     loginUser( {
         variables: {
@@ -53,7 +58,7 @@ export default function Login ( props ) {
       } )
       .then( ( response ) => {
         setSigningIn( false );
-        console.log(localStorage);
+        setError( null );
         localStorage.setItem( "acctok", response.data.loginUser.accessToken );
         setIsLoggedIn( true );
         navigation.navigate('Drawer');
@@ -61,21 +66,19 @@ export default function Login ( props ) {
       .catch( ( err ) => {
         setSigningIn( false );
         setError( err.message );
-        console.log("FAILED");
-        console.log(err);
-        console.log(err.message);
     } );
   }
 
   React.useEffect( () => {
     if ( !testedTokenData.testedToken ) {
-      setTestedToken( true )
+      setTestedToken( true );
       tryLogin();
     }
   }, [ testedTokenLoading, testedTokenData.testedToken ] );
 
   const tryLogin = () => {
     setSigningIn( true );
+
     refreshToken()
       .then( ( response ) => {
         const {
@@ -96,6 +99,7 @@ export default function Login ( props ) {
       .catch( ( error ) => {
         setIsLoggedIn( false );
         setSigningIn( false );
+        setError( err.message );
       } )
   }
 
@@ -104,7 +108,8 @@ export default function Login ( props ) {
       height={"100%"}
       width={"100%"}
     >
-      <FormControl isRequired>
+
+      <FormControl>
           <Stack mx="4">
             <FormControl.Label>LanHelpdesk URL</FormControl.Label>
             <Input type="text" defaultValue=""/>
@@ -113,12 +118,14 @@ export default function Login ( props ) {
 
       <FormControl isRequired>
           <Stack mx="4">
-            <FormControl.Label>Login</FormControl.Label>
+            <FormControl.Label>{t('username')}</FormControl.Label>
             <Input
               type="text"
               value={email}
+              placeholder={t('username')}
               onChangeText={(text) => {
-                setEmail(text)
+                setEmail(text);
+                setError(null);
               }}
             />
           </Stack>
@@ -126,13 +133,14 @@ export default function Login ( props ) {
 
         <FormControl isRequired>
             <Stack mx="4">
-              <FormControl.Label>Password</FormControl.Label>
+              <FormControl.Label>{t('password')}</FormControl.Label>
                 <Input
                   type={showPassword ? "text" : "password"}
                   style={{width: "100%"}}
                   value={password}
                   onChangeText={(text) => {
-                    setPassword(text)
+                    setPassword(text);
+                    setError( null );
                   }}
                   InputRightElement={
                     <Icon
@@ -147,13 +155,13 @@ export default function Login ( props ) {
                       onPress={() => setShowPassword(!showPassword)}
                       />
                   }
-                  placeholder="Password"
+                  placeholder={t('password')}
                 />
               <FormControl.HelperText>
-                Must be atleast 6 characters.
+                {t('atLeast6Char')}
               </FormControl.HelperText>
               <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-                Atleast 6 characters are required.
+                {t('atLeast6CharReq')}
               </FormControl.ErrorMessage>
             </Stack>
           </FormControl>
@@ -179,8 +187,11 @@ export default function Login ( props ) {
                 login();
               }}
               >
-              Login
+              {t('login')}
             </Button>
+            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+              {error ? error : ""}
+            </FormControl.ErrorMessage>
           </Stack>
       </FormControl>
     </Center>
