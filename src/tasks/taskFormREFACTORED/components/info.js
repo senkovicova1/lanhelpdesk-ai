@@ -99,7 +99,7 @@ export default function TaskInfo ( props ) {
     <Box>
       <Box marginTop="5">
         <Flex direction="row" justify="space-between">
-          <Heading variant="list" size="sm">{t('Description')}</Heading>
+          <Heading variant="list" size="sm">{t('description')}</Heading>
             <IconButton
               onPress={() => {
                 if (editDescription){

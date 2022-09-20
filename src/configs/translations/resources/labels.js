@@ -1,4 +1,46 @@
 export default {
+  addTask: {
+    en: 'Add a task',
+    sk: 'Pridajte úlohu',
+    cz: 'Přidejte úkol',
+    de: 'Fügen Sie eine Aufgabe hinzu',
+  },
+  addComment: {
+    en: 'Add a comment',
+    sk: 'Pridať komentár',
+    cz: 'Přidat komentář',
+    de: 'Einen Kommentar hinzufügen',
+  },
+  addSubtask: {
+    en: 'Add a subtask',
+    sk: 'Pridajte podúlohu',
+    cz: 'Přidejte dílčí úkol',
+    de: 'Fügen Sie eine Unteraufgabe hinzu',
+  },
+  editSubtask: {
+    en: 'Edit a subtask',
+    sk: 'Upravte podúlohu',
+    cz: 'Upravit dílčí úkol',
+    de: 'Bearbeiten Sie eine Unteraufgabe',
+  },
+  addMaterial: {
+    en: 'Add a material',
+    sk: 'Pridajte materiál',
+    cz: 'Přidejte materiál',
+    de: 'Material hinzufügen',
+  },
+  editMaterial: {
+    en: 'Edit a material',
+    sk: 'Upravte materiál',
+    cz: 'Upravit materiál',
+    de: 'Bearbeiten Sie ein Material',
+  },
+  settings: {
+    en: 'Settings',
+    sk: 'Nastavenie',
+    cz: 'Nastavení',
+    de: 'Einstellungen',
+  },
   project: {
     en: 'Project',
     sk: 'Projekt',

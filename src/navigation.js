@@ -42,11 +42,18 @@ import {
   GET_MY_DATA,
   USER_DATA_SUBSCRIPTION,
 } from './apollo/globalQueries';
+import {
+  useTranslation
+} from "react-i18next";
 
 
 const Stack = createNativeStackNavigator();
 
 export default function Navigation (props) {
+
+  const {
+    t
+  } = useTranslation();
 
   const {
     data
@@ -75,7 +82,6 @@ export default function Navigation (props) {
   }, [ currentUser, currentUser ? currentUser.language : null ] );
 
   console.log("isLoggedIn", data.isLoggedIn);
-  console.log("currentUser", currentUser, userDataData, userDataLoading);
 
   return (
     <Stack.Navigator>
@@ -118,7 +124,7 @@ export default function Navigation (props) {
         name="TaskAdd"
         component={TaskAdd}
         options={{
-          headerTitle: (props) => <Heading variant="main">Add a task</Heading>,
+          headerTitle: (props) => <Heading variant="main">{t('addTask')}</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },
@@ -129,7 +135,7 @@ export default function Navigation (props) {
         name="CommentAdd"
         component={CommentAdd}
         options={({navigation}) => ({
-          headerTitle: (props) => <Heading variant="main" ml="0">Add a comment</Heading>,
+          headerTitle: (props) => <Heading variant="main" ml="0">{t('addComment')}</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
             margin: "0px !important",
@@ -149,7 +155,7 @@ export default function Navigation (props) {
         name="TaskAddSubtaskAdd"
         component={TaskAddSubtaskAdd}
         options={{
-          headerTitle: (props) => <Heading variant="main">Add a subtask</Heading>,
+          headerTitle: (props) => <Heading variant="main">{t('addSubtask')}</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },
@@ -160,7 +166,7 @@ export default function Navigation (props) {
         name="TaskAddSubtaskEdit"
         component={TaskAddSubtaskEdit}
         options={{
-          headerTitle: (props) => <Heading variant="main">Edit a subtask</Heading>,
+          headerTitle: (props) => <Heading variant="main">{t('editSubtask')}</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },
@@ -171,7 +177,7 @@ export default function Navigation (props) {
         name="TaskAddMaterialAdd"
         component={TaskAddMaterialAdd}
         options={{
-          headerTitle: (props) => <Heading variant="main">Add a material</Heading>,
+          headerTitle: (props) => <Heading variant="main">{t('addMaterial')}</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },
@@ -182,7 +188,7 @@ export default function Navigation (props) {
         name="TaskAddMaterialEdit"
         component={TaskAddMaterialEdit}
         options={{
-          headerTitle: (props) => <Heading variant="main">Edit a material</Heading>,
+          headerTitle: (props) => <Heading variant="main">{t('editMaterial')}</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },
@@ -194,7 +200,7 @@ export default function Navigation (props) {
         name="TaskEditSubtaskAdd"
         component={TaskEditSubtaskAdd}
         options={{
-          headerTitle: (props) => <Heading variant="main">Add a subtask</Heading>,
+          headerTitle: (props) => <Heading variant="main">{t('addSubtask')}</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },
@@ -205,7 +211,7 @@ export default function Navigation (props) {
         name="TaskEditSubtaskEdit"
         component={TaskEditSubtaskEdit}
         options={{
-          headerTitle: (props) => <Heading variant="main">Edit a subtask</Heading>,
+          headerTitle: (props) => <Heading variant="main">{t('editSubtask')}</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },
@@ -216,7 +222,7 @@ export default function Navigation (props) {
         name="TaskEditMaterialAdd"
         component={TaskEditMaterialAdd}
         options={{
-          headerTitle: (props) => <Heading variant="main">Add a material</Heading>,
+          headerTitle: (props) => <Heading variant="main">{t('addMaterial')}</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },
@@ -227,7 +233,7 @@ export default function Navigation (props) {
         name="TaskEditMaterialEdit"
         component={TaskEditMaterialEdit}
         options={{
-          headerTitle: (props) => <Heading variant="main">Edit a material</Heading>,
+          headerTitle: (props) => <Heading variant="main">{t('editMaterial')}</Heading>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },
@@ -239,80 +245,10 @@ export default function Navigation (props) {
         name="Settings"
         component={Settings}
         options={{
-          headerTitle: (props) => <Text>Settings</Text>,
+          headerTitle: (props) => <Text>{t('settings')}</Text>,
           headerStyle: {
             backgroundColor: '#0078d4',
           },
-        }}
-      />
-      <Stack.Screen
-        name="UserList"
-        component={UserList}
-        options={{
-          headerTitle: (props) => <Heading variant="main">Users</Heading>,
-          headerStyle: {
-            backgroundColor: '#0078d4',
-          },
-          headerTintColor: "white"
-        }}
-      />
-      <Stack.Screen
-        name="UserAdd"
-        component={UserAdd}
-        options={{
-          headerTitle: (props) => <Heading variant="main">Add a user</Heading>,
-          headerRight: () => (
-            <View style={{display: "flex", flexDirection: "row"}}>
-              <IconButton
-                onPress={() => {}}
-                variant="ghost"
-                _icon={{
-                  as: Ionicons ,
-                  name: "save",
-                  color: "white"
-                }}
-                />
-          </View>
-          ),
-          headerStyle: {
-            backgroundColor: '#0078d4',
-          },
-          headerTintColor: "white"
-        }}
-      />
-      <Stack.Screen
-        name="CompanyList"
-        component={CompanyList}
-        options={{
-          headerTitle: (props) => <Heading variant="main">Companies</Heading>,
-          headerStyle: {
-            backgroundColor: '#0078d4',
-          },
-          headerTintColor: "white"
-        }}
-      />
-      <Stack.Screen
-        name="CompanyAdd"
-        component={CompanyAdd}
-        options={{
-          headerTitle: (props) => <Heading variant="main">Add a company</Heading>,
-          headerRight: () => (
-            <View style={{display: "flex", flexDirection: "row"}}>
-              <IconButton
-                onPress={() => {}}
-                variant="ghost"
-                _icon={{
-                  as: Ionicons ,
-                  name: "save",
-                  color: "white"
-                }}
-                />
-          </View>
-          ),
-          headerStyle: {
-            backgroundColor: '#0078d4',
-          },
-          headerTintColor: "white"
         }}
       />
     </Stack.Navigator>

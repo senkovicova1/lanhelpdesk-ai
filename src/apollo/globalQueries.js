@@ -14,7 +14,6 @@ const accessRights = `
 
   users
   companies
-  pausals
   projects
   statuses
   roles

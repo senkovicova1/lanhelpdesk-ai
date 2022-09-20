@@ -172,7 +172,7 @@ export default function Login ( props ) {
               accessibilityLabel="Enable autologin?"
               defaultIsChecked
               >
-              Autologin
+              {t('autologin')}
             </Checkbox>
         </Stack>
       </FormControl>
