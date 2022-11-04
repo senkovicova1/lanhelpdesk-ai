@@ -117,7 +117,7 @@ export default function TaskInfo ( props ) {
         <Heading variant="list" size="sm">{t('attachments')}</Heading>
         {
           attachments.map((attachment, index) => (
-            <Flex direction="row" justify="space-between">
+            <Flex key={attachment.id} direction="row" justify="space-between">
               <Button key={attachment.id} variant="ghost" m="0" p="0" justifyContent="flex-start">
                 {attachment.filename}
               </Button>

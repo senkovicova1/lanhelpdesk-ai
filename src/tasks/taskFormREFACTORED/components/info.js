@@ -73,7 +73,7 @@ export default function TaskInfo ( props ) {
           <AlertDialog.CloseButton />
           <AlertDialog.Header>{t('deleteAttachment')}</AlertDialog.Header>
           <AlertDialog.Body>
-            {`${sureDeleteAttachment} ${attachmentToDelete.filename}?`}
+            {`${t('sureDeleteAttachment')} ${attachmentToDelete.filename}?`}
           </AlertDialog.Body>
           <AlertDialog.Footer>
             <Button.Group space={2}>

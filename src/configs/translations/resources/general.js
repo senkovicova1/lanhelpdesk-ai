@@ -29,4 +29,10 @@ export default {
     cz: 'Žádný',
     de: 'Keiner',
   },
+  noTasks: {
+    en: 'This project has no tasks',
+    sk: 'Tento projekt nemá žiadne úlohy',
+    cz: 'Tento projekt nemá žádné úkoly',
+    de: 'Dieses Projekt hat keine Aufgaben',
+  },
 }

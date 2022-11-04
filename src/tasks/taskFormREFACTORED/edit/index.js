@@ -5,13 +5,33 @@ import {
   useApolloClient,
   useSubscription,
 } from "@apollo/client";
+import axios from 'react-native-axios';
 
-import { ScrollView, Spinner, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
+import {
+  DeviceEventEmitter
+} from 'react-native';
+
+import {
+  ScrollView,
+  Spinner,
+  Pressable,
+  Select,
+  Divider,
+  Heading,
+  Text,
+  Flex,
+  Box,
+  Stack,
+  IconButton,
+  Input,
+  Button,
+  Badge,
+  CheckIcon
+} from "native-base";
 
 import localStorage from 'react-native-sync-localstorage';
 
 import TaskEdit from './editContainer';
-import axios from 'react-native-axios';
 
 import {
   getMyData,
@@ -65,8 +85,9 @@ import {
   REST_URL,
 } from '../../../configs/restAPI';
 
+let commentChecker = 0;
 
-export default function TaskEditContainer( props ) {
+export default function TaskEditContainer(props) {
 
   //data & queries
   const {
@@ -85,156 +106,163 @@ export default function TaskEditContainer( props ) {
     data: basicCompaniesData,
     loading: basicCompaniesLoading,
     refetch: basicCompaniesRefetch,
-  } = useQuery( GET_BASIC_COMPANIES, {
+  } = useQuery(GET_BASIC_COMPANIES, {
     fetchPolicy: 'network-only'
-  } );
+  });
   const {
     data: basicUsersData,
     loading: basicUsersLoading,
     refetch: basicUsersRefetch,
-  } = useQuery( GET_BASIC_USERS, {
+  } = useQuery(GET_BASIC_USERS, {
     fetchPolicy: 'network-only'
-  } );
+  });
   const {
     data: myProjectsData,
     loading: myProjectsLoading,
     refetch: myProjectsRefetch,
-  } = useQuery( GET_MY_PROJECTS, {
+  } = useQuery(GET_MY_PROJECTS, {
     variables: {
       fromInvoice,
     },
     fetchPolicy: 'network-only'
-  } );
+  });
   const {
     data: taskData,
     loading: taskLoading,
     refetch: taskRefetch,
     error: taskError
-  } = useQuery( GET_TASK, {
+  } = useQuery(GET_TASK, {
     variables: {
       id: taskId,
       fromInvoice,
     },
-  } );
+  });
 
   const {
     data: commentsData,
     loading: commentsLoading,
     refetch: commentsRefetch,
     error: commentsError,
-  } = useQuery( GET_COMMENTS, {
+  } = useQuery(GET_COMMENTS, {
     variables: {
       task: taskId,
       page: 1,
       limit: 50,
     },
     fetchPolicy: 'network-only'
-  } );
+  });
 
 
   //local
   const {
     data: filterData,
-  } = useQuery( GET_FILTER );
+  } = useQuery(GET_FILTER);
 
   const {
     data: projectData,
-  } = useQuery( GET_PROJECT );
+  } = useQuery(GET_PROJECT);
 
-  const [ updateTask ] = useMutation( UPDATE_TASK );
+  const [updateTask] = useMutation(UPDATE_TASK);
 
-  const [ deleteTask ] = useMutation( DELETE_TASK );
-  const [ deleteTaskAttachment ] = useMutation( DELETE_TASK_ATTACHMENT );
+  const [deleteTask] = useMutation(DELETE_TASK);
+  const [deleteTaskAttachment] = useMutation(DELETE_TASK_ATTACHMENT);
 
-  useSubscription( TASK_DELETE_SUBSCRIPTION, {
+  useSubscription(TASK_DELETE_SUBSCRIPTION, {
     variables: {
       taskId
     },
     onSubscriptionData: () => {
       navigation.goBack();
     }
-  } );
+  });
 
-  useSubscription( PROJECTS_SUBSCRIPTION, {
+  useSubscription(PROJECTS_SUBSCRIPTION, {
     onSubscriptionData: () => {
       myProjectsRefetch();
     }
-  } );
+  });
 
-  useSubscription( COMPANIES_SUBSCRIPTION, {
+  useSubscription(COMPANIES_SUBSCRIPTION, {
     onSubscriptionData: () => {
       basicCompaniesRefetch();
     }
-  } );
+  });
 
-  useSubscription( USERS_SUBSCRIPTION, {
+  useSubscription(USERS_SUBSCRIPTION, {
     onSubscriptionData: () => {
       basicUsersRefetch();
     }
-  } );
+  });
 
-  useSubscription( COMMENTS_SUBSCRIPTION, {
+  useSubscription(COMMENTS_SUBSCRIPTION, {
     variables: {
       taskId,
     },
     onSubscriptionData: () => {
-      commentsRefetch( {
-          task: taskId,
-          page: 1,
-          limit: 50,
-        });
-    }
-  } );
-
-  React.useEffect( () => {
-    taskRefetch( {
-        id: taskId,
-        fromInvoice,
-      } );
-  }, [ taskId ] );
-
-  React.useEffect( () => {
-    commentsRefetch( {
+      commentsRefetch({
         task: taskId,
         page: 1,
         limit: 50,
-      } );
-  }, [ taskId ] );
+      });
+    }
+  });
 
-  const [ saving, setSaving ] = React.useState( false );
+  DeviceEventEmitter.addListener("event.submitComment", (eventData) => {
+    if (commentChecker === 0) {
+      commentChecker++;
+      submitComment(eventData.body, eventData.attachments);
+    }
+  });
+
+  React.useEffect(() => {
+    taskRefetch({
+      id: taskId,
+      fromInvoice,
+    });
+  }, [taskId]);
+
+  React.useEffect(() => {
+    commentsRefetch({
+      task: taskId,
+      page: 1,
+      limit: 50,
+    });
+  }, [taskId]);
+
+  const [saving, setSaving] = React.useState(false);
 
   //functions
-  const updateCasheStorage = ( response, key, type ) => {
-    const task = client.readQuery( {
+  const updateCasheStorage = (response, key, type) => {
+    const task = client.readQuery({
         query: GET_TASK,
         variables: {
           id: taskId,
           fromInvoice
         },
-      } )
+      })
       .task;
     let newTask = {
       ...task,
     };
-    newTask[ key ] = [ ...newTask[ key ] ]
-    switch ( type ) {
+    newTask[key] = [...newTask[key]]
+    switch (type) {
       case 'ADD': {
-        newTask[ key ].push( response );
+        newTask[key].push(response);
         break;
       }
       case 'UPDATE': {
-        newTask[ key ][ newTask[ key ].findIndex( ( item ) => item.id === response.id ) ] = response;
+        newTask[key][newTask[key].findIndex((item) => item.id === response.id)] = response;
         break;
       }
       case 'DELETE': {
-        newTask[ key ] = newTask[ key ].filter( ( item ) => item.id !== response.id );
+        newTask[key] = newTask[key].filter((item) => item.id !== response.id);
         break;
       }
       default: {
         return;
       }
     }
-    client.writeQuery( {
+    client.writeQuery({
       query: GET_TASK,
       variables: {
         id: taskId,
@@ -243,7 +271,7 @@ export default function TaskEditContainer( props ) {
       data: {
         task: newTask
       }
-    } );
+    });
   }
 
   // TODO: proper delete
@@ -290,7 +318,7 @@ export default function TaskEditContainer( props ) {
     */
   }
 
-  const addAttachment = async ( file ) => {
+  const addAttachment = async (file) => {
     if (file != null) {
       let fileToUpload = {
         type: file.mimeType,
@@ -299,65 +327,65 @@ export default function TaskEditContainer( props ) {
       };
 
       const formData = new FormData();
-      formData.append( `file`, fileToUpload );
-      formData.append( "token", `Bearer ${localStorage.getItem('acctok')}` );
-      formData.append( "taskId", taskId );
+      formData.append(`file`, fileToUpload);
+      formData.append("token", `Bearer ${localStorage.getItem('acctok')}`);
+      formData.append("taskId", taskId);
 
-    axios.post( `${REST_URL}/upload-attachments`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        transformRequest: (data, headers) => {
-          return formData;
-        },
-      } )
-      .then( ( response ) => {
-        const newAttachments = response.data.attachments.map( ( attachment ) => ( {
-          ...attachment,
-          __typename: "TaskAttachment",
-        } ) )
-        const oldTask = client.readQuery( {
+      axios.post(`${REST_URL}/upload-attachments`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          transformRequest: () => {
+            return formData;
+          },
+        })
+        .then((response) => {
+          const newAttachments = response.data.attachments.map((attachment) => ({
+            ...attachment,
+            __typename: "TaskAttachment",
+          }))
+          const oldTask = client.readQuery({
+              query: GET_TASK,
+              variables: {
+                id: taskId
+              }
+            })
+            .task;
+          client.writeQuery({
             query: GET_TASK,
             variables: {
               id: taskId
+            },
+            data: {
+              task: {
+                ...oldTask,
+                taskAttachments: [...oldTask.taskAttachments, ...newAttachments]
+              }
             }
-          } )
-          .task;
-        client.writeQuery( {
-          query: GET_TASK,
-          variables: {
-            id: taskId
-          },
-          data: {
-            task: {
-              ...oldTask,
-              taskAttachments: [ ...oldTask.taskAttachments, ...newAttachments ]
-            }
-          }
-        } )
+          })
 
 
-      } )
+        })
     }
   }
 
-  const removeAttachment = ( attachment ) => {
-    deleteTaskAttachment( {
+  const removeAttachment = (attachment) => {
+    deleteTaskAttachment({
         variables: {
           id: attachment.id,
           fromInvoice,
         }
-      } )
-      .then( ( response ) => {
-        const oldTask = client.readQuery( {
+      })
+      .then((response) => {
+        const oldTask = client.readQuery({
             query: GET_TASK,
             variables: {
               id: taskId,
               fromInvoice,
             }
-          } )
+          })
           .task;
-        client.writeQuery( {
+        client.writeQuery({
           query: GET_TASK,
           variables: {
             id: taskId,
@@ -366,13 +394,44 @@ export default function TaskEditContainer( props ) {
           data: {
             task: {
               ...oldTask,
-              taskAttachments: oldTask.taskAttachments.filter( ( taskAttachment ) => taskAttachment.id !== attachment.id )
+              taskAttachments: oldTask.taskAttachments.filter((taskAttachment) => taskAttachment.id !== attachment.id)
             }
           }
-        } )
-      } )
+        })
+      })
 
   }
+
+  const submitComment = (message, attachments) => {
+    const formData = new FormData();
+    attachments.forEach((file) => formData.append(`file`, file));
+    //FORM DATA
+    formData.append("token", `Bearer ${localStorage.getItem('acctok')}`);
+    formData.append("taskId", taskId);
+    formData.append("message", `<p>${message}</p>`);
+    formData.append("parentCommentId", null);
+    formData.append("internal", false);
+    formData.append("fromInvoice", false);
+    axios.post(`${REST_URL}/send-comment`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then((response) => {
+        if (response.data.ok) {
+          //setBody(`<br>${currentUser.signature.replace(/(?:\r\n|\r|\n)/g, '<br>')}`);
+          //setShowError(false);
+
+          commentsRefetch({
+            task: taskId,
+            page: 1,
+            limit: 5,
+          });
+        } else {}
+      })
+      .catch((err) => {});
+  }
+
 
   const currentUser = getMyData();
   const dataLoading = (
@@ -385,17 +444,7 @@ export default function TaskEditContainer( props ) {
     taskLoading
   );
 
-
-  console.log("*************************");
-  console.log("currentUser", currentUser);
-  console.log("basicCompaniesLoading", basicCompaniesLoading);
-  console.log("basicUsersLoading", basicUsersLoading);
-  console.log("myProjectsLoading", myProjectsLoading);
-  console.log("commentsLoading", commentsLoading);
-  console.log("commentsError", commentsError);
-  console.log("taskLoading", taskLoading);
-
-  if ( taskError ) {
+  if (taskError) {
     return (
       <ScrollView>
         <Text>{taskError.message}</Text>
@@ -403,12 +452,12 @@ export default function TaskEditContainer( props ) {
     )
   }
 
-  if ( dataLoading ) {
+  if (dataLoading) {
     return (
       <ScrollView m="5">
         <Spinner size="lg" />
       </ScrollView>
-     );
+    );
   }
 
   return (
@@ -421,7 +470,7 @@ export default function TaskEditContainer( props ) {
       accessRights={currentUser.role.accessRights}
       companies={toSelArr(basicCompaniesData.basicCompanies)}
       users={toSelArr(basicUsersData.basicUsers, 'fullName')}
-      projects={toSelArr(myProjectsData.myProjects.map((project) => ({...project, id: project.project.id, title: project.project.title}) ))}
+      projects={toSelArr(myProjectsData.myProjects.map((project) => ({ ...project, id: project.project.id, title: project.project.title })))}
       emails={[]}
       filterValues={localFilterToValues(filterData.localFilter)}
       originalProjectId={projectData.localProject.id}
@@ -435,6 +484,7 @@ export default function TaskEditContainer( props ) {
       saving={saving}
       setSaving={setSaving}
       comments={commentsData.comments}
-      />
+      resetCommentChecker={() => { commentChecker = 0; }}
+    />
   );
 }

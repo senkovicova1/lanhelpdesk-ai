@@ -96,50 +96,15 @@ const listTasks = `
 tasks {
   id
   title
-  ganttOrder
-  invoiced
-  updatedAt
-  createdAt
-  important
-  closeDate
-  pendingChangable
-  statusChange
-  attributeRights {
-    ${projectAttributeRights}
-  }
-  rights {
-    ${groupRights}
-  }
   assignedTo {
     id
     fullName
     email
   }
-  company {
-    id
-    title
-    dph
-  }
   startsAt
   deadline
-  description
-  milestone{
-    id
-    title
-    order
-    startsAt
-    endsAt
-  }
-  pendingDate
-  project{
-    id
-    title
-    autoApproved
-  }
   requester{
     id
-    name
-    surname
     fullName
     email
   }
@@ -150,38 +115,6 @@ tasks {
     color
     action
   }
-  repeat {
-    id
-    repeatEvery
-    repeatInterval
-    startsAt
-    active
-  }
-  tags {
-    id
-    color
-    title
-  }
-  subtasksQuantity
-  approvedSubtasksQuantity
-  pendingSubtasksQuantity
-  workTripsQuantity
-  materialsPrice
-  approvedMaterialsPrice
-  pendingMaterialsPrice
-  customAttributes{
-    customAttribute{
-      id
-      title
-    }
-    text
-    number
-    selectValues{
-      id
-      order
-      value
-    }
-  }
 }
 count
 execTime
@@ -191,7 +124,7 @@ secondaryTimes {
 }
 `
 
-export const GET_TASKS = gql `
+export const GET_TASKS = gql`
 query tasks(
   $projectId: Int
   $milestoneId: Int
@@ -393,7 +326,7 @@ const responseTask = `
   }
 `
 
-export const ADD_TASK = gql `
+export const ADD_TASK = gql`
   mutation addTask(
     $important: Boolean,
     $title: String!,
@@ -453,7 +386,7 @@ export const ADD_TASK = gql `
   }
 `;
 
-export const DELETE_TASK = gql `
+export const DELETE_TASK = gql`
   mutation deleteTask($id: Int!, $fromInvoice: Boolean) {
     deleteTask(
       id: $id,
@@ -464,7 +397,7 @@ export const DELETE_TASK = gql `
   }
 `;
 
-export const GET_TASK = gql `
+export const GET_TASK = gql`
   query task($id: Int!, $fromInvoice: Boolean){
     task(
       id: $id
@@ -475,7 +408,7 @@ export const GET_TASK = gql `
   }
 `;
 
-export const UPDATE_TASK = gql `
+export const UPDATE_TASK = gql`
   mutation updateTask(
     $id: Int!,
     $important: Boolean,
@@ -523,7 +456,7 @@ export const UPDATE_TASK = gql `
   }
 `;
 
-export const SET_AFTER_TASK_CREATE = gql `
+export const SET_AFTER_TASK_CREATE = gql`
   mutation setAfterTaskCreate($afterTaskCreate: Int!) {
     setAfterTaskCreate(
       afterTaskCreate: $afterTaskCreate
@@ -533,13 +466,13 @@ export const SET_AFTER_TASK_CREATE = gql `
   }
 `;
 
-export const ADD_TASK_SUBSCRIPTION = gql `
+export const ADD_TASK_SUBSCRIPTION = gql`
   subscription taskAddSubscription {
     taskAddSubscription
   }
 `;
 
-export const DELETE_TASK_ATTACHMENT = gql `
+export const DELETE_TASK_ATTACHMENT = gql`
   mutation deleteTaskAttachment($id: Int!) {
     deleteTaskAttachment(
       id: $id,
@@ -549,7 +482,7 @@ export const DELETE_TASK_ATTACHMENT = gql `
   }
 `;
 
-export const TASK_DELETE_SUBSCRIPTION = gql `
+export const TASK_DELETE_SUBSCRIPTION = gql`
     subscription taskDeleteSubscription( $taskId: Int! ) {
       taskDeleteSubscription( taskId: $taskId )
     }

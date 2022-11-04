@@ -1,32 +1,39 @@
-import React, {useState} from 'react';
-import { useWindowDimensions } from 'react-native';
-import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
-import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
-
-import RenderHtml from 'react-native-render-html';
+import React from 'react';
+import {
+  useWindowDimensions,
+} from 'react-native';
 
 import {
-  useMutation,
-  useQuery,
-  useApolloClient,
-} from "@apollo/client";
+  View,
+  Heading,
+  Text,
+  Flex,
+  Box,
+  IconButton,
+  Button,
+} from "native-base";
+import {
+  AntDesign
+} from '@expo/vector-icons';
+
+import RenderHtml from 'react-native-render-html';
 
 import {
   timestampToString
 } from '../../../../helperFunctions/time';
 
-export default function TaskComments ( props ) {
+export default function TaskComments(props) {
 
   const {
     navigation,
     userRights,
     taskId,
     comments,
-    users,
-    disabled,
   } = props;
 
-  const { width } = useWindowDimensions();
+  const {
+    width
+  } = useWindowDimensions();
 
   return (
     <Box>
@@ -45,7 +52,23 @@ export default function TaskComments ( props ) {
                 ${comment.message}`
                 }}
               />
-          </View>
+            </View>
+            {
+              comment.commentAttachments.length > 0 &&
+              comment.commentAttachments.map((attachment) => (
+                <Button
+                  key={attachment.id}
+                  variant="ghost"
+                  m="0"
+                  p="0"
+                  justifyContent="flex-start"
+                  onPress={() => { }}
+                >
+                  {attachment.filename}
+                </Button>
+              ))
+            }
+            <View></View>
           </Box>
         ))
       }
@@ -55,10 +78,11 @@ export default function TaskComments ( props ) {
           <IconButton
             onPress={() => {
               navigation.navigate('CommentAdd',
-              {
-                taskId,
-              }
-            )}}
+                {
+                  taskId,
+                }
+              )
+            }}
             variant="solid"
             width="50px"
             borderRadius="20"
@@ -66,9 +90,9 @@ export default function TaskComments ( props ) {
               as: AntDesign,
               name: "plus",
             }}
-            />
+          />
         </Box>
       }
     </Box>
-)
+  )
 }

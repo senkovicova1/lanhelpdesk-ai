@@ -154,9 +154,9 @@ export default function TaskEdit( props ) {
       let matchingTaskValue = task.customAttributes.find((customAttribute) => item.id === customAttribute.customAttribute.id);
 
       const value = {
-        text: matchingTaskValue.text,
-        number: matchingTaskValue.number,
-        selectValues: matchingTaskValue.selectValues.map((value) => ({...value, label: value.value.substring(0,1).toUpperCase() + value.value.substring(1)})),
+        text: matchingTaskValue ? matchingTaskValue.text : "",
+        number: matchingTaskValue ? matchingTaskValue.number : "",
+        selectValues: matchingTaskValue ? matchingTaskValue.selectValues.map((value) => ({...value, label: value.value.substring(0,1).toUpperCase() + value.value.substring(1)})) : [],
       };
 
       const selectValues = item.selectValues.map((value) => ({...value, label: value.value.substring(0,1).toUpperCase() + value.value.substring(1)}));
