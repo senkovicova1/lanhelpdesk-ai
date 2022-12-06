@@ -9,6 +9,7 @@ export default function EditTaskErrorDisplay( props ) {
     status,
     project,
     assignedTo,
+    t,
   } = props;
 
 
@@ -48,7 +49,7 @@ export default function EditTaskErrorDisplay( props ) {
     <Box>
       { generalErrors &&
         <Box mb="4">
-          <Heading size="sm">General errors</Heading>
+          <Heading size="sm">{t('generalErrors')}</Heading>
           { titleError &&
             <Alert w="100%" status={"error"} mb="1">
               <VStack space={2} flexShrink={1} w="100%">
@@ -56,7 +57,7 @@ export default function EditTaskErrorDisplay( props ) {
                   <HStack space={2} flexShrink={1}>
                     <Alert.Icon mt="1" />
                     <Text fontSize="md" color="coolGray.800">
-                      Task title can't be empty!
+                      {t('titleCantBeEmpty')}
                     </Text>
                   </HStack>
                 </HStack>
@@ -70,7 +71,7 @@ export default function EditTaskErrorDisplay( props ) {
                   <HStack space={2} flexShrink={1}>
                     <Alert.Icon mt="1" />
                     <Text fontSize="md" color="coolGray.800">
-                      Task status is missing!
+                      {t('statusMissing')}
                     </Text>
                   </HStack>
                 </HStack>
@@ -84,7 +85,7 @@ export default function EditTaskErrorDisplay( props ) {
                   <HStack space={2} flexShrink={1}>
                     <Alert.Icon mt="1" />
                     <Text fontSize="md" color="coolGray.800">
-                      Task project is missing!
+                      {t('projectMissing')}
                     </Text>
                   </HStack>
                 </HStack>
@@ -98,7 +99,7 @@ export default function EditTaskErrorDisplay( props ) {
                   <HStack space={2} flexShrink={1}>
                     <Alert.Icon mt="1" />
                     <Text fontSize="md" color="coolGray.800">
-                      Task must be assigned to someone!
+                      {t('taskMustBeAssigned')}
                     </Text>
                   </HStack>
                 </HStack>
@@ -109,7 +110,7 @@ export default function EditTaskErrorDisplay( props ) {
       }
       { warnings &&
         <Box mb="4">
-          <Heading size="sm">Warnings</Heading>
+          <Heading size="sm">{t('warnings')}</Heading>
           { assignedMissingWarning &&
             <Alert w="100%" status={"error"} mb="1">
               <VStack space={2} flexShrink={1} w="100%">
@@ -117,7 +118,7 @@ export default function EditTaskErrorDisplay( props ) {
                   <HStack space={2} flexShrink={1}>
                     <Alert.Icon mt="1" />
                     <Text fontSize="md" color="coolGray.800">
-                      Task wasn't assigned to anyone, you can't create works and trips!
+                      {t('cantCreateWorksTrips')}
                     </Text>
                   </HStack>
                 </HStack>
@@ -131,7 +132,7 @@ export default function EditTaskErrorDisplay( props ) {
                   <HStack space={2} flexShrink={1}>
                     <Alert.Icon mt="1" />
                     <Text fontSize="md" color="coolGray.800">
-                      You cannot see who is assigned to this task and so can't create works and trips!
+                      {t('cantSeeAssigned')}
                     </Text>
                   </HStack>
                 </HStack>

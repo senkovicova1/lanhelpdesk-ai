@@ -16,6 +16,9 @@ import {
 import {
   GET_TASK,
 } from '../../../../queries/tasks';
+import {
+  useTranslation
+} from "react-i18next";
 
 export default function MaterialAdd ( props ) {
 
@@ -33,6 +36,10 @@ export default function MaterialAdd ( props ) {
     materialQuantity,
     materialPrice,
   } = route.params;
+
+  const {
+    t
+  } = useTranslation();
 
   const client = useApolloClient();
 
@@ -183,14 +190,14 @@ export default function MaterialAdd ( props ) {
       <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={closeDeleteAlert}>
         <AlertDialog.Content>
           <AlertDialog.CloseButton />
-          <AlertDialog.Header>Delete a material</AlertDialog.Header>
+          <AlertDialog.Header>{t('deleteMaterial')}</AlertDialog.Header>
           <AlertDialog.Body>
-            Are you sure you want to delete this material?
+            {t('sureDeleteMaterial')}
           </AlertDialog.Body>
           <AlertDialog.Footer>
             <Button.Group space={2}>
               <Button variant="unstyled" colorScheme="coolGray" onPress={closeDeleteAlert} ref={cancelRef}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button colorScheme="danger" onPress={() => {
                   if (addingTask){
@@ -201,7 +208,7 @@ export default function MaterialAdd ( props ) {
                   }
                 }}
                 >
-                Delete
+                {t('delete')}
               </Button>
             </Button.Group>
           </AlertDialog.Footer>
@@ -221,16 +228,16 @@ export default function MaterialAdd ( props ) {
                   setDone(!done);
                 }}
                 >
-                Completed
+                {t('completed')}
               </Checkbox>
           </Stack>
         </FormControl>
 
         <FormControl>
-          <FormControl.Label>Material info</FormControl.Label>
+          <FormControl.Label>{t('materialInfo')}</FormControl.Label>
           <TextArea
             bgColor="white"
-            placeholder="Write material description here"
+            placeholder={t('writeMaterialDesc')}
             value={title}
             onChangeText={(text) => {
               setTitle(text)
@@ -240,7 +247,7 @@ export default function MaterialAdd ( props ) {
 
         <FormControl>
             <Stack>
-              <FormControl.Label>Quantity</FormControl.Label>
+              <FormControl.Label>{t('quantity')}</FormControl.Label>
               <Input
                 keyboardType = 'numeric'
                 bgColor="white"
@@ -261,7 +268,7 @@ export default function MaterialAdd ( props ) {
 
         <FormControl>
             <Stack>
-              <FormControl.Label>Price per unit</FormControl.Label>
+              <FormControl.Label>{t('pricePerUnit')}</FormControl.Label>
               <Input
                 keyboardType = 'numeric'
                 bgColor="white"

@@ -33,6 +33,10 @@ import {
   backendCleanRights,
 } from '../../../configs/constants';
 
+import {
+  useTranslation
+} from "react-i18next";
+
 let fakeID = -1;
 
 export default function TaskEdit( props ) {
@@ -60,6 +64,10 @@ export default function TaskEdit( props ) {
     client,
     fromInvoice,
   } = props;
+
+  const {
+    t
+  } = useTranslation();
 
   const invoiced = task.invoiced;
 
@@ -445,7 +453,7 @@ export default function TaskEdit( props ) {
         <Flex direction="column" >
           <Spinner size="lg" />
           <Center>
-            <Text>Saving changes. Please wait.</Text>
+            <Text>{t('savingTask')}</Text>
           </Center>
         </Flex>
       </ScrollView>
@@ -457,6 +465,7 @@ export default function TaskEdit( props ) {
 
       <ErrorDisplay
         {...getTaskData()}
+        t={t}
         userRights={userRights}
         projectAttributes={projectAttributes}
         />

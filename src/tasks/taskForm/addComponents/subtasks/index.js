@@ -6,6 +6,9 @@ import {
 } from "@apollo/client";
 import { View, Pressable, Select, Divider, Heading, Text, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon  } from "native-base";
 import { FontAwesome5, MaterialIcons, Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
+import {
+  useTranslation
+} from "react-i18next";
 
 export default function TaskSubtasks ( props ) {
 
@@ -16,6 +19,10 @@ export default function TaskSubtasks ( props ) {
     assignedTo,
     userRights,
   } = props;
+
+  const {
+    t
+  } = useTranslation();
 
   const getMinId = () => {
     let minId = -1;
@@ -125,7 +132,7 @@ export default function TaskSubtasks ( props ) {
       <Box marginTop="5" alignItems="center">
         {
           assignedTo.length === 0 &&
-          <Text>You must first assign the task to someone!</Text>
+          <Text>{t('firstAssignTask')}</Text>
         }
         {
           assignedTo.length > 0 &&

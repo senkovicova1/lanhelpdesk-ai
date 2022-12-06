@@ -16,6 +16,9 @@ import {
 import {
   GET_TASK,
 } from '../../../../queries/tasks';
+import {
+  useTranslation
+} from "react-i18next";
 
 export default function SubtaskEdit ( props ) {
 
@@ -33,6 +36,10 @@ export default function SubtaskEdit ( props ) {
     subtaskQuantity,
     subtaskAssignedTo,
   } = route.params;
+
+  const {
+    t
+  } = useTranslation();
 
   const client = useApolloClient();
 
@@ -185,17 +192,17 @@ export default function SubtaskEdit ( props ) {
       <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={closeDeleteAlert}>
         <AlertDialog.Content>
           <AlertDialog.CloseButton />
-          <AlertDialog.Header>Delete a subtask</AlertDialog.Header>
+          <AlertDialog.Header>{t('deleteSubtask')}</AlertDialog.Header>
           <AlertDialog.Body>
-            Are you sure you want to delete this subtask?
+            {t('sureDeleteSubtask')}
           </AlertDialog.Body>
           <AlertDialog.Footer>
             <Button.Group space={2}>
               <Button variant="unstyled" colorScheme="coolGray" onPress={closeDeleteAlert} ref={cancelRef}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button colorScheme="danger" onPress={deleteSubtaskFunc}>
-                Delete
+                {t('delete')}
               </Button>
             </Button.Group>
           </AlertDialog.Footer>
@@ -231,16 +238,16 @@ export default function SubtaskEdit ( props ) {
                   setDone(!done);
                 }}
                 >
-                Completed
+                {t('completed')}
               </Checkbox>
           </Stack>
         </FormControl>
 
         <FormControl>
-          <FormControl.Label>Subtask info</FormControl.Label>
+          <FormControl.Label>{t('subtasklInfo')}</FormControl.Label>
           <TextArea
             bgColor="white"
-            placeholder="Write subtask description here"
+            placeholder={t('writeSubtaskDesc')}
             value={title}
             onChangeText={(text) => {
               setTitle(text)
@@ -250,7 +257,7 @@ export default function SubtaskEdit ( props ) {
 
         <FormControl>
             <Stack>
-              <FormControl.Label>Quantity</FormControl.Label>
+              <FormControl.Label>{t('quantity')}</FormControl.Label>
               <Input
                 keyboardType = 'numeric'
                 bgColor="white"
@@ -272,7 +279,7 @@ export default function SubtaskEdit ( props ) {
 
         <FormControl>
             <Stack>
-              <FormControl.Label>Assigned user</FormControl.Label>
+              <FormControl.Label>{t('assignedUser')}</FormControl.Label>
               <Select
                 selectedValue={assignedTo ? assignedTo.id : null}
                 onValueChange={itemValue => {

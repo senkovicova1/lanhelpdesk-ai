@@ -15,6 +15,9 @@ import {
 import {
   timestampToString,
 } from '../../../helperFunctions/time';
+import {
+  useTranslation
+} from "react-i18next";
 
 const lanHelpdeskTheme = require("../../../configs/rn-dropdown-picker-theme");
 DropDownPicker.addTheme("LanHelpdeskTheme", lanHelpdeskTheme);
@@ -48,6 +51,10 @@ export default function TaskAttributes ( props ) {
     deadline,
     setDeadline,
   } = props;
+
+  const {
+    t
+  } = useTranslation();
 
   const [ assignedToPickerOpen, setAssignedToPickerOpen ] = useState(false);
   const [ deadlinePickerOpen, setDeadlinePickerOpen ] = useState(false);
@@ -117,10 +124,10 @@ export default function TaskAttributes ( props ) {
       {
         userRights.attributeRights.status.add &&
         <Box marginTop="5">
-          <Heading variant="list" size="sm">{`Status ${ userRights.attributeRights.status.required ? "*" : ""}`}</Heading>
+          <Heading variant="list" size="sm">{`${t('status')} ${ userRights.attributeRights.status.required ? "*" : ""}`}</Heading>
           {
             (projectAttributes.status.fixed || !userRights.attributeRights.status.edit ) &&
-            <Text>{status ? status.label : "None"}</Text>
+            <Text>{status ? status.label : t('none')}</Text>
           }
           {
             !projectAttributes.status.fixed && userRights.attributeRights.status.add &&
@@ -147,7 +154,7 @@ export default function TaskAttributes ( props ) {
 
       {/*Project*/}
       <Box marginTop="5">
-        <Heading variant="list" size="sm">Project *</Heading>
+        <Heading variant="list" size="sm">{`${t('project')} *`}</Heading>
           <Select
             selectedValue={project.id}
             onValueChange={itemValue => {
@@ -170,10 +177,10 @@ export default function TaskAttributes ( props ) {
       {
         userRights.attributeRights.requester.add &&
         <Box marginTop="5">
-          <Heading variant="list" size="sm">{`Requester ${ userRights.attributeRights.requester.required ? "*" : ""}`}</Heading>
+          <Heading variant="list" size="sm">{`${t('requester')} ${ userRights.attributeRights.requester.required ? "*" : ""}`}</Heading>
           {
             (projectAttributes.requester.fixed || !userRights.attributeRights.requester.edit ) &&
-            <Text>{requester ? requester.label : "None"}</Text>
+            <Text>{requester ? requester.label : t('none')}</Text>
           }
           {
             !projectAttributes.requester.fixed && userRights.attributeRights.requester.add &&
@@ -201,10 +208,10 @@ export default function TaskAttributes ( props ) {
       {
         userRights.attributeRights.company.add &&
         <Box marginTop="5">
-          <Heading variant="list" size="sm">{`Company ${ userRights.attributeRights.company.required ? "*" : ""}`}</Heading>
+          <Heading variant="list" size="sm">{`${t('company')} ${ userRights.attributeRights.company.required ? "*" : ""}`}</Heading>
             {
               (projectAttributes.company.fixed || !userRights.attributeRights.company.edit ) &&
-              <Text>{company ? company.label : "None"}</Text>
+              <Text>{company ? company.label : t('none')}</Text>
             }
             {
               !projectAttributes.company.fixed && userRights.attributeRights.company.add &&
@@ -232,7 +239,7 @@ export default function TaskAttributes ( props ) {
       {
         userRights.attributeRights.assigned.add &&
         <Box marginTop="5">
-            <Heading variant="list" size="sm">{`Assigned ${ userRights.attributeRights.assigned.required ? "*" : ""}`}</Heading>
+            <Heading variant="list" size="sm">{`${t('assigned')} ${ userRights.attributeRights.assigned.required ? "*" : ""}`}</Heading>
               {
                 (projectAttributes.assigned.fixed || !userRights.attributeRights.assigned.edit ) &&
                 <Box>
@@ -243,7 +250,7 @@ export default function TaskAttributes ( props ) {
                     </Text>
                   }
                   { assignedTo.length === 0 &&
-                    <Text>This task is unassigned!</Text>
+                    <Text>{t('taskUnassigned')}</Text>
                   }
                 </Box>
               }
@@ -271,10 +278,10 @@ export default function TaskAttributes ( props ) {
       {
         userRights.attributeRights.deadline.add &&
         <Box marginTop="5">
-          <Heading variant="list" size="sm">{`Deadline ${ userRights.attributeRights.deadline.required ? "*" : ""}`}</Heading>
+          <Heading variant="list" size="sm">{`${t('deadline')} ${ userRights.attributeRights.deadline.required ? "*" : ""}`}</Heading>
             {
               (projectAttributes.deadline.fixed || !userRights.attributeRights.deadline.edit ) &&
-              <Text>{deadline ? timestampToString(deadline) : "No deadline"}</Text>
+              <Text>{deadline ? timestampToString(deadline) : t('noDeadline')}</Text>
             }
             {
               !projectAttributes.deadline.fixed && userRights.attributeRights.deadline.add &&
@@ -286,7 +293,7 @@ export default function TaskAttributes ( props ) {
                   >
                   <Box height="46px" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#CCC" justifyContent="center" pl="10px">
                     <Text fontSize="xs">
-                      {deadline ? timestampToString(deadline) : "No deadline"}
+                      {deadline ? timestampToString(deadline) : t('noDeadline')}
                     </Text>
                   </Box>
                 </Pressable>
@@ -306,11 +313,6 @@ export default function TaskAttributes ( props ) {
             }
         </Box>
       }
-
-      <Box marginTop="5">
-        <Heading variant="list" size="sm">Repeats</Heading>
-        <Text>No repeat</Text>
-      </Box>
 
       <CustomAttributes
         {...props}

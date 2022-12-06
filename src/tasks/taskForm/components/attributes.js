@@ -15,6 +15,9 @@ import {
 import {
   timestampToString,
 } from '../../../helperFunctions/time';
+import {
+  useTranslation
+} from "react-i18next";
 
 const lanHelpdeskTheme = require("../../../configs/rn-dropdown-picker-theme");
 DropDownPicker.addTheme("LanHelpdeskTheme", lanHelpdeskTheme);
@@ -58,6 +61,10 @@ export default function TaskAttributes ( props ) {
     customAttributes,
     setCustomAttributes,
   } = props;
+
+  const {
+    t
+  } = useTranslation();
 
   const [ assignedToPickerOpen, setAssignedToPickerOpen ] = useState(false);
   const [ assignedUsersPicker, setAssignedUsersPicker ] = useState([]);
@@ -167,7 +174,7 @@ export default function TaskAttributes ( props ) {
       {
         userRights.attributeRights.status.view &&
         <Box marginTop="5">
-          <Heading variant="list" size="sm">Status</Heading>
+          <Heading variant="list" size="sm">{t('status')}</Heading>
           {
             (
               !editOpen ||
@@ -175,7 +182,7 @@ export default function TaskAttributes ( props ) {
               !userRights.attributeRights.status.edit ||
               invoiced
             ) &&
-            <Text>{status ? status.label : "None"}</Text>
+            <Text>{status ? status.label : t('none')}</Text>
           }
           {
             editOpen &&
@@ -204,14 +211,14 @@ export default function TaskAttributes ( props ) {
 
       {/*Project*/}
       <Box marginTop="5">
-        <Heading variant="list" size="sm">Project</Heading>
+        <Heading variant="list" size="sm">{t('project')}</Heading>
         {
           (
             !editOpen ||
             !userRights.rights.taskProjectWrite ||
             invoiced
           ) &&
-          <Text>{project ? project.label : "None"}</Text>
+          <Text>{project ? project.label : t('none')}</Text>
         }
         {
           editOpen &&
@@ -239,7 +246,7 @@ export default function TaskAttributes ( props ) {
       {/*Requester*/}
       { userRights.attributeRights.requester.view &&
         <Box marginTop="5">
-          <Heading variant="list" size="sm">Requester</Heading>
+          <Heading variant="list" size="sm">{t('requester')}</Heading>
           {
             (
               !editOpen ||
@@ -247,7 +254,7 @@ export default function TaskAttributes ( props ) {
               !userRights.attributeRights.requester.edit ||
               invoiced
              ) &&
-            <Text>{requester ? requester.label : "None"}</Text>
+            <Text>{requester ? requester.label : t('none')}</Text>
           }
           {
             editOpen &&
@@ -275,13 +282,13 @@ export default function TaskAttributes ( props ) {
       {/*Company*/}
       { userRights.attributeRights.company.view &&
         <Box marginTop="5">
-          <Heading variant="list" size="sm">Company</Heading>
+          <Heading variant="list" size="sm">{t('company')}</Heading>
           {
             (
               !editOpen ||
               projectAttributes.company.fixed || !userRights.attributeRights.company.edit || invoiced
             ) &&
-            <Text>{company ? company.label : "None"}</Text>
+            <Text>{company ? company.label : t('none')}</Text>
           }
           {
             editOpen &&
@@ -311,7 +318,7 @@ export default function TaskAttributes ( props ) {
       {/*Assigned*/}
       { userRights.attributeRights.assigned.view &&
         <Box marginTop="5">
-          <Heading variant="list" size="sm">Assigned</Heading>
+          <Heading variant="list" size="sm">{t('assigned')}</Heading>
           {
             assignedTo.length === 0 &&
             userRights.attributeRights.assigned.view &&
@@ -322,7 +329,7 @@ export default function TaskAttributes ( props ) {
                   <HStack space={2} flexShrink={1}>
                     <Alert.Icon mt="1" />
                     <Text fontSize="md" color="coolGray.800">
-                      Task must be assigned to someone!
+                      {t('taskMustBeAssigned')}
                     </Text>
                   </HStack>
                 </HStack>
@@ -336,7 +343,7 @@ export default function TaskAttributes ( props ) {
               !userRights.attributeRights.assigned.edit ||
               invoiced
             ) &&
-            <Text>{assignedTo.length > 0 ? assignedTo.map((user) => user.label).join(', ') : "None"}</Text>
+            <Text>{assignedTo.length > 0 ? assignedTo.map((user) => user.label).join(', ') : t('none')}</Text>
           }
           {
             editOpen &&
@@ -369,7 +376,7 @@ export default function TaskAttributes ( props ) {
       {/*Deadline*/}
       { userRights.attributeRights.deadline.view &&
       <Box marginTop="5">
-        <Heading variant="list" size="sm">Deadline</Heading>
+        <Heading variant="list" size="sm">{t('deadline')}</Heading>
         {
           (
             !editOpen ||
@@ -377,7 +384,7 @@ export default function TaskAttributes ( props ) {
             !userRights.attributeRights.deadline.edit ||
             invoiced
           ) &&
-          <Text>{deadline ? timestampToString(deadline) : "No deadline"}</Text>
+          <Text>{deadline ? timestampToString(deadline) : t('noDeadline')}</Text>
         }
         {
           editOpen &&
@@ -392,7 +399,7 @@ export default function TaskAttributes ( props ) {
                 >
                 <Box height="46px" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#CCC" justifyContent="center" pl="10px">
                   <Text fontSize="xs">
-                    {deadline ? timestampToString(deadline) : "No deadline"}
+                    {deadline ? timestampToString(deadline) : t('noDeadline')}
                   </Text>
                 </Box>
               </Pressable>

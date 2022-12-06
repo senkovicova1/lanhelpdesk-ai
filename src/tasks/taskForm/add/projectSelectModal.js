@@ -2,6 +2,10 @@ import React from 'react';
 
 import { Select, Heading, Text, FormControl, Modal, Flex, Box, Stack, IconButton, Input, Button, Badge, CheckIcon, Center } from "native-base";
 
+import {
+  useTranslation
+} from "react-i18next";
+
 
 export default function ProjectSelectModal( props ) {
   const {
@@ -13,6 +17,10 @@ export default function ProjectSelectModal( props ) {
     setShowModal,
   } = props;
 
+  const {
+    t
+  } = useTranslation();
+
   const [ projectId, setProjectId ] = React.useState( null );
 
   return (
@@ -20,10 +28,10 @@ export default function ProjectSelectModal( props ) {
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <Modal.Content>
           <Modal.CloseButton />
-          <Modal.Header>Create a task</Modal.Header>
+          <Modal.Header>{t('createTask')}</Modal.Header>
           <Modal.Body>
             <FormControl>
-              <FormControl.Label>Choose a project *</FormControl.Label>
+              <FormControl.Label>{t('chooseProjectReq')}</FormControl.Label>
                 <Select
                   selectedValue={projectId}
                   onValueChange={itemValue => {
@@ -51,7 +59,7 @@ export default function ProjectSelectModal( props ) {
                   navigation.goBack();
                 }}
                 >
-                Cancel
+                {t('cancel')}
               </Button>
               <Button
                 onPress={() => {
@@ -61,7 +69,7 @@ export default function ProjectSelectModal( props ) {
                   }
                 }}
               >
-                Save
+              {t('save')}
               </Button>
             </Button.Group>
           </Modal.Footer>
