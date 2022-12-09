@@ -139,7 +139,6 @@ export default function CalendarView(props) {
                     markedDates={markedDates}
                     onDayPress={(day) => {
                         // Handler which gets executed on day press. Default = undefined
-                        //  console.log('selected day', day);
                         let newMarkedDates = {};
                         newMarkedDates[day.dateString] = {
                             selected: true,
@@ -152,12 +151,10 @@ export default function CalendarView(props) {
                     }}
                     onDayLongPress={(day) => {
                         // Handler which gets executed on day long press. Default = undefined
-                        // console.log('selected day', day);
                     }}
                     monthFormat={'MMMM yyyy'}
                     onMonthChange={(month) => {
                         // Handler which gets executed when visible month changes in calendar. Default = undefined
-                        // console.log('month changed', month);
                     }}
                     firstDay={1}
                     showWeekNumbers={true}

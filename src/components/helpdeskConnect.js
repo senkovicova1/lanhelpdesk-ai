@@ -8,6 +8,7 @@ import {
     WarningOutlineIcon,
 } from 'native-base';
 import { useTranslation } from 'react-i18next';
+import axios from 'react-native-axios';
 
 export default function HelpdeskConnect(props) {
     const {
@@ -20,6 +21,31 @@ export default function HelpdeskConnect(props) {
     const { t } = useTranslation();
 
     const [error, setError] = React.useState(null);
+
+    async function check() {
+        let result = null;
+        try {
+            let res = await axios.get(
+                `http://${helpdeskURL}:${port}`
+            );
+            result = res.status;
+            // Work with the response...
+        } catch (err) {
+            console.log(err);
+            if (err.response) {
+                // The client was given an error response (5xx, 4xx)
+            } else if (err.request) {
+                // The client never received a response, and the request was never left
+            } else {
+                // Anything else
+            }
+        }
+        if (result) {
+            connectToHelpdesk();
+        } else {
+            setError('Incorrect URL or port');
+        }
+    }
 
     return (
         <Center height={'100%'} width={'100%'}>
@@ -80,7 +106,6 @@ export default function HelpdeskConnect(props) {
                     <Button
                         shadow={2}
                         onPress={() => {
-                            console.log('PRESS');
                             const regexHelpdesk =
                                 /[a-z0-9]\.helpdesk\.com$/;
                             const regexPort = /^\d{4}$/;
@@ -90,7 +115,6 @@ export default function HelpdeskConnect(props) {
                                 )
                             ) {
                                 setError('Wrong url');
-                                console.log('NO');
                             }*/
                             if (!regexPort.test(port)) {
                                 setError('Wrong port');
@@ -101,7 +125,7 @@ export default function HelpdeskConnect(props) {
                                 ) &&*/
                                 regexPort.test(port)
                             ) {
-                                connectToHelpdesk();
+                                check();
                             }
                         }}
                     >

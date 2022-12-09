@@ -55,7 +55,6 @@ export default function Navigation(props) {
     React.useEffect(() => {
         if (currentUser) {
             i18n.changeLanguage(currentUser.language);
-            console.log(currentUser.language);
         }
     }, [
         currentUser,

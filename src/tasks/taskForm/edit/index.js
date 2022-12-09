@@ -93,8 +93,6 @@ export default function TaskEditContainer(props) {
         fetchPolicy: 'network-only',
     });
 
-    //console.log('myProjectsError', myProjectsError);
-
     const {
         data: taskData,
         loading: taskLoading,

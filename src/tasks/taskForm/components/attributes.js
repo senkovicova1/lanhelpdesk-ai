@@ -98,7 +98,9 @@ export default function TaskAttributes(props) {
     const [attributeChanges, setAttributeChanges] =
         useState({});
 
-    const availableProjects = []; //TODO: ked theri opravi backend aby sa dali ziskavat project{right} projects.filter( ( project ) => project.right.taskProjectWrite );
+    const availableProjects = projects.filter(
+        (project) => project.right.taskProjectWrite
+    );
     const requesters =
         project && project.project.lockedRequester
             ? toSelArr(

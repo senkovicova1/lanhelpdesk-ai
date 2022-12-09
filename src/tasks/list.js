@@ -133,7 +133,6 @@ export default function TaskList(props) {
 
     //refetch tasks
     React.useEffect(() => {
-        console.log('tasks refetch');
         tasksRefetch();
     }, [localFilter, localProject.id, limit, search]);
 
@@ -168,9 +167,6 @@ export default function TaskList(props) {
             'HH:mm DD.MM.YYYY'
         );
     };
-
-    console.log('tasksData', tasksData);
-    console.log('tasksError', tasksError);
 
     let tasks =
         tasksLoading || !tasksData || !tasksData.tasks

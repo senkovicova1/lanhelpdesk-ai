@@ -58,7 +58,6 @@ export default function Login(props) {
             .then((response) => {
                 setSigningIn(false);
                 setError(null);
-                console.log(response.data.loginUser);
                 localStorage.setItem(
                     'acctok',
                     response.data.loginUser.accessToken

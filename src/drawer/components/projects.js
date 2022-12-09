@@ -30,8 +30,6 @@ export default function DrawerContentProjects(props) {
         fetchPolicy: 'network-only',
     });
 
-    console.log('myProjectsError2', myProjectsError);
-
     //local
     const { data: projectData, loading: projectLoading } =
         useQuery(GET_PROJECT);
