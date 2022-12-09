@@ -10,9 +10,9 @@ import {
     PROJECTS_SUBSCRIPTION,
 } from '../../queries/projects';
 
-import { setProject } from '../../apollo/localSchema/actions';
+import { setProject } from '../../apollo_copy/localSchema/actions';
 
-import { GET_PROJECT } from '../../apollo/localSchema/queries';
+import { GET_PROJECT } from '../../apollo_copy/localSchema/queries';
 import { useTranslation } from 'react-i18next';
 
 export default function DrawerContentProjects(props) {
@@ -25,16 +25,19 @@ export default function DrawerContentProjects(props) {
         data: myProjectsData,
         loading: myProjectsLoading,
         refetch: myProjectsRefetch,
+        error: myProjectsError,
     } = useQuery(GET_MY_PROJECTS, {
         fetchPolicy: 'network-only',
     });
+
+    console.log('myProjectsError2', myProjectsError);
 
     //local
     const { data: projectData, loading: projectLoading } =
         useQuery(GET_PROJECT);
 
     useSubscription(PROJECTS_SUBSCRIPTION, {
-        onSubscriptionData: () => {
+        onData: () => {
             myProjectsRefetch();
         },
     });

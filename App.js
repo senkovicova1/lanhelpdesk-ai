@@ -37,6 +37,7 @@ import HelpdeskConnect from './src/components/helpdeskConnect';
 import initializeTranslations from './src/configs/translations';
 import axios from 'react-native-axios';
 import localStorage from 'react-native-sync-localstorage';
+import { DeviceEventEmitter } from 'react-native';
 /*
 import {
     REST_URL,
@@ -142,14 +143,15 @@ export default function App() {
     }
 
     const connectToHelpdesk = () => {
-        console.log('HI');
         localStorage.setItem('helpdeskURL', helpdeskURL);
         localStorage.setItem('port', port);
 
         setClient(createClient());
     };
 
-    console.log(REST_URL, SOCKET_URL);
+    DeviceEventEmitter.addListener('event.logOut', () => {
+        setClient(null);
+    });
 
     if (!client) {
         return (

@@ -1,10 +1,6 @@
-import {
-  gql
-} from '@apollo/client';
+import { gql } from '@apollo/client';
 
-import {
-  filter,
-} from './filters';
+import { filter } from './filters';
 
 export const groupRights = `
   projectRead
@@ -144,7 +140,7 @@ export const projectAttributes = `
   }
 `;
 
-export const GET_MY_PROJECTS = gql `
+export const GET_MY_PROJECTS = gql`
   query myProjects( $fromInvoice: Boolean ) {
     myProjects( fromInvoice: $fromInvoice ) {
       project {
@@ -251,21 +247,21 @@ export const GET_MY_PROJECTS = gql `
   }
 `;
 
-export const GET_PROJECTS = gql `
-  query {
-    projects {
-      id
-      title
-      right{
-        projectWrite
-      }
-      attributeRights{
-        assigned {
-          view
+export const GET_PROJECTS = gql`
+    query {
+        projects {
+            id
+            title
+            right {
+                projectWrite
+            }
+            attributeRights {
+                assigned {
+                    view
+                }
+            }
         }
-      }
     }
-  }
 `;
 
 const responseProject = `
@@ -561,51 +557,9 @@ const responseProject = `
   projectAttributes {
     ${projectAttributes}
   }
-`
-
-export const ADD_PROJECT = gql `
-  mutation addProject(
-    $title: String!
-    $description: String!
-    $lockedRequester: Boolean!
-    $autoApproved: Boolean!
-    $hideApproved: Boolean!
-    $archived: Boolean!
-    $projectAttributes: ProjectAttributesInput!
-    $tags: [NewTagInput]!
-    $statuses: [NewStatusInput]!
-    $filters: [ProjectFilterInput]!
-    $userGroups: [UserGroupInput]!
-    $companyGroups: [CompanyGroupInput]!
-    $groups: [ProjectGroupInput]!
-    $customAttributes: [CustomAttributeAddInput]!
-    $automationEvents: [AutomationEventInput]!
-    $automationTimers: [AutomationTimerInput]!
-  ) {
-    addProject(
-      title: $title
-      description: $description
-      lockedRequester: $lockedRequester
-      autoApproved: $autoApproved
-      hideApproved: $hideApproved
-      archived: $archived
-      projectAttributes: $projectAttributes
-      tags: $tags
-      statuses: $statuses
-      filters: $filters
-      userGroups: $userGroups
-      companyGroups: $companyGroups
-      groups: $groups
-      customAttributes: $customAttributes
-      automationEvents: $automationEvents
-      automationTimers: $automationTimers
-    ){
-      ${responseProject}
-    }
-  }
 `;
 
-export const GET_PROJECT = gql `
+export const GET_PROJECT = gql`
   query project($id: Int!) {
     project(
       id: $id
@@ -615,158 +569,44 @@ export const GET_PROJECT = gql `
   }
 `;
 
-export const UPDATE_PROJECT = gql `
-  mutation updateProject(
-    $id: Int!
-    $title: String
-    $description: String
-    $lockedRequester: Boolean
-    $autoApproved: Boolean
-    $hideApproved: Boolean!
-    $archived: Boolean
-    $projectAttributes: ProjectAttributesInput
-
-    $addTags: [NewTagInput]!
-    $updateTags: [TagUpdateInput]!
-    $deleteTags: [Int]!
-
-    $addStatuses: [NewStatusInput]!
-    $updateStatuses: [UpdateStatusInput]!
-    $deleteStatuses: [Int]!
-
-    $addFilters: [ProjectFilterInput]!
-    $updateFilters: [ProjectFilterInput]!
-    $deleteFilters: [Int]!
-
-    $userGroups: [UserGroupUpdateInput]!
-    $companyGroups: [CompanyGroupUpdateInput]!
-
-    $addGroups: [ProjectGroupInput]!
-    $updateGroups: [ProjectGroupInput]!
-    $deleteGroups: [Int]!
-
-    $addCustomAttributes: [CustomAttributeAddInput]!
-    $updateCustomAttributes: [CustomAttributeUpdateInput]!
-    $deleteCustomAttributes: [Int]!
-
-    $addAutomationEvents: [AutomationEventInput]!
-    $updateAutomationEvents: [AutomationEventInput]!
-    $deleteAutomationEvents: [Int]!
-
-    $addAutomationTimers: [AutomationTimerInput]!
-    $updateAutomationTimers: [AutomationTimerInput]!
-    $deleteAutomationTimers: [Int]!
-  ) {
-    updateProject(
-      id: $id
-      title: $title
-      description: $description
-      lockedRequester: $lockedRequester
-      autoApproved: $autoApproved
-      hideApproved: $hideApproved
-      archived: $archived
-      projectAttributes: $projectAttributes
-
-      addTags: $addTags
-      updateTags: $updateTags
-      deleteTags: $deleteTags
-
-      addStatuses: $addStatuses
-      updateStatuses: $updateStatuses
-      deleteStatuses: $deleteStatuses
-
-      addFilters: $addFilters
-      updateFilters: $updateFilters
-      deleteFilters: $deleteFilters
-
-      userGroups: $userGroups
-      companyGroups: $companyGroups
-
-      addGroups: $addGroups
-      updateGroups: $updateGroups
-      deleteGroups: $deleteGroups
-
-      addCustomAttributes: $addCustomAttributes
-      updateCustomAttributes: $updateCustomAttributes
-      deleteCustomAttributes: $deleteCustomAttributes
-
-      addAutomationEvents: $addAutomationEvents
-      updateAutomationEvents: $updateAutomationEvents
-      deleteAutomationEvents: $deleteAutomationEvents
-
-      addAutomationTimers: $addAutomationTimers
-      updateAutomationTimers: $updateAutomationTimers
-      deleteAutomationTimers: $deleteAutomationTimers
-    ){
-      ${responseProject}
+export const GET_NUMBER_OF_TASKS = gql`
+    query getNumberOfTasks($projectId: Int!) {
+        getNumberOfTasks(projectId: $projectId)
     }
-  }
 `;
 
-export const DELETE_PROJECT = gql `
-  mutation deleteProject($id: Int! $newId: Int!) {
-    deleteProject(
-      id: $id
-      newId: $newId
-    ){
-      id
+export const ADD_USER_TO_PROJECT_GROUP = gql`
+    mutation addUserToProjectGroup(
+        $id: Int!
+        $userId: Int!
+    ) {
+        addUserToProjectGroup(id: $id, userId: $userId) {
+            id
+        }
     }
-  }
 `;
 
-export const DELETE_PROJECT_ATTACHMENT = gql `
-  mutation deleteProjectAttachment($id: Int!) {
-    deleteProjectAttachment(
-      id: $id
-    ){
-      id
+export const PROJECTS_SUBSCRIPTION = gql`
+    subscription projectsSubscription {
+        projectsSubscription
     }
-  }
 `;
 
-export const GET_NUMBER_OF_TASKS = gql `
-  query getNumberOfTasks($projectId: Int!) {
-    getNumberOfTasks(
-      projectId: $projectId
-    )
-  }
-`;
-
-export const ADD_USER_TO_PROJECT_GROUP = gql `
-  mutation addUserToProjectGroup(
-    $id: Int!
-    $userId: Int!
-  ) {
-    addUserToProjectGroup(
-      id: $id
-      userId: $userId
-    ){
-      id
+export const GET_PROJECT_GROUPS = gql`
+    query projectGroups($id: Int!) {
+        projectGroups(id: $id) {
+            id
+            title
+            description
+            order
+        }
     }
-  }
 `;
 
-export const PROJECTS_SUBSCRIPTION = gql `
-  subscription projectsSubscription {
-    projectsSubscription
-  }
-`;
-
-export const GET_PROJECT_GROUPS = gql `
-  query projectGroups($id: Int!) {
-    projectGroups(
-      id: $id
-    ){
-      id
-      title
-      description
-      order
+export const PROJECT_GROUPS_SUBSCRIPTION = gql`
+    subscription projectGroupsSubscription(
+        $projectId: Int!
+    ) {
+        projectGroupsSubscription(projectId: $projectId)
     }
-  }
-`;
-
-export const PROJECT_GROUPS_SUBSCRIPTION = gql `
-  subscription projectGroupsSubscription($projectId: Int!) {
-    projectGroupsSubscription(projectId: $projectId)
-  }
 `;

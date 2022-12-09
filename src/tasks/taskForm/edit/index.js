@@ -9,23 +9,7 @@ import axios from 'react-native-axios';
 
 import { DeviceEventEmitter } from 'react-native';
 
-import {
-    ScrollView,
-    Spinner,
-    Pressable,
-    Select,
-    Divider,
-    Heading,
-    Text,
-    Flex,
-    Box,
-    Stack,
-    IconButton,
-    Input,
-    Button,
-    Badge,
-    CheckIcon,
-} from 'native-base';
+import { ScrollView, Spinner, Text } from 'native-base';
 
 import localStorage from 'react-native-sync-localstorage';
 
@@ -59,7 +43,6 @@ import {
 
 import {
     GET_TASK,
-    GET_TASKS,
     DELETE_TASK,
     TASK_DELETE_SUBSCRIPTION,
     UPDATE_TASK,
@@ -69,7 +52,7 @@ import {
 import {
     GET_FILTER,
     GET_PROJECT,
-} from '../../../apollo/localSchema/queries';
+} from '../../../apollo_copy/localSchema/queries';
 
 import { REST_URL } from '../../../configs/restAPI';
 
@@ -102,12 +85,16 @@ export default function TaskEditContainer(props) {
         data: myProjectsData,
         loading: myProjectsLoading,
         refetch: myProjectsRefetch,
+        error: myProjectsError,
     } = useQuery(GET_MY_PROJECTS, {
         variables: {
             fromInvoice,
         },
         fetchPolicy: 'network-only',
     });
+
+    //console.log('myProjectsError', myProjectsError);
+
     const {
         data: taskData,
         loading: taskLoading,
@@ -453,6 +440,8 @@ export default function TaskEditContainer(props) {
         basicCompaniesLoading ||
         basicUsersLoading ||
         myProjectsLoading ||
+        !myProjectsData ||
+        !myProjectsData.myProjects ||
         commentsLoading ||
         commentsError ||
         taskLoading;

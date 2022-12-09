@@ -23,7 +23,7 @@ import {
 import {
     GET_PROJECT,
     GET_FILTER,
-} from '../apollo/localSchema/queries';
+} from '../apollo_copy/localSchema/queries';
 
 import {
     GET_TASKS,
@@ -33,7 +33,7 @@ import {
 import {
     GET_MY_DATA,
     USER_DATA_SUBSCRIPTION,
-} from '../apollo/globalQueries';
+} from '../apollo_copy/globalQueries';
 import { useTranslation } from 'react-i18next';
 
 export default function TaskList(props) {
@@ -95,10 +95,11 @@ export default function TaskList(props) {
 
     //apollo queries
     const taskVariables = {
-        projectId: null,
-        /*localProject.project.id === -1
+        projectId:
+            localProject.project.id === -1
                 ? null
-                : localProject.project.id*/ filter: null /*filterVariables*/,
+                : localProject.project.id,
+        filter: filterVariables,
         sort: {
             asc: true,
             key: 'status',

@@ -85,7 +85,7 @@ import {
 import {
     GET_PROJECT,
     GET_FILTER,
-} from '../../../apollo/localSchema/queries';
+} from '../../../apollo_copy/localSchema/queries';
 
 import { REST_URL } from '../../../configs/restAPI';
 

@@ -32,9 +32,10 @@ import {
     toSelItem,
 } from '../../../helperFunctions/select';
 
-import { timestampToString } from '../../../helperFunctions/time';
-
-import { updateArrayItem } from '../../../helperFunctions/time';
+import {
+    timestampToString,
+    updateArrayItem,
+} from '../../../helperFunctions';
 
 import {
     GET_TASK,

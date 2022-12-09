@@ -24,9 +24,9 @@ import {
 import {
     GET_PROJECT,
     GET_FILTER,
-} from '../../apollo/localSchema/queries';
+} from '../../apollo_copy/localSchema/queries';
 
-import { setFilter } from '../../apollo/localSchema/actions';
+import { setFilter } from '../../apollo_copy/localSchema/actions';
 import { useTranslation } from 'react-i18next';
 
 export default function DrawerContentFilters(props) {

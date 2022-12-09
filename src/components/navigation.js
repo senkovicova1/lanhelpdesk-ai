@@ -22,12 +22,12 @@ import TaskEditMaterialEdit from '../tasks/taskForm/components/materials/editFor
 import i18n from 'i18next';
 import { getMyData } from '../helperFunctions';
 
-import { GET_IS_LOGGED_IN } from '../apollo/localSchema/queries';
+import { GET_IS_LOGGED_IN } from '../apollo_copy/localSchema/queries';
 
 import {
     GET_MY_DATA,
     USER_DATA_SUBSCRIPTION,
-} from '../apollo/globalQueries';
+} from '../apollo_copy/globalQueries';
 import { useTranslation } from 'react-i18next';
 
 const Stack = createNativeStackNavigator();

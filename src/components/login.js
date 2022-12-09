@@ -18,9 +18,9 @@ import { useMutation, useQuery } from '@apollo/client';
 import {
     setIsLoggedIn,
     // setTestedToken,
-} from '../apollo/localSchema/actions'; /*
-import refreshToken from '../apollo/refreshToken';
-import { GET_TESTED_TOKEN } from '../apollo/localSchema/queries';*/
+} from '../apollo_copy/localSchema/actions'; /*
+import refreshToken from '../apollo_copy/refreshToken';
+import { GET_TESTED_TOKEN } from '../apollo_copy/localSchema/queries';*/
 import { LOGIN_USER } from '../queries/login';
 import { useTranslation } from 'react-i18next';
 
@@ -31,8 +31,10 @@ export default function Login(props) {
 
     const [loginUser] = useMutation(LOGIN_USER);
 
-    const [email, setEmail] = React.useState('');
-    const [password, setPassword] = React.useState('');
+    const [email, setEmail] =
+        React.useState('senk@test.sk');
+    const [password, setPassword] =
+        React.useState('Popoluska');
     const [showPassword, setShowPassword] =
         React.useState(false);
     const [signingIn, setSigningIn] = React.useState(false);
