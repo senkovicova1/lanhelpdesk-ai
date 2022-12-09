@@ -17,10 +17,10 @@ import localStorage from 'react-native-sync-localstorage';
 import { useMutation, useQuery } from '@apollo/client';
 import {
     setIsLoggedIn,
-    setTestedToken,
-} from '../apollo/localSchema/actions';
+    // setTestedToken,
+} from '../apollo/localSchema/actions'; /*
 import refreshToken from '../apollo/refreshToken';
-import { GET_TESTED_TOKEN } from '../apollo/localSchema/queries';
+import { GET_TESTED_TOKEN } from '../apollo/localSchema/queries';*/
 import { LOGIN_USER } from '../queries/login';
 import { useTranslation } from 'react-i18next';
 
@@ -37,12 +37,12 @@ export default function Login(props) {
         React.useState(false);
     const [signingIn, setSigningIn] = React.useState(false);
     const [error, setError] = React.useState(null);
-
+    /*
     const {
         data: testedTokenData,
         loading: testedTokenLoading,
     } = useQuery(GET_TESTED_TOKEN);
-
+*/
     const login = () => {
         setSigningIn(true);
         setError(null);
@@ -56,6 +56,7 @@ export default function Login(props) {
             .then((response) => {
                 setSigningIn(false);
                 setError(null);
+                console.log(response.data.loginUser);
                 localStorage.setItem(
                     'acctok',
                     response.data.loginUser.accessToken
@@ -64,18 +65,19 @@ export default function Login(props) {
                 navigation.navigate('Drawer');
             })
             .catch((err) => {
+                console.log(err);
                 setSigningIn(false);
                 setError(err.message);
             });
     };
-
+    /*
     React.useEffect(() => {
-        if (!testedTokenData.testedToken) {
+         if (!testedTokenData.testedToken) {
             setTestedToken(true);
             tryLogin();
         }
-    }, [testedTokenLoading, testedTokenData.testedToken]);
-
+    }, [testedTokenLoading, testedTokenData.testedToken]);*/
+    /*
     const tryLogin = () => {
         setSigningIn(true);
 
@@ -102,22 +104,9 @@ export default function Login(props) {
                 setError(err.message);
             });
     };
-
+*/
     return (
         <Center height={'100%'} width={'100%'}>
-            <FormControl>
-                <Stack mx="4">
-                    <FormControl.Label>
-                        LanHelpdesk URL & Port
-                    </FormControl.Label>
-                    <Input
-                        type="text"
-                        defaultValue=""
-                        placeholder="company.lanhelpdesk.com:port"
-                    />
-                </Stack>
-            </FormControl>
-
             <FormControl isRequired>
                 <Stack mx="4">
                     <FormControl.Label>

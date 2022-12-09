@@ -95,11 +95,10 @@ export default function TaskList(props) {
 
     //apollo queries
     const taskVariables = {
-        projectId:
-            localProject.project.id === -1
+        projectId: null,
+        /*localProject.project.id === -1
                 ? null
-                : localProject.project.id,
-        filter: filterVariables,
+                : localProject.project.id*/ filter: null /*filterVariables*/,
         sort: {
             asc: true,
             key: 'status',
@@ -113,6 +112,7 @@ export default function TaskList(props) {
         data: tasksData,
         loading: tasksLoading,
         refetch: tasksRefetchFunc,
+        error: tasksError,
     } = useQuery(GET_TASKS, {
         variables: taskVariables,
         notifyOnNetworkStatusChange: true,
@@ -132,17 +132,18 @@ export default function TaskList(props) {
 
     //refetch tasks
     React.useEffect(() => {
+        console.log('tasks refetch');
         tasksRefetch();
     }, [localFilter, localProject.id, limit, search]);
 
     useSubscription(ADD_TASK_SUBSCRIPTION, {
-        onSubscriptionData: () => {
+        onData: () => {
             tasksRefetch();
         },
     });
 
     useSubscription(USER_DATA_SUBSCRIPTION, {
-        onSubscriptionData: () => {
+        onData: () => {
             userDataRefetch();
         },
     });
@@ -166,6 +167,9 @@ export default function TaskList(props) {
             'HH:mm DD.MM.YYYY'
         );
     };
+
+    console.log('tasksData', tasksData);
+    console.log('tasksError', tasksError);
 
     let tasks =
         tasksLoading || !tasksData || !tasksData.tasks

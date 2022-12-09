@@ -3,7 +3,7 @@ import { REST_URL } from '../configs/restAPI';
 
 //refreshne access a refresh token
 export default async function refreshToken() {
-    console.log('refresh token');
+    console.log('REST_URL', REST_URL);
     return axios.request({
         url: `${REST_URL}/refresh_token`,
         method: 'post',
