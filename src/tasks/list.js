@@ -185,7 +185,7 @@ export default function TaskList(props) {
             }
             if (!task.startsAt && task.deadline) {
                 return (
-                    parseInt(task.deadline) <=
+                    parseInt(task.deadline) >=
                     parseInt(markedDate)
                 );
             }

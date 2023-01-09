@@ -31,10 +31,8 @@ export default function Login(props) {
 
     const [loginUser] = useMutation(LOGIN_USER);
 
-    const [email, setEmail] =
-        React.useState('senk@test.sk');
-    const [password, setPassword] =
-        React.useState('Popoluska');
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
     const [showPassword, setShowPassword] =
         React.useState(false);
     const [signingIn, setSigningIn] = React.useState(false);

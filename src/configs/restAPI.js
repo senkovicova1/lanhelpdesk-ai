@@ -1,7 +1,7 @@
 import localStorage from 'react-native-sync-localstorage';
 
 // TODO: toto zmen na true pred push
-export const testing = true;
+export const testing = false;
 const production = true;
 const port = production ? 8082 : 8083;
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    Text,
     Center,
     Button,
     Input,
@@ -23,26 +24,10 @@ export default function HelpdeskConnect(props) {
     const [error, setError] = React.useState(null);
 
     async function check() {
-        let result = null;
         try {
-            let res = await axios.get(
-                `http://${helpdeskURL}:${port}`
-            );
-            result = res.status;
-            // Work with the response...
-        } catch (err) {
-            console.log(err);
-            if (err.response) {
-                // The client was given an error response (5xx, 4xx)
-            } else if (err.request) {
-                // The client never received a response, and the request was never left
-            } else {
-                // Anything else
-            }
-        }
-        if (result) {
+            await fetch(`https://${helpdeskURL}:${port}`);
             connectToHelpdesk();
-        } else {
+        } catch (e) {
             setError('Incorrect URL or port');
         }
     }
@@ -95,6 +80,7 @@ export default function HelpdeskConnect(props) {
                     </FormControl.ErrorMessage>
                 </Stack>
             </FormControl>
+            <Text>{error}</Text>
 
             <FormControl
                 isDisabled={
@@ -107,22 +93,22 @@ export default function HelpdeskConnect(props) {
                         shadow={2}
                         onPress={() => {
                             const regexHelpdesk =
-                                /[a-z0-9]\.helpdesk\.com$/;
+                                /[a-z0-9]\.lantask\.eu$/;
                             const regexPort = /^\d{4}$/;
-                            /*  if (
+                            if (
                                 !regexHelpdesk.test(
                                     helpdeskURL
                                 )
                             ) {
                                 setError('Wrong url');
-                            }*/
+                            }
                             if (!regexPort.test(port)) {
                                 setError('Wrong port');
                             }
                             if (
-                                /*  regexHelpdesk.test(
+                                regexHelpdesk.test(
                                     helpdeskURL
-                                ) &&*/
+                                ) &&
                                 regexPort.test(port)
                             ) {
                                 check();
@@ -131,13 +117,6 @@ export default function HelpdeskConnect(props) {
                     >
                         {t('Connect')}
                     </Button>
-                    <FormControl.ErrorMessage
-                        leftIcon={
-                            <WarningOutlineIcon size="xs" />
-                        }
-                    >
-                        {error ? error : 'AAA'}
-                    </FormControl.ErrorMessage>
                 </Stack>
             </FormControl>
         </Center>

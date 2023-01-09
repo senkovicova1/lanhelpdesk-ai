@@ -49,12 +49,11 @@ initializeTranslations();
 export default function App() {
     const [client, setClient] = useState(null);
 
-    const [helpdeskURL, setHelpdeskURL] =
-        useState('192.168.1.13');
-    const [port, setPort] = useState('4000');
+    const [helpdeskURL, setHelpdeskURL] = useState('');
+    const [port, setPort] = useState('');
 
-    const REST_URL = `http://${helpdeskURL}:${port}`;
-    const SOCKET_URL = `ws://${helpdeskURL}:${port}`;
+    const REST_URL = `https://${helpdeskURL}:${port}`;
+    const SOCKET_URL = `wss://${helpdeskURL}:${port}`;
 
     /*Create client*/
     function createClient() {
