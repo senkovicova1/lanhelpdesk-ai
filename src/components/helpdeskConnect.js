@@ -13,22 +13,22 @@ import axios from 'react-native-axios';
 
 export default function HelpdeskConnect(props) {
     const {
-        helpdeskPrefix,
-        setHelpdeskPrefix,
+        helpdeskURL,
+        setHelpdeskURL,
         port,
         setPort,
         connectToHelpdesk,
     } = props;
     const { t } = useTranslation();
 
+    const [error, setError] = React.useState(null);
+
     async function check() {
         try {
-            await fetch(
-                `https://${helpdeskPrefix}.lantask.eu:${responsePort}`
-            );
+            await fetch(`https://${helpdeskURL}:${port}`);
             connectToHelpdesk();
         } catch (e) {
-            setError(`Incorrect URL or port`);
+            setError('Incorrect URL or port');
         }
     }
 
@@ -37,15 +37,15 @@ export default function HelpdeskConnect(props) {
             <FormControl isRequired>
                 <Stack mx="4">
                     <FormControl.Label>
-                        Lantask Prefix
+                        LanHelpdesk URL
                     </FormControl.Label>
                     <Input
                         type="text"
                         defaultValue=""
-                        value={helpdeskPrefix}
-                        placeholder=""
+                        value={helpdeskURL}
+                        placeholder="company.lanhelpdesk.com"
                         onChangeText={(text) => {
-                            setHelpdeskPrefix(text);
+                            setHelpdeskURL(text);
                         }}
                     />
                     <FormControl.ErrorMessage
@@ -80,11 +80,13 @@ export default function HelpdeskConnect(props) {
                     </FormControl.ErrorMessage>
                 </Stack>
             </FormControl>
-
             <Text>{error}</Text>
 
             <FormControl
-                isDisabled={helpdeskPrefix.length === 0}
+                isDisabled={
+                    port.length === 0 ||
+                    helpdeskURL.length === 0
+                }
             >
                 <Stack mx="4">
                     <Button
@@ -92,19 +94,22 @@ export default function HelpdeskConnect(props) {
                         onPress={() => {
                             const regexHelpdesk =
                                 /[a-z0-9]\.lantask\.eu$/;
+                            const regexPort = /^\d{4}$/;
                             if (
                                 !regexHelpdesk.test(
-                                    helpdeskPrefix +
-                                        '.lantask.eu'
+                                    helpdeskURL
                                 )
                             ) {
                                 setError('Wrong url');
                             }
+                            if (!regexPort.test(port)) {
+                                setError('Wrong port');
+                            }
                             if (
                                 regexHelpdesk.test(
-                                    helpdeskPrefix +
-                                        '.lantask.eu'
-                                )
+                                    helpdeskURL
+                                ) &&
+                                regexPort.test(port)
                             ) {
                                 check();
                             }

@@ -49,12 +49,11 @@ initializeTranslations();
 export default function App() {
     const [client, setClient] = useState(null);
 
-    const [helpdeskPrefix, setHelpdeskPrefix] =
-        useState('');
+    const [helpdeskURL, setHelpdeskURL] = useState('');
     const [port, setPort] = useState('');
 
-    const REST_URL = `https://${helpdeskPrefix}.lantask.eu:${port}`;
-    const SOCKET_URL = `wss://${helpdeskPrefix}.lantask.eu:${port}`;
+    const REST_URL = `https://${helpdeskURL}:${port}`;
+    const SOCKET_URL = `wss://${helpdeskURL}:${port}`;
 
     /*Create client*/
     function createClient() {
@@ -143,10 +142,7 @@ export default function App() {
     }
 
     const connectToHelpdesk = () => {
-        localStorage.setItem(
-            'helpdeskURL',
-            `${helpdeskPrefix}.lantask.eu`
-        );
+        localStorage.setItem('helpdeskURL', helpdeskURL);
         localStorage.setItem('port', port);
 
         setClient(createClient());
@@ -160,8 +156,8 @@ export default function App() {
         return (
             <NativeBaseProvider theme={LanHelpdeskTheme}>
                 <HelpdeskConnect
-                    helpdeskPrefix={helpdeskPrefix}
-                    setHelpdeskPrefix={setHelpdeskPrefix}
+                    helpdeskURL={helpdeskURL}
+                    setHelpdeskURL={setHelpdeskURL}
                     port={port}
                     setPort={setPort}
                     connectToHelpdesk={connectToHelpdesk}
