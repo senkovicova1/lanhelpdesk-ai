@@ -71,7 +71,7 @@ export default function Navigation(props) {
                 options={{
                     headerTitle: (props) => (
                         <Heading variant="main">
-                            LanHelpdesk
+                            Lantask
                         </Heading>
                     ),
                     headerStyle: {

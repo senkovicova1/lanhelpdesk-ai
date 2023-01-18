@@ -49,11 +49,20 @@ initializeTranslations();
 export default function App() {
     const [client, setClient] = useState(null);
 
-    const [helpdeskURL, setHelpdeskURL] = useState('');
+    const [helpdeskPrefix, setHelpdeskPrefix] =
+        useState('');
     const [port, setPort] = useState('');
 
-    const REST_URL = `https://${helpdeskURL}:${port}`;
-    const SOCKET_URL = `wss://${helpdeskURL}:${port}`;
+    const REST_URL =
+        helpdeskPrefix === 'localhost'
+            ? `http://192.168.1.13:${port}`
+            : `https://${helpdeskPrefix}.lantask.eu:${port}`;
+    const SOCKET_URL =
+        helpdeskPrefix === 'localhost'
+            ? `ws://192.168.1.13:${port}`
+            : `wss://${helpdeskPrefix}.lantask.eu:${port}`;
+
+    console.log(REST_URL, SOCKET_URL);
 
     /*Create client*/
     function createClient() {
@@ -142,7 +151,12 @@ export default function App() {
     }
 
     const connectToHelpdesk = () => {
-        localStorage.setItem('helpdeskURL', helpdeskURL);
+        localStorage.setItem(
+            'helpdeskURL',
+            helpdeskPrefix === 'localhost'
+                ? `192.168.1.13`
+                : `${helpdeskPrefix}.lantask.eu`
+        );
         localStorage.setItem('port', port);
 
         setClient(createClient());
@@ -152,12 +166,14 @@ export default function App() {
         setClient(null);
     });
 
+    console.log(client ? Object.keys(client) : 'no');
+
     if (!client) {
         return (
             <NativeBaseProvider theme={LanHelpdeskTheme}>
                 <HelpdeskConnect
-                    helpdeskURL={helpdeskURL}
-                    setHelpdeskURL={setHelpdeskURL}
+                    helpdeskPrefix={helpdeskPrefix}
+                    setHelpdeskPrefix={setHelpdeskPrefix}
                     port={port}
                     setPort={setPort}
                     connectToHelpdesk={connectToHelpdesk}
@@ -172,7 +188,11 @@ export default function App() {
                 <NativeBaseProvider
                     theme={LanHelpdeskTheme}
                 >
-                    <Navigation />
+                    <Navigation
+                        returnToConnection={() => {
+                            setClient(null);
+                        }}
+                    />
                 </NativeBaseProvider>
             </NavigationContainer>
         </ApolloProvider>

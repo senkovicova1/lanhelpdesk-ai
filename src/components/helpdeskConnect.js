@@ -13,8 +13,8 @@ import axios from 'react-native-axios';
 
 export default function HelpdeskConnect(props) {
     const {
-        helpdeskURL,
-        setHelpdeskURL,
+        helpdeskPrefix,
+        setHelpdeskPrefix,
         port,
         setPort,
         connectToHelpdesk,
@@ -24,12 +24,40 @@ export default function HelpdeskConnect(props) {
     const [error, setError] = React.useState(null);
 
     async function check() {
-        try {
-            await fetch(`https://${helpdeskURL}:${port}`);
-            connectToHelpdesk();
-        } catch (e) {
-            setError('Incorrect URL or port');
-        }
+        /*  const URL =
+            helpdeskPrefix === 'localhost'
+                ? `http://192.168.1.13:${port}`
+                : `https://${helpdeskPrefix}.lantask.eu:${port}`;
+        */
+
+        // druha https na testovanie https://nodejs02.lanhelpdesk.com:8080/
+        //'http://nodejs02.lanhelpdesk.com:8099/'
+        // https://dummyjson.com/products/1
+        /*
+        fetch(URL, {
+            method: 'GET',
+            mode: 'no-cors',
+            credentials: 'omit',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+        })
+            .then((response) => {
+                console.log(Object.keys(response));
+
+                Object.keys(response).map((key) =>
+                    console.log(response[key])
+                );
+                //     connectToHelpdesk();
+            })
+            .catch((error) => {
+                console.log(error);
+                setError('Incorrect URL or port');
+            });
+            */
+
+        connectToHelpdesk();
     }
 
     return (
@@ -37,15 +65,16 @@ export default function HelpdeskConnect(props) {
             <FormControl isRequired>
                 <Stack mx="4">
                     <FormControl.Label>
-                        LanHelpdesk URL
+                        Lantask prefix
                     </FormControl.Label>
                     <Input
                         type="text"
                         defaultValue=""
-                        value={helpdeskURL}
-                        placeholder="company.lanhelpdesk.com"
+                        value={helpdeskPrefix}
+                        placeholder="My company"
                         onChangeText={(text) => {
-                            setHelpdeskURL(text);
+                            setHelpdeskPrefix(text);
+                            setError(null);
                         }}
                     />
                     <FormControl.ErrorMessage
@@ -69,6 +98,7 @@ export default function HelpdeskConnect(props) {
                         placeholder={'0000'}
                         onChangeText={(text) => {
                             setPort(text);
+                            setError(null);
                         }}
                     />
                     <FormControl.ErrorMessage
@@ -85,34 +115,39 @@ export default function HelpdeskConnect(props) {
             <FormControl
                 isDisabled={
                     port.length === 0 ||
-                    helpdeskURL.length === 0
+                    helpdeskPrefix.length === 0
                 }
             >
                 <Stack mx="4">
                     <Button
                         shadow={2}
                         onPress={() => {
-                            const regexHelpdesk =
+                            /* const regexHelpdesk =
                                 /[a-z0-9]\.lantask\.eu$/;
                             const regexPort = /^\d{4}$/;
                             if (
+                                helpdeskPrefix !==
+                                    'localhost' &&
                                 !regexHelpdesk.test(
-                                    helpdeskURL
+                                    `${helpdeskPrefix}.lantask.eu`
                                 )
                             ) {
-                                setError('Wrong url');
+                                setError('Wrong prefix');
                             }
                             if (!regexPort.test(port)) {
                                 setError('Wrong port');
                             }
                             if (
-                                regexHelpdesk.test(
-                                    helpdeskURL
-                                ) &&
+                                (helpdeskPrefix ===
+                                    'localhost' ||
+                                    regexHelpdesk.test(
+                                        `${helpdeskPrefix}.lantask.eu`
+                                    )) &&
                                 regexPort.test(port)
                             ) {
                                 check();
-                            }
+                            }*/
+                            check();
                         }}
                     >
                         {t('Connect')}

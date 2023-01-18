@@ -31,11 +31,11 @@ export const SOCKET_URL = testing
 
 export const REST_URL = `${
     testing ? 'http' : 'https'
-}://${localStorage.getItem(
-    'helpdeskURL'
-)}:${localStorage.getItem('port')}`;
+}://${localStorage.getItem('helpdeskURL')}${
+    testing ? '' : '.lantask.eu'
+}:${localStorage.getItem('port')}`;
 export const SOCKET_URL = `${
     testing ? 'ws' : 'wss'
-}://${localStorage.getItem(
-    'helpdeskURL'
-)}:${localStorage.getItem('port')}`;
+}://${localStorage.getItem('helpdeskURL')}${
+    testing ? '' : '.lantask.eu'
+}:${localStorage.getItem('port')}`;

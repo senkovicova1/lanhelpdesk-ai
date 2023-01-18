@@ -50,7 +50,7 @@ export default function CustomDrawerContent(props) {
                         }}
                     />
                     <Heading variant="main" size="md">
-                        LanHelpdeskApp
+                        Lantask
                     </Heading>
                 </Flex>
                 <Heading variant="main" size="sm" mt="2">

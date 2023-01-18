@@ -10,7 +10,11 @@ import {
     WarningOutlineIcon,
     Text,
 } from 'native-base';
-import { MaterialIcons } from '@expo/vector-icons';
+import { DeviceEventEmitter } from 'react-native';
+import {
+    MaterialIcons,
+    Ionicons,
+} from '@expo/vector-icons';
 
 import localStorage from 'react-native-sync-localstorage';
 
@@ -106,6 +110,35 @@ export default function Login(props) {
 */
     return (
         <Center height={'100%'} width={'100%'}>
+            <FormControl
+                isDisabled={
+                    signingIn ||
+                    email.length === 0 ||
+                    password.length === 0
+                }
+            >
+                <Stack mx="4">
+                    <Button
+                        variant="ghost"
+                        onPress={() => {
+                            DeviceEventEmitter.emit(
+                                'event.logOut',
+                                null
+                            );
+                        }}
+                        leftIcon={
+                            <Icon
+                                as={Ionicons}
+                                name="arrow-back"
+                                size="sm"
+                            />
+                        }
+                    >
+                        {t('return')}
+                    </Button>
+                </Stack>
+            </FormControl>
+
             <FormControl isRequired>
                 <Stack mx="4">
                     <FormControl.Label>
@@ -175,6 +208,7 @@ export default function Login(props) {
                     </FormControl.ErrorMessage>
                 </Stack>
             </FormControl>
+            <Text>{error}</Text>
 
             <FormControl
                 isDisabled={
@@ -192,13 +226,6 @@ export default function Login(props) {
                     >
                         {t('login')}
                     </Button>
-                    <FormControl.ErrorMessage
-                        leftIcon={
-                            <WarningOutlineIcon size="xs" />
-                        }
-                    >
-                        {error ? error : ''}
-                    </FormControl.ErrorMessage>
                 </Stack>
             </FormControl>
         </Center>
